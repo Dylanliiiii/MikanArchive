@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from "@/config/site";
+import { withBase } from "@/utils/paths";
 
 interface Props {
   postCount?: number;
@@ -20,8 +21,8 @@ const { postCount = 0, resourceCount = 0, friendCount = 0 } = Astro.props;
         把教程、问题解决记录、资源收藏和写作足迹放进一个轻盈的知识收藏馆。
       </p>
       <div class="mt-7 flex flex-wrap gap-3">
-        <a class="button-primary" href="/posts/">进入文库</a>
-        <a class="button-outline" href="/resources/">查看收藏</a>
+        <a class="button-primary" href={withBase("/posts/")}>进入文库</a>
+        <a class="button-outline" href={withBase("/resources/")}>查看收藏</a>
       </div>
       <div class="mt-8 grid max-w-xl grid-cols-3 gap-3">
         <div class="surface-plain p-3">

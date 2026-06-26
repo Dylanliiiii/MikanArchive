@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 GitHub Pages Actions 工作流，支持通过 Astro 构建并部署 `dist/`。
 - 初始化 Astro + MDX + React + Tailwind CSS 的静态站点框架。
 - 新增首页、文库、文章详情、收藏、友邻、足迹和我的页面。
 - 新增搜索弹窗、友链申请弹窗、日历、写作热力图、文章卡片、资源卡片和友链卡片。
@@ -15,6 +16,7 @@
 
 ### Changed
 
+- 为站内链接和公开资产路径增加 base path 处理，兼容 GitHub Pages `/MikanArchive/` 子路径部署。
 - 升级到 Astro 7 依赖栈，改用 `src/content.config.ts` + Content Layer `glob()` loader。
 - 移除已弃用的 `@astrojs/tailwind` 集成，改为 Tailwind CSS v3 + PostCSS + Autoprefixer。
 - 明确 Node.js 最低要求为 `>=22.12.0`，并新增 `.node-version` 记录推荐版本。
@@ -23,6 +25,7 @@
 
 ### Fixed
 
+- 修复 GitHub Pages 默认 Jekyll 构建 Astro 源码导致的部署失败问题。
 - 通过升级 Astro 依赖链清理 `npm audit --omit=dev` 报告中的安全公告。
 
 ### Docs

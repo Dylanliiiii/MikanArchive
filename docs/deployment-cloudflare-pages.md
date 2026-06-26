@@ -106,6 +106,31 @@ Output Directory: dist
 
 同样需要在 Vercel 的环境变量或 Secret 中配置 `ENABLE_CONTENT_SYNC`、`CONTENT_REPO_URL`、`CONTENT_BRANCH`。私有仓库访问凭据必须放在平台密钥中，不写入公开仓库。
 
+## GitHub Pages 兼容部署
+
+GitHub Pages 可用于公开示例站点。仓库已提供 `.github/workflows/pages.yml`，用于通过 GitHub Actions 构建 Astro 站点并部署 `dist/`。
+
+GitHub 仓库设置要求：
+
+- Settings → Pages → Build and deployment → Source 选择 `GitHub Actions`。
+- 不要选择默认的 `Deploy from a branch`，该模式会使用 Jekyll 构建源码目录，无法正确处理 `.astro` 文件。
+
+当前仓库名为 `MikanArchive`，GitHub Pages 项目页部署在子路径：
+
+```text
+https://dylanliiiii.github.io/MikanArchive/
+```
+
+因此 GitHub Actions 工作流设置了：
+
+```env
+SITE_URL=https://dylanliiiii.github.io
+BASE_PATH=/MikanArchive
+ENABLE_CONTENT_SYNC=false
+```
+
+如果未来改为用户页仓库、自定义域名或其他仓库名，需要同步调整 `SITE_URL` 和 `BASE_PATH`。
+
 ## 故障排查
 
 ### 构建提示找不到内容文件
@@ -143,6 +168,16 @@ npm run sync:content && npm run build
 ```
 
 这样可以保证部署环境先生成内容目录，再进入校验和构建阶段。
+
+### GitHub Pages 使用 Jekyll 构建失败
+
+如果 Actions 日志出现 `Build with Jekyll`、`Invalid YAML front matter` 或 `.astro` 文件的 YAML 解析错误，说明 Pages 仍在使用旧的分支部署/Jekyll 构建。
+
+处理方式：
+
+1. 确认 `.github/workflows/pages.yml` 已推送到 `main`。
+2. 到 GitHub Settings → Pages，把 Source 改成 `GitHub Actions`。
+3. 重新运行 `pages build and deployment` 工作流。
 
 ### Node 版本不兼容
 

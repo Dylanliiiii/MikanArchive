@@ -1,5 +1,53 @@
 # Development Log
 
+## 2026-06-27 00:44:34 +08:00
+
+### 修改范围
+
+- GitHub Pages 部署修复
+- 子路径部署兼容
+- README 使用说明补充
+- 部署文档与日志同步
+
+### 涉及文件
+
+- `.github/workflows/pages.yml`
+- `astro.config.mjs`
+- `src/utils/paths.ts`
+- `src/config/site.ts`
+- `src/pages/_data.ts`
+- `src/components/site/SiteNav.astro`
+- `src/components/site/SiteFooter.astro`
+- `src/components/home/HomeHero.astro`
+- `src/components/home/RecentPosts.astro`
+- `src/components/home/FeaturedResources.astro`
+- `src/components/cards/FriendCard.astro`
+- `src/layouts/PostLayout.astro`
+- `src/pages/index.astro`
+- `README.md`
+- `CHANGELOG.md`
+- `docs/deployment-cloudflare-pages.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 GitHub Pages Actions 工作流，使用 Node、npm、Astro 构建流程部署 `dist/`，替代 GitHub Pages 默认 Jekyll 构建。
+- 确认线上失败根因为 GitHub Pages legacy 分支部署触发 `actions/jekyll-build-pages`，Jekyll 将 `.astro` 组件误当作 YAML frontmatter 解析。
+- 将 `astro.config.mjs` 改为读取 `SITE_URL` 和 `BASE_PATH` 环境变量，GitHub Pages 工作流使用 `SITE_URL=https://dylanliiiii.github.io`、`BASE_PATH=/MikanArchive`。
+- 新增 `src/utils/paths.ts`，统一处理站内链接和 `/assets/...` 公开资产路径，兼容 GitHub Pages 子路径部署。
+- 更新导航、首页入口、文章链接、文章封面和友链头像等内部路径。
+- 在 README 中补充本地使用步骤、GitHub Pages 部署说明和 Jekyll 报错原因。
+- 在部署文档中补充 GitHub Pages 兼容部署、Pages Source 设置和故障排查说明。
+
+### 验证情况
+
+- 已运行 `gh run view 28251467753 --log-failed`，确认失败日志为 `Build with Jekyll` 和 `.astro` 文件 `Invalid YAML front matter`。
+- 已在 `SITE_URL=https://dylanliiiii.github.io`、`BASE_PATH=/MikanArchive` 环境下运行 `npm.cmd run sync:content`、`npm.cmd run validate:content`、`npm.cmd run check` 和 `npm.cmd run build`，均通过，构建生成 7 个静态页面和 sitemap。
+- 已运行 `npm.cmd ci --registry=https://registry.npmjs.org` 模拟 GitHub Actions 安装流程；首次因 Windows 本机 native `.node` 文件占用出现 EPERM，结束残留 Node 进程后重试通过。
+- 已检查 `dist/` 中首页、文库、文章详情和友邻页面，确认站内链接、Astro 静态资源、文章封面和友链头像均带有 `/MikanArchive/` base path。
+- 已运行 `npm.cmd audit --omit=dev --json`，生产依赖安全公告数量为 0。
+- 已运行完整 `npm.cmd audit --json`，仍有 5 个 moderate dev 依赖公告，来源为 `@astrojs/check` 的 `@astrojs/language-server`/`volar-service-yaml`/`yaml-language-server` 链；不进入生产构建产物，且 npm 当前给出的修复方案是降级 `@astrojs/check`。
+
 ## 2026-06-27 00:29:46 +08:00
 
 ### 修改范围

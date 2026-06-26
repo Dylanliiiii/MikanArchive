@@ -1,4 +1,6 @@
 ---
+import { withBase } from "@/utils/paths";
+
 interface Props {
   name: string;
   url: string;
@@ -23,7 +25,7 @@ const {
 ---
 
 <a href={url} target="_blank" rel="noreferrer" class="surface card-hover group flex min-w-0 gap-4 p-4">
-  <img src={avatar} alt={`${name} 的头像`} class="h-16 w-16 shrink-0 rounded-lg border border-border bg-muted object-cover" loading="lazy" />
+  <img src={withBase(avatar)} alt={`${name} 的头像`} class="h-16 w-16 shrink-0 rounded-lg border border-border bg-muted object-cover" loading="lazy" />
   <div class="min-w-0 flex-1">
     <div class="flex min-w-0 flex-wrap items-center gap-2">
       <h3 class="max-w-full truncate text-base font-bold tracking-normal">{name}</h3>

@@ -1,5 +1,6 @@
 ---
 import ResourceCard from "@/components/cards/ResourceCard.astro";
+import { withBase } from "@/utils/paths";
 
 interface ResourceItem {
   title: string;
@@ -23,7 +24,7 @@ const { resources = [] } = Astro.props;
       <h2>精选收藏</h2>
       <p>留下来不是因为链接多，而是因为它们确实解决过问题。</p>
     </div>
-    <a class="button-ghost" href="/resources/">收藏库</a>
+    <a class="button-ghost" href={withBase("/resources/")}>收藏库</a>
   </div>
   <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
     {

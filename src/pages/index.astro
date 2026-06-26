@@ -5,6 +5,7 @@ import FootprintPreview from "@/components/home/FootprintPreview.astro";
 import HomeHero from "@/components/home/HomeHero.astro";
 import RecentPosts from "@/components/home/RecentPosts.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { withBase } from "@/utils/paths";
 import { getCollection } from "astro:content";
 import {
   formatDate,
@@ -53,7 +54,7 @@ const postCards = posts.map((post) => ({
             <h2>友邻一角</h2>
             <p>把值得常去的站点放在近处。</p>
           </div>
-          <a class="button-ghost" href="/friends/">友邻墙</a>
+          <a class="button-ghost" href={withBase("/friends/")}>友邻墙</a>
         </div>
         <div class="grid gap-4">
           {friends.slice(0, 2).map((friend) => <FriendCard {...friend} />)}
@@ -67,7 +68,7 @@ const postCards = posts.map((post) => ({
         <div class="mt-5 flex flex-wrap gap-2">
           {(resume.skills ?? []).slice(0, 5).map((skill) => <span class="badge">{skill}</span>)}
         </div>
-        <a class="button-outline mt-5" href="/about/">查看资料</a>
+        <a class="button-outline mt-5" href={withBase("/about/")}>查看资料</a>
       </div>
     </div>
   </section>

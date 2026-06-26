@@ -7,11 +7,12 @@ import {
   getTimeline,
   getUpdates
 } from "@/data/loaders";
+import { withBase } from "@/utils/paths";
 
 export type PostEntry = CollectionEntry<"posts">;
 
 export function postHref(post: PostEntry) {
-  return `/posts/${post.id}/`;
+  return withBase(`/posts/${post.id}/`);
 }
 
 export function formatDate(value?: string | Date) {

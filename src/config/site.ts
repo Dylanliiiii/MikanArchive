@@ -18,7 +18,7 @@ export const siteConfig = {
   socialLinks: [
     { label: "GitHub", href: "https://github.com/" },
     { label: "Email", href: "mailto:hello@example.com" },
-    { label: "RSS", href: "/rss.xml" }
+    { label: "RSS", href: "" }
   ],
   theme: {
     accentNames: ["sakura", "sky", "honey", "mint", "ink"],

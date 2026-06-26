@@ -1,17 +1,18 @@
 ---
 import { siteConfig } from "@/config/site";
+import { withBase } from "@/utils/paths";
 ---
 
 <header class="sticky top-0 z-40 border-b border-border/70 bg-background/70 backdrop-blur-xl">
   <nav class="container flex min-h-16 flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-0" aria-label="主导航">
-    <a href="/" class="flex items-center gap-2 text-base font-bold tracking-normal">
+    <a href={withBase("/")} class="flex items-center gap-2 text-base font-bold tracking-normal">
       <span class="grid h-8 w-8 place-items-center rounded-md bg-primary text-sm text-primary-foreground">M</span>
       <span>{siteConfig.name}</span>
     </a>
     <div class="-mx-1 flex max-w-full items-center gap-1 overflow-x-auto px-1 text-sm text-foreground/70 sm:flex-wrap sm:justify-end">
       {
         siteConfig.nav.map((item) => (
-          <a class="shrink-0 rounded-md px-3 py-2 transition hover:bg-muted hover:text-foreground" href={item.href}>
+          <a class="shrink-0 rounded-md px-3 py-2 transition hover:bg-muted hover:text-foreground" href={withBase(item.href)}>
             {item.label}
           </a>
         ))

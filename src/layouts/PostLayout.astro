@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { withBase } from "@/utils/paths";
 
 type Frontmatter = {
   title: string;
@@ -32,7 +33,7 @@ const formatDate = (value?: Date | string) =>
     <header class="surface mb-8 overflow-hidden">
       {
         frontmatter.cover && (
-          <img src={frontmatter.cover} alt="" class="h-56 w-full object-cover sm:h-72" loading="eager" />
+          <img src={withBase(frontmatter.cover)} alt="" class="h-56 w-full object-cover sm:h-72" loading="eager" />
         )
       }
       <div class="p-5 sm:p-8">

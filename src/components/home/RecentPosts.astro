@@ -1,5 +1,6 @@
 ---
 import PostCard from "@/components/cards/PostCard.astro";
+import { withBase } from "@/utils/paths";
 
 interface PostItem {
   title: string;
@@ -23,7 +24,7 @@ const { posts = [] } = Astro.props;
       <h2>最近文章</h2>
       <p>教程、笔记和排错记录先从这里进入。</p>
     </div>
-    <a class="button-ghost" href="/posts/">全部文章</a>
+    <a class="button-ghost" href={withBase("/posts/")}>全部文章</a>
   </div>
   <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
     {
