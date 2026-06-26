@@ -5,7 +5,7 @@ published: "2026-06-26"
 updated: "2026-06-26"
 category: "教程"
 tags: ["Astro", "博客", "示例"]
-cover: "/assets/images/welcome-cover.svg"
+image: "/assets/images/welcome-cover.svg"
 draft: false
 type: "tutorial"
 featured: true

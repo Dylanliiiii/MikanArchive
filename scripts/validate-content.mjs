@@ -187,6 +187,10 @@ async function validatePosts() {
       tags: isStringArray,
       draft: (value) => typeof value === "boolean"
     });
+
+    if ("cover" in frontmatter && !("image" in frontmatter)) {
+      continue;
+    }
   }
 }
 

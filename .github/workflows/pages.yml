@@ -35,9 +35,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Sync example content
-        run: npm run sync:content
-
       - name: Check Astro project
         run: npm run check
 

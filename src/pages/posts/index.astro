@@ -1,61 +1,27 @@
 ---
-import PostCard from "@/components/cards/PostCard.astro";
-import { SearchDialog } from "@/components/search/SearchDialog";
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-import { formatDate, postHref, sortPosts } from "../_data";
+import PostPage from "@/components/layout/PostPage.astro";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getSortedPosts } from "@/utils/content-utils";
 
-const rawPosts = await getCollection("posts");
-const posts = sortPosts(rawPosts);
-const categories = [...new Set(posts.map((post) => post.data.category))];
-const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))];
-const searchItems = posts.map((post) => ({
-  title: post.data.title,
-  description: post.data.description,
-  href: postHref(post),
-  category: post.data.category,
-  tags: post.data.tags
-}));
+const posts = await getSortedPosts();
+const page = {
+	data: posts,
+	currentPage: 1,
+	lastPage: 1,
+	size: posts.length,
+	total: posts.length,
+	url: {
+		current: "/posts/",
+		next: undefined,
+		prev: undefined,
+		first: "/posts/",
+		last: "/posts/",
+	},
+	start: 0,
+	end: posts.length - 1,
+};
 ---
 
-<BaseLayout title="文库" description="教程、笔记、归档和搜索">
-  <section class="container page-shell">
-    <div class="section-title">
-      <div>
-        <h1 class="text-3xl font-black tracking-normal sm:text-4xl">文库</h1>
-        <p>教程、笔记、问题解决记录和长期参考资料。</p>
-      </div>
-      <SearchDialog client:load items={searchItems} />
-    </div>
-
-    <div class="mb-6 grid gap-4 md:grid-cols-2">
-      <div class="surface p-4">
-        <p class="text-sm font-semibold">分类</p>
-        <div class="mt-3 flex flex-wrap gap-2">
-          {categories.map((category) => <a class="badge" href={`#category-${category}`}>{category}</a>)}
-        </div>
-      </div>
-      <div class="surface p-4">
-        <p class="text-sm font-semibold">标签</p>
-        <div class="mt-3 flex flex-wrap gap-2">
-          {tags.slice(0, 16).map((tag) => <span class="badge">#{tag}</span>)}
-        </div>
-      </div>
-    </div>
-
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {
-        posts.map((post) => (
-          <PostCard
-            title={post.data.title}
-            description={post.data.description}
-            href={postHref(post)}
-            category={post.data.category}
-            tags={post.data.tags}
-            published={formatDate(post.data.published)}
-          />
-        ))
-      }
-    </div>
-  </section>
-</BaseLayout>
+<MainGridLayout title="文库" description="文章、教程和笔记列表">
+  <PostPage page={page} />
+</MainGridLayout>

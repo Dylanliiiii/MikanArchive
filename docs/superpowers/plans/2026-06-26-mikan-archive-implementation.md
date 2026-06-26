@@ -1,5 +1,7 @@
 # MikanArchive Implementation Plan
 
+> 历史说明：本计划记录 2026-06-26 初版 Astro 实现路线。当前主题重构已改以 `docs/superpowers/plans/2026-06-27-mikan-archive-firefly-rebuild.md` 为准，旧计划中的 React islands、`cover` 字段和重复同步构建命令仅保留作历史背景。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the first version of MikanArchive as an Astro static personal knowledge blog with separated public framework and private content support.
@@ -1449,7 +1451,7 @@ Create `README.md` with these sections:
 
 Create `docs/deployment-cloudflare-pages.md` explaining:
 
-- Build command: `npm run sync:content && npm run build`
+- Build command: `npm run build`
 - Output directory: `dist`
 - Required environment variables.
 - Private repository access options.

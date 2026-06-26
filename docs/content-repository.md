@@ -39,6 +39,7 @@ content.example/
 ```text
 src/content/posts/
 src/content/profile/
+src/content/spec/
 src/data/content/
 public/assets/
 ```
@@ -48,6 +49,7 @@ public/assets/
 ```text
 posts/               -> src/content/posts/
 profile/             -> src/content/profile/
+profile/about.md     -> src/content/spec/about.md
 resources/           -> src/data/content/resources/
 links/               -> src/data/content/links/
 records/             -> src/data/content/records/
@@ -110,7 +112,7 @@ published: "2026-06-26"
 updated: "2026-06-26"
 category: "教程"
 tags: ["Windows", "工具", "问题解决"]
-cover: "/assets/images/example-cover.png"
+image: "/assets/images/example-cover.png"
 draft: false
 ---
 
@@ -129,7 +131,7 @@ draft: false
 可选字段：
 
 - `updated`：更新日期。
-- `cover`：封面图路径。
+- `image`：封面图路径。旧内容如果仍使用 `cover`，建议在接入私有内容仓库前迁移为 `image`。
 - `type`：文章类型。
 - `featured`：是否精选。
 - `series`：所属系列。
@@ -234,4 +236,4 @@ draft: false
 npm run validate:content
 ```
 
-校验脚本会检查生成后的 `src/content/` 和 `src/data/content/`。如果尚未运行同步，或 `content.example/` 尚未创建，校验会失败并提示缺失目录或文件。正常流程是先运行 `npm run sync:content`，再运行 `npm run validate:content`。
+校验脚本会检查生成后的 `src/content/` 和 `src/data/content/`。如果尚未运行同步，或 `content.example/` 尚未创建，校验会失败并提示缺失目录或文件。`npm run build` 会自动先运行同步和校验；日常单独检查时可先运行 `npm run sync:content`，再运行 `npm run validate:content`。

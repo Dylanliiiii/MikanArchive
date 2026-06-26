@@ -1,5 +1,104 @@
 # Development Log
 
+## 2026-06-27 02:09:10 +08:00
+
+### 修改范围
+
+- Firefly 风格主题重构实施
+- 内容同步与 Firefly 内容集合适配
+- 核心页面、导航、侧栏和文章体验迁移
+- 构建配置、依赖、安全审计和文档同步
+
+### 涉及文件
+
+- `LICENSE`
+- `package.json`
+- `package-lock.json`
+- `astro.config.mjs`
+- `tsconfig.json`
+- `postcss.config.mjs`
+- `svelte.config.js`
+- `pagefind.yml`
+- `.github/workflows/pages.yml`
+- `.gitignore`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `README.md`
+- `CHANGELOG.md`
+- `docs/content-repository.md`
+- `docs/deployment-cloudflare-pages.md`
+- `docs/maintenance.md`
+- `docs/superpowers/plans/2026-06-27-mikan-archive-firefly-rebuild.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `content.example/posts/2026-06-26-welcome-to-mikan-archive.md`
+- `scripts/sync-content.mjs`
+- `scripts/validate-content.mjs`
+- `src/`
+- `development-log.md`
+
+### 具体内容
+
+- 以 Firefly 主题结构重建 `src/` 页面层，接入 Firefly 风格的壁纸横幅、玻璃导航、左右侧栏、文章列表、文章详情、友邻墙、搜索、显示设置、返回顶部和阅读目录等体验。
+- 保留 MikanArchive 的公开框架仓库与私有内容仓库分离边界，继续使用 `content.example/` 作为私有内容仓库未创建时的兜底内容源。
+- 更新内容同步脚本，使示例或未来私有内容同步到 `src/content/posts/`、`src/content/profile/`、`src/content/spec/`、`src/data/content/` 和 `public/assets/`。
+- 将示例文章封面字段从旧的 `cover` 改为 Firefly 使用的 `image`，并让 Content Layer 对 `published`、`updated` 字符串日期做兼容转换。
+- 新增 `src/data/mikan.ts`，用结构化 JSON 读取资源收藏、友链、足迹、最近更新和简历数据，供 Firefly 风格页面使用。
+- 保留核心页面：主页、文库、文章详情、收藏、友邻、足迹、我的、归档、分类、标签、搜索、RSS、robots 和 404；移除暂不启用且阻塞构建的番组、追番、相册、留言和打赏页面入口。
+- 新增 `LICENSE` 并保留 MikanArchive、Firefly 与 fuwari 的 MIT 版权声明；没有复制 fqzlr.com 的真实文章、头像、个人资料或私有素材，也没有提交 Firefly 默认角色壁纸、模型、音乐或打赏二维码。
+- 曾评估 `@swup/astro` 作为 Firefly 页面过渡集成，但其最新版仍带有无可用修复的 high severity npm audit 传递依赖链；因此当前移除 Swup 集成，保留普通静态页面跳转，并保留 guarded `window.swup` 兼容类型以便未来恢复时减少改动。
+- 更新 README、内容仓库说明、Cloudflare Pages 部署文档、维护说明、CHANGELOG、AGENTS 和项目专属 Skill，使构建命令、内容映射、Firefly 方向和版权边界与当前实现一致。
+- 同步 GitHub Pages workflow，移除重复的独立内容同步步骤；`npm run check` 会先执行内容同步，`npm run build` 统一执行同步、校验、构建和 Pagefind 索引。
+
+### 验证情况
+
+- 已运行 `npm.cmd install --cache .npm-cache --registry=https://registry.npmjs.org`，通过并更新 `package-lock.json`。首次使用全局 npm cache 安装时曾因本机全局缓存目录 EPERM 失败，改用仓库内 `.npm-cache/` 后通过。
+- 已运行 `npm.cmd run sync:content`，通过，确认没有私有内容仓库时可从 `content.example/` 生成站点内容。
+- 已运行 `npm.cmd run validate:content`，通过，输出 `Content validation passed.`。
+- 已运行 `npm.cmd run check`，通过，命令会先执行 `sync:content`，结果为 0 errors、0 warnings、1 hint；剩余 hint 是 Firefly 日历组件中一个未使用的事件参数，不阻塞构建。
+- 已运行 `npm.cmd run build`，通过，生成 13 个静态页面、sitemap 和 Pagefind 索引。构建仍提示若干 Firefly 动态导入不会拆分 chunk、部分 chunk 超过 500KB、Astro markdown gfm/smartypants 未来弃用提示，以及中文 Pagefind 不支持 stemming；这些是优化项，不影响当前构建。
+- 已运行 `npm.cmd audit --omit=dev --json`，生产依赖安全公告数量为 0。完整 `npm.cmd audit --json` 仍有 5 个 moderate dev 依赖公告，来源为 `@astrojs/check` 的语言服务链，当前 npm 没有非破坏性修复。
+- 已启动 `npm.cmd run preview -- --host 127.0.0.1 --port 4321`，预览地址为 `http://127.0.0.1:4321/`。
+- 已使用系统 Chrome 通过 Playwright 检查 `/`、`/posts/`、`/posts/2026-06-26-welcome-to-mikan-archive/`、`/resources/`、`/friends/`、`/records/`、`/about/`，均返回 200，页面标题和首个 `h1` 正常，导航可见，内容包含 `MikanArchive`。
+- 已使用移动视口检查首页，确认移动端菜单按钮可见，首屏内容包含 `MikanArchive`。
+- 已保存预览截图到 `.tmp/preview-final-home.png` 和 `.tmp/preview-final-home-mobile.png`；`.tmp/` 已被 `.gitignore` 忽略。
+
+## 2026-06-27 01:25:47 +08:00
+
+### 修改范围
+
+- Firefly 重构方向确认
+- 设计规格新增
+- 项目规则、README、CHANGELOG 和忽略规则同步
+- Firefly 主题与 fqzlr.com 参考边界调研
+
+### 涉及文件
+
+- `.gitignore`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `README.md`
+- `CHANGELOG.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 Firefly 重构设计规格，明确下一阶段以 CuteLeaf/Firefly 为底座或强参考重建 MikanArchive 的壁纸、玻璃导航、侧栏、文章列表、文章详情、友链、收藏、足迹和我的页面体验。
+- 明确当前私有内容仓库 `mikan-archive-content` 尚未创建不阻塞重构，第一阶段继续使用 `content.example/` 兜底，后续通过现有内容同步脚本和环境变量接入私有内容仓库。
+- 明确可以复刻 fqzlr.com 的公开布局体验和交互结构，但不能复制该博主的真实文章、头像、图片、个人资料、私有配置或账号文案。
+- 明确如果引入 Firefly 代码或组件设计，需要保留 Firefly 与 fuwari 的 MIT 版权声明和清晰致谢。
+- 将 `.superpowers/` 和 `.tmp/` 加入 `.gitignore`，避免本地可视化伴随会话和 Firefly 调研仓库进入公开提交。
+- 同步更新 `AGENTS.md`、项目专属 Skill、README 和 CHANGELOG，使项目规则指向当前 Firefly 重构设计规格。
+
+### 验证情况
+
+- 已读取 `AGENTS.md`、MikanArchive 项目专属 Skill、维护 Skill 和既有设计文档。
+- 已浅克隆 `CuteLeaf/Firefly` 到本地临时目录并读取 README、LICENSE、配置、布局、导航、侧栏、友链和文章列表相关源码。
+- 已确认 Firefly README 说明其为 Astro 静态博客主题，并提供壁纸模式、侧边栏、文章布局、Pagefind 搜索、主题色和亮暗色等能力。
+- 已确认 Firefly LICENSE 为 MIT，并包含 `Copyright (c) 2024 saicaca` 与 `Copyright (c) 2025 CuteLeaf`。
+- 已启动 brainstorming 可视化伴随服务，并输出 Firefly 重构幅度选项到本地页面。
+- 曾尝试使用 Playwright CLI 抓取 fqzlr.com 首页和文章页截图；首次受全局 npm cache 权限影响失败，改用项目内 npm cache 后又因 PowerShell 执行策略和 CLI 参数版本差异未完成截图。本次为设计文档与规则同步，尚未修改应用代码或运行构建验证。
+
 ## 2026-06-27 00:44:34 +08:00
 
 ### 修改范围
