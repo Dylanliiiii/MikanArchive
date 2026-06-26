@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blog Direction Preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Microsoft YaHei", sans-serif;
+        background: #f6f0f4;
+        color: #241f25;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 32px;
+      }
+
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 5vw, 48px);
+        letter-spacing: 0;
+      }
+
+      .intro {
+        margin: 12px 0 28px;
+        max-width: 760px;
+        color: #655864;
+        line-height: 1.75;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        background: rgb(255 255 255 / 78%);
+        border: 1px solid rgb(142 116 132 / 28%);
+        border-radius: 8px;
+        box-shadow: 0 20px 60px rgb(64 44 56 / 12%);
+        overflow: hidden;
+      }
+
+      .mock {
+        min-height: 310px;
+        padding: 18px;
+      }
+
+      .body {
+        padding: 18px;
+      }
+
+      h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      p {
+        margin: 0;
+        color: #6f6270;
+        line-height: 1.65;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+        font-size: 13px;
+      }
+
+      .nav strong {
+        font-size: 16px;
+      }
+
+      .links {
+        display: flex;
+        gap: 10px;
+        color: inherit;
+        opacity: 0.68;
+      }
+
+      .eyebrow {
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .headline {
+        max-width: 340px;
+        font-size: 25px;
+        font-weight: 800;
+        line-height: 1.18;
+      }
+
+      .blocks {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .block {
+        min-height: 102px;
+        border-radius: 8px;
+        padding: 13px;
+      }
+
+      .line {
+        height: 8px;
+        margin-bottom: 9px;
+        border-radius: 999px;
+      }
+
+      .a {
+        background: #f8fafc;
+        color: #111827;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .a .block {
+        background: white;
+        border: 1px solid #e5e7eb;
+      }
+
+      .a .line.dark {
+        width: 58%;
+        background: #111827;
+      }
+
+      .a .line.light {
+        width: 88%;
+        background: #cbd5e1;
+      }
+
+      .b {
+        background: #101014;
+        color: #f8fafc;
+        border-bottom: 1px solid #27272a;
+      }
+
+      .b .block {
+        background: #18181b;
+        border: 1px solid #3f3f46;
+        box-shadow: 0 0 28px rgb(129 140 248 / 16%);
+      }
+
+      .b .line.dark {
+        width: 58%;
+        background: #a5b4fc;
+      }
+
+      .b .line.light {
+        width: 88%;
+        background: #52525b;
+      }
+
+      .glow {
+        height: 100%;
+        min-height: 80px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #22d3ee, #a78bfa, #f472b6);
+      }
+
+      .c {
+        background:
+          radial-gradient(circle at 90% 10%, rgb(147 197 253 / 46%), transparent 28%),
+          radial-gradient(circle at 12% 92%, rgb(253 230 138 / 58%), transparent 30%),
+          #fff7fb;
+        color: #1f2937;
+        border-bottom: 1px solid #f9a8d4;
+      }
+
+      .c .eyebrow {
+        color: #db2777;
+      }
+
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+      }
+
+      .c .block {
+        background: rgb(255 255 255 / 82%);
+        border: 1px solid #fbcfe8;
+      }
+
+      .c .line.dark {
+        width: 66%;
+        background: #be185d;
+      }
+
+      .c .line.light {
+        width: 88%;
+        background: #f9a8d4;
+      }
+
+      .soft-art {
+        height: 84px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #fbcfe8, #bfdbfe, #fef3c7);
+      }
+
+      @media (max-width: 960px) {
+        body {
+          padding: 20px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>个人博客方向预览</h1>
+      <p class="intro">
+        这只是临时视觉板，不是最终代码。你已经倾向 C，我会把它作为主方向，再吸收 B 的背景、小组件和动态氛围。
+      </p>
+
+      <section class="grid">
+        <article class="card">
+          <div class="mock a">
+            <div class="nav">
+              <strong>Trace Notes</strong>
+              <div class="links"><span>Tutorials</span><span>Links</span><span>Archive</span></div>
+            </div>
+            <div class="eyebrow">RECENT FIELD NOTES</div>
+            <div class="headline">把解决问题的线索，整理成能再次找到的知识库</div>
+            <div class="blocks">
+              <div class="block">
+                <div class="line dark"></div>
+                <div class="line light"></div>
+                <div class="line light" style="width:72%"></div>
+              </div>
+              <div class="block" style="background:#111827;color:white">
+                <div style="font-size:12px;color:#94a3b8">Pinned</div>
+                <div style="margin-top:34px;font-weight:700">Useful Links</div>
+              </div>
+            </div>
+          </div>
+          <div class="body">
+            <h2>A. shadcn 风知识库</h2>
+            <p>克制、清晰、高级感强。适合教程、链接收藏、简历展示，维护成本低。</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="mock b">
+            <div class="nav">
+              <strong>Neon Notebook</strong>
+              <div class="links"><span>Logs</span><span>Tools</span><span>About</span></div>
+            </div>
+            <div class="eyebrow" style="color:#a5b4fc">SYSTEM LOG / 2026</div>
+            <div class="headline">一点微光、动效和技术感，但文章仍然是主角</div>
+            <div class="blocks">
+              <div class="block">
+                <div class="line dark"></div>
+                <div class="line light"></div>
+                <div class="line light" style="width:64%"></div>
+              </div>
+              <div class="block"><div class="glow"></div></div>
+            </div>
+          </div>
+          <div class="body">
+            <h2>B. 暗色技术感博客</h2>
+            <p>更酷一点，有微动效和霓虹点缀。适合技术教程，但要控制别喧宾夺主。</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="mock c">
+            <div class="nav">
+              <strong>Mikan Archive</strong>
+              <div class="dots">
+                <span class="dot" style="background:#f9a8d4"></span>
+                <span class="dot" style="background:#93c5fd"></span>
+                <span class="dot" style="background:#fde68a"></span>
+              </div>
+            </div>
+            <div class="eyebrow">COLLECTED TUTORIALS</div>
+            <div class="headline">轻二次元，但保留干净、可阅读的博客骨架</div>
+            <div class="blocks">
+              <div class="block"><div class="soft-art"></div></div>
+              <div class="block">
+                <div class="line dark"></div>
+                <div class="line light"></div>
+                <div class="line light" style="width:70%;background:#bfdbfe"></div>
+              </div>
+            </div>
+          </div>
+          <div class="body">
+            <h2>C. 轻二次元收藏馆</h2>
+            <p>更有个性，适合加角色、徽章、收藏感。简历场景下需要把可爱度压住。</p>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
