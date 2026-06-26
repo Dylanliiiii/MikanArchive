@@ -47,6 +47,9 @@
 - 已检查 `dist/` 中首页、文库、文章详情和友邻页面，确认站内链接、Astro 静态资源、文章封面和友链头像均带有 `/MikanArchive/` base path。
 - 已运行 `npm.cmd audit --omit=dev --json`，生产依赖安全公告数量为 0。
 - 已运行完整 `npm.cmd audit --json`，仍有 5 个 moderate dev 依赖公告，来源为 `@astrojs/check` 的 `@astrojs/language-server`/`volar-service-yaml`/`yaml-language-server` 链；不进入生产构建产物，且 npm 当前给出的修复方案是降级 `@astrojs/check`。
+- 已通过 GitHub Pages API 将仓库 Pages `build_type` 从 `legacy` 切换为 `workflow`。
+- 已运行 `gh run watch 28252393148 --exit-status`，新的 `pages build and deployment` workflow 成功，包含 build 和 deploy 两个 job。
+- 已访问 `https://dylanliiiii.github.io/MikanArchive/`，返回 200，页面内容包含 `/MikanArchive/` base path。
 
 ## 2026-06-27 00:29:46 +08:00
 
