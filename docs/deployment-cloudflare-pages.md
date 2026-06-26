@@ -25,10 +25,10 @@ Build command: npm run sync:content && npm run build
 Output directory: dist
 ```
 
-Node.js 版本建议使用当前 Astro 支持的 LTS 版本，例如 Node 20 或更新的 LTS 版本。可以在 Cloudflare Pages 的环境变量中设置：
+当前 Astro 版本要求 Node.js `>=22.12.0`。项目根目录的 `.node-version` 记录了推荐版本，Cloudflare Pages 也建议在环境变量中显式设置：
 
 ```text
-NODE_VERSION=20
+NODE_VERSION=22.16.0
 ```
 
 ## 环境变量
@@ -149,10 +149,10 @@ npm run sync:content && npm run build
 如果出现依赖安装、Astro 构建或 TypeScript 运行异常，先确认 Cloudflare Pages 使用的 Node.js 版本。建议设置：
 
 ```text
-NODE_VERSION=20
+NODE_VERSION=22.16.0
 ```
 
-或使用项目依赖支持的更新 LTS 版本。
+或使用 Astro 当前支持的更新 Node 22/24 版本。
 
 ### 输出目录配置错误
 

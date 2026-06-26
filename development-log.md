@@ -1,5 +1,51 @@
 # Development Log
 
+## 2026-06-27 00:29:46 +08:00
+
+### 修改范围
+
+- Astro 依赖安全升级
+- Tailwind 集成方式迁移
+- Astro Content Layer 迁移
+- Node 版本与部署文档同步
+
+### 涉及文件
+
+- `package.json`
+- `package-lock.json`
+- `.node-version`
+- `astro.config.mjs`
+- `postcss.config.mjs`
+- `src/content.config.ts`
+- `src/content/config.ts`
+- `src/pages/_data.ts`
+- `src/pages/posts/[...slug].astro`
+- `README.md`
+- `CHANGELOG.md`
+- `docs/deployment-cloudflare-pages.md`
+- `docs/superpowers/plans/2026-06-26-mikan-archive-implementation.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将 Astro 依赖栈升级到 Astro 7，包含 `@astrojs/mdx`、`@astrojs/react`、`@astrojs/sitemap` 和 `@astrojs/markdown-satteri` 的兼容版本。
+- 移除已弃用且不兼容 Astro 6/7 的 `@astrojs/tailwind` 集成，新增 `postcss.config.mjs`，通过 Tailwind CSS v3 + PostCSS + Autoprefixer 继续处理全局样式。
+- 新增 `.node-version` 并在 `package.json` 中声明 Node.js `>=22.12.0`、npm `>=9.6.5`，与 Astro 7 的运行要求保持一致。
+- 将旧的 `src/content/config.ts` 迁移为 `src/content.config.ts`，使用 Astro Content Layer 的 `glob()` loader 加载文章和 profile Markdown。
+- 将文章路由从旧 `post.slug` 改为 Content Layer entry 的 `post.id`，并将文章详情页从 `post.render()` 改为 `render(post)`。
+- 同步 README、Cloudflare Pages 部署文档、CHANGELOG 和实现计划中的 Node 版本、依赖栈、Tailwind 集成和 Content Layer 示例。
+
+### 验证情况
+
+- 已运行 `npm.cmd install --registry=https://registry.npmjs.org`，通过并重新生成 `package-lock.json`；安装过程中曾出现旧 Rollup 临时目录清理 EPERM 警告，不影响最终依赖树。
+- 已运行 `npm.cmd ls astro @astrojs/mdx @astrojs/react @astrojs/sitemap @astrojs/markdown-satteri @astrojs/tailwind tailwindcss postcss autoprefixer vite esbuild`，确认安装树使用 Astro 7.0.3、Vite 8.1.0、esbuild 0.28.1，且不再安装 `@astrojs/tailwind`。
+- 已运行 `npm.cmd run sync:content`，通过。
+- 已运行 `npm.cmd run validate:content`，通过，输出 `Content validation passed.`。
+- 已运行 `npm.cmd run check`，通过，结果为 0 errors、0 warnings、0 hints。
+- 已运行 `npm.cmd run build`，通过，生成 7 个静态页面和 sitemap。
+- 已运行 `npm.cmd audit --omit=dev --json`，通过，安全公告数量为 0。
+- 已启动本地预览并使用 `Invoke-WebRequest` 检查 `/`、`/posts/`、`/resources/`、`/friends/`、`/records/`、`/about/`、`/posts/2026-06-26-welcome-to-mikan-archive/`，均返回 200。
+
 ## 2026-06-26 23:42:22 +08:00
 
 ### 修改范围

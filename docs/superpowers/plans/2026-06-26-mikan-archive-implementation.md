@@ -23,11 +23,12 @@ development-log.md
 README.md
 package.json
 astro.config.mjs
+postcss.config.mjs
 tailwind.config.mjs
 tsconfig.json
+src/content.config.ts
 src/
   config/site.ts
-  content/config.ts
   data/loaders.ts
   data/content/
   layouts/BaseLayout.astro
@@ -83,7 +84,7 @@ docs/
 Responsibilities:
 
 - `src/config/site.ts`: public site metadata and navigation.
-- `src/content/config.ts`: Astro content collection schemas for posts and profile Markdown.
+- `src/content.config.ts`: Astro Content Layer collection schemas and `glob()` loaders for posts and profile Markdown.
 - `src/data/loaders.ts`: typed loaders for JSON data in resources, links, records, and profile.
 - `scripts/sync-content.mjs`: copy `content.example/` or clone/copy private content, then map posts/profile Markdown to `src/content/`, JSON data to `src/data/content/`, and public assets to `public/assets/`.
 - `scripts/validate-content.mjs`: validate synced JSON data and post frontmatter before build.
@@ -98,8 +99,10 @@ Responsibilities:
 
 - Create: `package.json`
 - Create: `astro.config.mjs`
+- Create: `postcss.config.mjs`
 - Create: `tailwind.config.mjs`
 - Create: `tsconfig.json`
+- Create: `.node-version`
 - Create: `.gitignore`
 - Create: `.env.example`
 - Modify: `development-log.md`
@@ -115,6 +118,10 @@ Create `package.json`:
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=9.6.5"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "npm run validate:content && astro build",
@@ -124,23 +131,25 @@ Create `package.json`:
     "check": "astro check"
   },
   "dependencies": {
-    "@astrojs/mdx": "latest",
-    "@astrojs/react": "latest",
-    "@astrojs/sitemap": "latest",
-    "@astrojs/tailwind": "latest",
-    "@tailwindcss/typography": "latest",
-    "astro": "latest",
+    "@astrojs/markdown-satteri": "^0.3.2",
+    "@astrojs/mdx": "^7.0.0",
+    "@astrojs/react": "^6.0.0",
+    "@astrojs/sitemap": "^3.7.3",
+    "@tailwindcss/typography": "^0.5.20",
+    "astro": "^7.0.3",
     "clsx": "latest",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
     "tailwind-merge": "latest",
-    "tailwindcss": "latest",
+    "tailwindcss": "^3.4.19",
     "typescript": "latest",
     "zod": "latest"
   },
   "devDependencies": {
-    "@astrojs/check": "latest"
+    "@astrojs/check": "^0.9.9",
+    "autoprefixer": "^10.5.2",
+    "postcss": "^8.5.15"
   }
 }
 ```
@@ -153,7 +162,6 @@ Create `astro.config.mjs`:
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
-import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
@@ -161,7 +169,6 @@ export default defineConfig({
   integrations: [
     mdx(),
     react(),
-    tailwind({ applyBaseStyles: false }),
     sitemap()
   ],
   markdown: {
@@ -207,6 +214,17 @@ export default {
 };
 ```
 
+Create `postcss.config.mjs`:
+
+```js
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {}
+  }
+};
+```
+
 - [ ] **Step 4: Create TypeScript config**
 
 Create `tsconfig.json`:
@@ -232,6 +250,12 @@ ENABLE_CONTENT_SYNC=false
 CONTENT_REPO_URL=
 CONTENT_BRANCH=main
 CONTENT_LOCAL_PATH=
+```
+
+Create `.node-version`:
+
+```text
+22.16.0
 ```
 
 Create `.gitignore`:
@@ -281,7 +305,7 @@ Append a new entry to `development-log.md` describing the project shell initiali
 Run:
 
 ```powershell
-git add package.json package-lock.json astro.config.mjs tailwind.config.mjs tsconfig.json .env.example .gitignore development-log.md CHANGELOG.md
+git add package.json package-lock.json astro.config.mjs postcss.config.mjs tailwind.config.mjs tsconfig.json .env.example .node-version .gitignore development-log.md CHANGELOG.md
 git commit -m "chore: initialize astro project shell"
 ```
 
@@ -301,7 +325,7 @@ git commit -m "chore: initialize astro project shell"
 - Create: `content.example/records/updates.json`
 - Create: `content.example/assets/images/welcome-cover.svg`
 - Create: `content.example/assets/avatars/example-friend.svg`
-- Create: `src/content/config.ts`
+- Create: `src/content.config.ts`
 - Create: `src/data/loaders.ts`
 - Modify: `development-log.md`
 
@@ -473,13 +497,15 @@ Create `content.example/assets/avatars/example-friend.svg`:
 
 - [ ] **Step 6: Create content schema**
 
-Create `src/content/config.ts`:
+Create `src/content.config.ts`:
 
 ```ts
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 const posts = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -496,7 +522,7 @@ const posts = defineCollection({
 });
 
 const profile = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/profile" }),
   schema: z.object({
     title: z.string(),
     description: z.string()
@@ -604,7 +630,7 @@ Expected initially: FAIL because `scripts/validate-content.mjs` is not created y
 Update `development-log.md`, then run:
 
 ```powershell
-git add content.example src/content src/data development-log.md
+git add content.example src/content.config.ts src/content src/data development-log.md
 git commit -m "feat: add example content and content schemas"
 ```
 

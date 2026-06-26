@@ -11,7 +11,7 @@ import {
 export type PostEntry = CollectionEntry<"posts">;
 
 export function postHref(post: PostEntry) {
-  return `/posts/${post.slug}/`;
+  return `/posts/${post.id}/`;
 }
 
 export function formatDate(value?: string | Date) {

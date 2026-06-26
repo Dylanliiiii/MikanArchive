@@ -15,8 +15,15 @@
 
 ### Changed
 
+- 升级到 Astro 7 依赖栈，改用 `src/content.config.ts` + Content Layer `glob()` loader。
+- 移除已弃用的 `@astrojs/tailwind` 集成，改为 Tailwind CSS v3 + PostCSS + Autoprefixer。
+- 明确 Node.js 最低要求为 `>=22.12.0`，并新增 `.node-version` 记录推荐版本。
 - 将公开文档中的本机绝对路径示例改为相对路径或泛化描述。
 - 将内容同步目标统一为文章/profile Markdown 同步到 `src/content/`，JSON 数据同步到 `src/data/content/`，公开资源同步到 `public/assets/`。
+
+### Fixed
+
+- 通过升级 Astro 依赖链清理 `npm audit --omit=dev` 报告中的安全公告。
 
 ### Docs
 
