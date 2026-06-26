@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  category?: string;
+  tags?: string[];
+  published?: string;
+}
+
+const { title, description, href, category = "笔记", tags = [], published } = Astro.props;
+---
+
+<a href={href} class="surface card-hover block overflow-hidden p-5">
+  <div class="mb-3 flex flex-wrap items-center gap-2">
+    <span class="badge bg-primary/10 text-primary">{category}</span>
+    {published && <span class="badge">{published}</span>}
+  </div>
+  <h3 class="line-clamp-2 text-lg font-bold leading-snug tracking-normal">{title}</h3>
+  <p class="mt-2 line-clamp-3 text-sm leading-6 text-foreground/70">{description}</p>
+  {
+    tags.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-2">
+        {tags.slice(0, 4).map((tag) => (
+          <span class="badge">#{tag}</span>
+        ))}
+      </div>
+    )
+  }
+</a>

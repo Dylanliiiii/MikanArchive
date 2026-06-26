@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Astro 文档",
+    "url": "https://docs.astro.build/",
+    "category": "文档",
+    "tags": ["Astro", "静态站点", "内容集合"],
+    "note": "用于查询 Astro 项目结构、内容集合、Markdown/MDX 和部署方式。",
+    "featured": true,
+    "addedAt": "2026-06-26"
+  },
+  {
+    "title": "MDN Web Docs",
+    "url": "https://developer.mozilla.org/",
+    "category": "文档",
+    "tags": ["Web", "JavaScript", "CSS"],
+    "note": "面向 Web 标准、浏览器 API 和 CSS 细节的公开参考资料。",
+    "featured": true,
+    "addedAt": "2026-06-26"
+  },
+  {
+    "title": "shadcn/ui",
+    "url": "https://ui.shadcn.com/",
+    "category": "组件",
+    "tags": ["UI", "React", "Tailwind"],
+    "note": "作为简洁、可组合组件风格的公开参考，不包含任何私有设计素材。",
+    "featured": false,
+    "addedAt": "2026-06-26"
+  }
+]

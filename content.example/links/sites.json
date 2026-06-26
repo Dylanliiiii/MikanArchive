@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Astro",
+    "url": "https://astro.build/",
+    "description": "用于构建内容驱动网站的公开静态站点框架。",
+    "category": "框架",
+    "tags": ["Astro", "SSG", "Web"]
+  },
+  {
+    "name": "GitHub",
+    "url": "https://github.com/",
+    "description": "代码托管、开源协作和项目展示入口。",
+    "category": "开发",
+    "tags": ["Code", "Open Source", "Git"]
+  }
+]

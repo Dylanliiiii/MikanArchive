@@ -1,0 +1,74 @@
+---
+import FriendCard from "@/components/cards/FriendCard.astro";
+import FeaturedResources from "@/components/home/FeaturedResources.astro";
+import FootprintPreview from "@/components/home/FootprintPreview.astro";
+import HomeHero from "@/components/home/HomeHero.astro";
+import RecentPosts from "@/components/home/RecentPosts.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import {
+  formatDate,
+  getFriends,
+  getResources,
+  getResume,
+  getTimeline,
+  getUpdates,
+  postHref,
+  sortPosts
+} from "./_data";
+
+const rawPosts = await getCollection("posts");
+const posts = sortPosts(rawPosts);
+const resources = await getResources();
+const friends = await getFriends();
+const timeline = await getTimeline();
+const updates = await getUpdates();
+const resume = await getResume();
+const featuredResources = [
+  ...resources.filter((item) => item.featured),
+  ...resources.filter((item) => !item.featured)
+].slice(0, 3);
+
+const postCards = posts.map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  href: postHref(post),
+  category: post.data.category,
+  tags: post.data.tags,
+  published: formatDate(post.data.published)
+}));
+---
+
+<BaseLayout title="MikanArchive" description="个人知识收藏博客">
+  <HomeHero postCount={posts.length} resourceCount={resources.length} friendCount={friends.length} />
+  <RecentPosts posts={postCards} />
+  <FeaturedResources resources={featuredResources} />
+  <FootprintPreview timeline={timeline} updates={updates} />
+
+  <section class="container py-10">
+    <div class="grid gap-4 lg:grid-cols-[1fr_1fr]">
+      <div>
+        <div class="section-title">
+          <div>
+            <h2>友邻一角</h2>
+            <p>把值得常去的站点放在近处。</p>
+          </div>
+          <a class="button-ghost" href="/friends/">友邻墙</a>
+        </div>
+        <div class="grid gap-4">
+          {friends.slice(0, 2).map((friend) => <FriendCard {...friend} />)}
+        </div>
+      </div>
+      <div class="surface p-5">
+        <p class="text-sm font-semibold text-primary">我的</p>
+        <h2 class="mt-3 text-2xl font-bold">{resume.name}</h2>
+        <p class="mt-2 text-base leading-7 text-foreground/70">{resume.headline}</p>
+        {resume.summary && <p class="mt-4 text-sm leading-7 text-foreground/60">{resume.summary}</p>}
+        <div class="mt-5 flex flex-wrap gap-2">
+          {(resume.skills ?? []).slice(0, 5).map((skill) => <span class="badge">{skill}</span>)}
+        </div>
+        <a class="button-outline mt-5" href="/about/">查看资料</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

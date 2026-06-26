@@ -553,19 +553,7 @@ Private content repository:
 mikan-archive-content
 ```
 
-Current local folder can later be renamed from:
-
-```text
-D:\Work\Projects\1
-```
-
-to:
-
-```text
-D:\Work\Projects\MikanArchive
-```
-
-Folder renaming should happen before implementation starts or before connecting to the GitHub repository.
+Local folder names are environment-specific. Project documents and examples should use repository-relative paths instead of developer-machine absolute paths.
 
 ## References Considered
 

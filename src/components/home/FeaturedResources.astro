@@ -1,0 +1,35 @@
+---
+import ResourceCard from "@/components/cards/ResourceCard.astro";
+
+interface ResourceItem {
+  title: string;
+  url: string;
+  category?: string;
+  tags?: string[];
+  note: string;
+  featured?: boolean;
+}
+
+interface Props {
+  resources?: ResourceItem[];
+}
+
+const { resources = [] } = Astro.props;
+---
+
+<section class="container py-10">
+  <div class="section-title">
+    <div>
+      <h2>精选收藏</h2>
+      <p>留下来不是因为链接多，而是因为它们确实解决过问题。</p>
+    </div>
+    <a class="button-ghost" href="/resources/">收藏库</a>
+  </div>
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {
+      resources.slice(0, 3).map((resource) => (
+        <ResourceCard {...resource} />
+      ))
+    }
+  </div>
+</section>

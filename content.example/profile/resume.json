@@ -1,0 +1,33 @@
+{
+  "name": "MikanArchive 示例用户",
+  "title": "个人知识收藏博客示例资料",
+  "headline": "个人知识收藏博客示例资料",
+  "location": "公开示例位置",
+  "bio": "这是用于演示页面结构的虚构个人资料，不包含真实隐私或真实履历。",
+  "summary": "这是用于演示页面结构的虚构个人资料，不包含真实隐私或真实履历。",
+  "links": [
+    {
+      "label": "GitHub 示例入口",
+      "url": "https://github.com/"
+    },
+    {
+      "label": "个人站点示例",
+      "url": "https://example.com/"
+    }
+  ],
+  "skills": ["Astro", "TypeScript", "Markdown", "Tailwind CSS", "内容整理"],
+  "projects": [
+    {
+      "name": "MikanArchive Demo",
+      "description": "公开示例项目，用于展示知识收藏博客的信息架构。",
+      "url": "https://example.com/mikan-archive-demo"
+    }
+  ],
+  "contacts": [
+    {
+      "label": "示例邮箱",
+      "value": "hello@example.com",
+      "url": "mailto:hello@example.com"
+    }
+  ]
+}

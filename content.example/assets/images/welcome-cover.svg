@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">MikanArchive welcome cover</title>
+  <desc id="desc">A light archive desk with books, cards, stars, and soft balanced colors.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff7fb"/>
+      <stop offset="0.48" stop-color="#f0f9ff"/>
+      <stop offset="1" stop-color="#f7fee7"/>
+    </linearGradient>
+    <linearGradient id="shelf" x1="0" x2="1">
+      <stop offset="0" stop-color="#f9a8d4"/>
+      <stop offset="0.5" stop-color="#93c5fd"/>
+      <stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="480" fill="url(#paper)"/>
+  <circle cx="806" cy="92" r="104" fill="#bfdbfe" opacity="0.55"/>
+  <circle cx="144" cy="378" r="112" fill="#bbf7d0" opacity="0.58"/>
+  <path d="M104 108c72-42 166-48 246-18 82 31 162 14 224-24 66-40 166-18 220 40" fill="none" stroke="#f9a8d4" stroke-width="10" stroke-linecap="round" opacity="0.32"/>
+  <rect x="172" y="118" width="616" height="244" rx="26" fill="#ffffff" opacity="0.86" stroke="#e5e7eb" stroke-width="3"/>
+  <rect x="222" y="274" width="516" height="18" rx="9" fill="url(#shelf)" opacity="0.92"/>
+  <rect x="270" y="178" width="42" height="96" rx="8" fill="#f9a8d4"/>
+  <rect x="322" y="156" width="42" height="118" rx="8" fill="#93c5fd"/>
+  <rect x="374" y="188" width="42" height="86" rx="8" fill="#fde68a"/>
+  <rect x="426" y="166" width="42" height="108" rx="8" fill="#86efac"/>
+  <rect x="516" y="166" width="156" height="92" rx="18" fill="#fff7ed" stroke="#fdba74" stroke-width="3"/>
+  <path d="M548 226h92M548 204h64" stroke="#fb7185" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="698" cy="171" r="14" fill="#facc15"/>
+  <path d="M698 136l8 18 20 2-15 13 5 20-18-10-18 10 5-20-15-13 20-2z" fill="#fde68a" stroke="#f59e0b" stroke-width="3"/>
+  <text x="244" y="344" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="46" font-weight="700" fill="#be185d">MikanArchive</text>
+  <text x="248" y="386" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="22" fill="#475569">教程 · 收藏 · 友邻 · 足迹</text>
+</svg>

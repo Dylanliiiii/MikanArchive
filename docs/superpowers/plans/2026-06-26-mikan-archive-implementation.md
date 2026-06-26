@@ -857,7 +857,7 @@ Create `docs/content-repository.md` with this content:
 
     ```powershell
     $env:ENABLE_CONTENT_SYNC="true"
-    $env:CONTENT_LOCAL_PATH="D:\path\to\mikan-archive-content"
+    $env:CONTENT_LOCAL_PATH="../mikan-archive-content"
     npm run sync:content
     ```
 
@@ -1510,13 +1510,13 @@ Open preview URL and verify:
 Run:
 
 ```powershell
-rg -n "localhost:63517|CONTENT_REPO_URL|Cloudflare Pages|Release|主页 / 文库 / 收藏 / 友邻 / 足迹 / 我的" README.md docs AGENTS.md .agents CHANGELOG.md development-log.md
+rg -n "localhost:[0-9]+|CONTENT_REPO_URL|Cloudflare Pages|Release|主页 / 文库 / 收藏 / 友邻 / 足迹 / 我的" README.md docs AGENTS.md .agents CHANGELOG.md development-log.md
 ```
 
 Expected:
 
 - Public docs do not depend on a machine-specific numbered workspace path.
-- `localhost:63517` does not appear in project docs.
+- Machine-specific localhost preview ports do not appear in project docs.
 - Deployment variables and navigation are documented consistently.
 
 - [ ] **Step 4: Record final log**

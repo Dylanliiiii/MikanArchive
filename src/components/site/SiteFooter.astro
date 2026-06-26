@@ -1,0 +1,21 @@
+---
+import { siteConfig } from "@/config/site";
+---
+
+<footer class="mt-20 border-t border-border/70 bg-white/30 py-8 text-sm text-foreground/60">
+  <div class="container flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="font-semibold text-foreground">{siteConfig.name}</p>
+      <p class="mt-1 leading-6">{siteConfig.description}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {
+        siteConfig.socialLinks.map((link) => (
+          <a class="rounded-md px-2 py-1 transition hover:bg-muted hover:text-foreground" href={link.href}>
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>

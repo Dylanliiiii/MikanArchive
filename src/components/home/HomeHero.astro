@@ -1,0 +1,63 @@
+---
+import { siteConfig } from "@/config/site";
+
+interface Props {
+  postCount?: number;
+  resourceCount?: number;
+  friendCount?: number;
+}
+
+const { postCount = 0, resourceCount = 0, friendCount = 0 } = Astro.props;
+---
+
+<section class="container pt-10 sm:pt-14">
+  <div class="grid min-h-[calc(100svh-9rem)] items-center gap-6 pb-10 lg:grid-cols-[1.08fr_0.92fr]">
+    <div class="py-8">
+      <h1 class="max-w-3xl text-balance text-4xl font-black leading-tight tracking-normal text-foreground sm:text-6xl">
+        MikanArchive
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-8 text-foreground/70">
+        把教程、问题解决记录、资源收藏和写作足迹放进一个轻盈的知识收藏馆。
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a class="button-primary" href="/posts/">进入文库</a>
+        <a class="button-outline" href="/resources/">查看收藏</a>
+      </div>
+      <div class="mt-8 grid max-w-xl grid-cols-3 gap-3">
+        <div class="surface-plain p-3">
+          <p class="text-2xl font-bold">{postCount}</p>
+          <p class="mt-1 text-xs text-foreground/60">文章</p>
+        </div>
+        <div class="surface-plain p-3">
+          <p class="text-2xl font-bold">{resourceCount}</p>
+          <p class="mt-1 text-xs text-foreground/60">收藏</p>
+        </div>
+        <div class="surface-plain p-3">
+          <p class="text-2xl font-bold">{friendCount}</p>
+          <p class="mt-1 text-xs text-foreground/60">友邻</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface relative overflow-hidden p-5 sm:p-6">
+      <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-300 via-sky-300 to-emerald-300"></div>
+      <div class="grid gap-4">
+        <div class="rounded-lg border border-border/70 bg-pink-50/80 p-4">
+          <p class="text-sm font-semibold text-primary">知识书架</p>
+          <p class="mt-2 text-sm leading-6 text-foreground/70">教程、笔记、参考资料按主题归档，回头找资料时不再从浏览器历史里翻。</p>
+        </div>
+        <div class="rounded-lg border border-border/70 bg-sky-50/80 p-4">
+          <p class="text-sm font-semibold text-sky-700">收藏索引</p>
+          <p class="mt-2 text-sm leading-6 text-foreground/70">工具、文档、灵感和下载资料都有保存理由，知道当初为什么留下它。</p>
+        </div>
+        <div class="rounded-lg border border-border/70 bg-emerald-50/80 p-4">
+          <p class="text-sm font-semibold text-emerald-700">写作足迹</p>
+          <p class="mt-2 text-sm leading-6 text-foreground/70">用时间线和热力图保留更新脉络，让个人知识库像一座慢慢亮起来的馆。</p>
+        </div>
+      </div>
+      <div class="mt-5 rounded-lg border border-dashed border-border bg-white/60 p-4 text-sm leading-6 text-foreground/60">
+        {siteConfig.description}
+      </div>
+    </div>
+  </div>
+</section>

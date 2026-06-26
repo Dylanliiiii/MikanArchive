@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.npm-cache/
+
+# Build output
+dist/
+.astro/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Generated content from public examples or private repository
+content/
+.tmp-content-repo/
+src/content/posts/
+src/content/profile/
+src/data/content/
+public/assets/
+
+# Logs and local tool state
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db

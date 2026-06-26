@@ -1,0 +1,24 @@
+[
+  {
+    "name": "示例书架",
+    "url": "https://example.com/example-archive",
+    "avatar": "/assets/avatars/example-friend.svg",
+    "description": "用于展示友链卡片样式的虚构站点，不代表真实博客。",
+    "category": "示例",
+    "tags": ["博客", "收藏", "示例"],
+    "featured": true,
+    "status": "active",
+    "addedAt": "2026-06-26"
+  },
+  {
+    "name": "Demo Maker Notes",
+    "url": "https://example.org/demo-maker-notes",
+    "avatar": "/assets/avatars/example-maker.svg",
+    "description": "用于演示创作者友邻分类的虚构公开示例，不冒充真实站点。",
+    "category": "示例",
+    "tags": ["Maker", "Notes", "Demo"],
+    "featured": false,
+    "status": "active",
+    "addedAt": "2026-06-26"
+  }
+]

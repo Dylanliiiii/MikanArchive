@@ -1,0 +1,49 @@
+---
+import PostLayout from "@/layouts/PostLayout.astro";
+import { getCollection } from "astro:content";
+import { postHref, readingTimeFromContent, sortPosts } from "../_data";
+
+export async function getStaticPaths() {
+  const rawPosts = await getCollection("posts");
+  const posts = sortPosts(rawPosts);
+
+  return posts.map((post, index) => ({
+    params: { slug: post.slug },
+    props: {
+      post,
+      previous: posts[index + 1] ?? null,
+      next: posts[index - 1] ?? null
+    }
+  }));
+}
+
+const { post, previous, next } = Astro.props;
+const { Content } = await post.render();
+const readingTime = readingTimeFromContent(post.body ?? post.data.description);
+---
+
+<PostLayout frontmatter={post.data} readingTime={readingTime}>
+  <Content />
+  <nav class="not-prose mt-10 grid gap-3 border-t border-border pt-6 sm:grid-cols-2" aria-label="文章翻页">
+    {
+      previous ? (
+        <a class="surface-plain p-4 text-sm transition hover:border-primary/40" href={postHref(previous)}>
+          <span class="text-foreground/50">上一篇</span>
+          <p class="mt-1 font-semibold">{previous.data.title}</p>
+        </a>
+      ) : (
+        <span></span>
+      )
+    }
+    {
+      next ? (
+        <a class="surface-plain p-4 text-right text-sm transition hover:border-primary/40" href={postHref(next)}>
+          <span class="text-foreground/50">下一篇</span>
+          <p class="mt-1 font-semibold">{next.data.title}</p>
+        </a>
+      ) : (
+        <span></span>
+      )
+    }
+  </nav>
+</PostLayout>
