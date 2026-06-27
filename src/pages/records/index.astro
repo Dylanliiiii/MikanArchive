@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getMikanArchiveGroups, getMikanFriends, getMikanResources, getMikanUpdates } from "@/data/mikan";
 import { getSortedPostsList, getTagList } from "@/utils/content-utils";
 
@@ -18,7 +18,7 @@ const stats = [
 ];
 ---
 
-<MainGridLayout title="足迹" description="写作、收藏和站点维护记录">
+<ContentGridLayout title="足迹" description="写作、收藏和站点维护记录">
 	<section class="grid gap-3 sm:grid-cols-2 md:grid-cols-4 mb-4">
 		{stats.map((item) => (
 			<div class:list={["card-base stat-card p-5", item.tone]}>
@@ -110,7 +110,7 @@ const stats = [
 			))}
 		</div>
 	</section>
-</MainGridLayout>
+</ContentGridLayout>
 
 <style>
 	.stat-card {

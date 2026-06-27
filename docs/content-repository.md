@@ -146,9 +146,10 @@ draft: false
     "title": "Astro 文档",
     "url": "https://docs.astro.build/",
     "kind": "tool",
-    "category": "文档",
+	"category": "开发文档",
     "tags": ["Astro", "静态站点"],
     "note": "用于查询 Astro 项目结构和内容集合配置。",
+	"icon": "simple-icons:astro",
     "featured": true
   },
   {
@@ -179,6 +180,12 @@ draft: false
 - `addedAt`：收藏日期，建议使用 `YYYY-MM-DD`。
 
 工具导航页会按 `category` 分组；摘录收藏页会优先展示来源、适用场景、收藏日期和标签。示例内容只用于解释结构，不能冒充真实私人收藏。
+
+工具导航可额外使用：
+
+- `icon`：可选。优先填写项目已安装的 Iconify 名称，例如 `simple-icons:astro`、`simple-icons:openai` 或 `material-symbols:speed-rounded`；也可以填写 `https://` 开头的公开图标 URL。配置的 Iconify 名称必须真实存在于已安装图标集，缺失时页面会回退到通用收藏图标。
+
+公开仓库的工具数据只用于演示分类、数量和卡片布局，不应写入真实私人收藏或账号资料。
 
 ## 友链与站点收藏
 

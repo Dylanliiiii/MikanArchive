@@ -23,5 +23,14 @@
 ### 当前状态
 
 - 正式设计规格已写入 `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`。
-- 正在等待用户审阅正式规格。
-- 用户确认规格后，下一步使用 `writing-plans` 创建详细实施计划，再开始代码修改。
+- 用户已确认正式规格，并要求开始实施。
+- 详细实施计划已写入 `docs/superpowers/plans/2026-06-27-mikan-archive-focused-content-layout.md`。
+- 已完成非主页布局、全部页面迁移、工具图标模型、工具导航重做、收藏标题区压缩和桌面/移动端视觉对比。
+- 当前剩余：完整构建与路由检查、最终 diff 审阅、开发日志收尾、提交并 push 当前分支。
+
+### 实施顺序
+
+1. 运行同步、内容校验、两组测试、Astro 检查和完整构建。
+2. 检查关键路由返回 200、浏览器控制台与最终 diff。
+3. 完成 `development-log.md` 验证记录。
+4. 提交并 push 当前 `codex/firefly-rebuild` 分支；未经明确要求不合并 `main`。

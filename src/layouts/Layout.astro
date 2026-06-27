@@ -39,9 +39,17 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	postSlug?: string;
+	contentOnly?: boolean;
 }
 
-let { title, description, lang, setOGTypeArticle, postSlug } = Astro.props;
+let {
+	title,
+	description,
+	lang,
+	setOGTypeArticle,
+	postSlug,
+	contentOnly = false,
+} = Astro.props;
 
 // apply a class to the body element to decide the height of the banner, only used for initial page load
 // Swup can update the body for each page visit, but it's after the page transition, causing a delay for banner height change
@@ -59,7 +67,7 @@ const navbarTransparentMode =
 const shouldShowTopHighlight =
 	navbarTransparentMode === "full" || navbarTransparentMode === "semifull";
 
-const enableBanner = backgroundWallpaper.mode === "banner";
+const enableBanner = !contentOnly && backgroundWallpaper.mode === "banner";
 
 let pageTitle: string;
 if (title) {
@@ -246,6 +254,7 @@ const siteLang = lang.replace("_", "-");
         lightTheme: expressiveCodeConfig.lightTheme,
         baseUrl: import.meta.env.BASE_URL,
         cardTransparentOpacity: backgroundWallpaper.overlay?.cardOpacity ?? 0.6,
+		contentOnly,
       }}
     >
       // 主题初始化 - 与setting-utils.ts保持一致
@@ -355,7 +364,8 @@ const siteLang = lang.replace("_", "-");
         // 使用 requestAnimationFrame 确保在下一帧之前执行
         requestAnimationFrame(function () {
           // 根据模式隐藏显示对应元素
-          if (
+		  if (
+			contentOnly ||
             wallpaperMode === WALLPAPER_NONE ||
             wallpaperMode === WALLPAPER_OVERLAY ||
             wallpaperMode === WALLPAPER_FULLSCREEN
@@ -553,11 +563,13 @@ const siteLang = lang.replace("_", "-");
   </head>
   <body
     class="min-h-screen"
+	data-content-only={contentOnly ? "true" : "false"}
     class:list={[
       {
         "is-home": isHomePageCheck,
         "lg:is-home": isHomePageCheck,
         "enable-banner": enableBanner,
+		"no-banner-layout": contentOnly,
         "sticky-navbar": siteConfig.navbar.stickyNavbar ?? false,
         "enable-card-border": siteConfig.card?.border,
         "card-follow-theme-hue": siteConfig.card?.followTheme,
@@ -1499,7 +1511,10 @@ function disableAnimation() {
 
     let newGridClasses: string;
 
-    if (sidebarPosition === "both" || shouldBothSidebars) {
+    if (sidebarPosition === "none") {
+	  // 聚焦内容布局不渲染通用侧栏，保留页面自身声明的文章目录列
+	  newGridClasses = "grid-cols-1";
+    } else if (sidebarPosition === "both" || shouldBothSidebars) {
       // 双侧栏（含文章页临时双侧栏）
       // 从right临时扩展为both时，平板端保持显示右侧栏
       const effectiveTabletSidebar = (shouldBothSidebars && sidebarPosition === "right") ? "right" : tabletSidebar;

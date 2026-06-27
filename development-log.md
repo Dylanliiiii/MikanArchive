@@ -433,3 +433,83 @@
 - 已运行轻量 frontmatter 校验，确认两个项目专属 Skill 都包含 `name` 和 `description` 字段。
 - 曾尝试运行 skill-creator 的 `quick_validate.py`，但当前 Python 环境缺少 `yaml` 模块，未使用该脚本完成校验。
 - 本次为项目规则、文档和项目专属 Skill 初始化，未运行应用构建或单元测试。
+## 2026-06-27 18:07:13 +08:00
+
+### 修改范围
+
+- 非主页聚焦布局与工具导航实施计划
+- 跨会话任务交接
+
+### 涉及文件
+
+- `docs/superpowers/plans/2026-06-27-mikan-archive-focused-content-layout.md`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 根据已确认的聚焦布局设计新增详细实施计划，明确首页继续使用现有 `MainGridLayout`，所有非主页迁移到新增 `ContentGridLayout`。
+- 将工作拆分为布局契约测试、非主页迁移、工具图标模型、工具导航结构测试、工具页重做、收藏页面压缩、文档同步和视觉验证八个任务。
+- 明确工具导航参考 `fqzlr/my-blog` 的开源结构，但只复用公开布局与交互思路，不复制真实内容、头像或私有配置。
+- 把项目默认视觉对比纳入最终验证，覆盖桌面与移动端：首页保留检查、非主页横幅/侧栏移除、工具标签筛选和文章目录响应式行为。
+- 更新 `docs/next-tasks.md`，把状态从等待规格确认切换为等待执行 Task 1。
+
+### 验证情况
+
+- 已读取已确认设计规格、现有 `MainGridLayout` / `Layout`、工具导航页面、资源数据模型、内容校验脚本和现有测试，确认计划中的文件路径与当前仓库一致。
+- 已读取参考仓库公开 `collections.astro` 与 `collections.css`，确认计划覆盖标签滑动指示器、分类数量、分组线、图标、域名底栏、hover 外链箭头和 3/2/1 列响应式行为。
+- 本次仅新增实施计划和交接记录，尚未修改应用代码，因此未运行应用测试或构建；这些验证已列入实施计划 Task 8。
+## 2026-06-27 18:39:37 +08:00
+
+### 修改范围
+
+- 非主页聚焦内容布局
+- 工具导航重做与资源图标模型
+- 收藏页面首屏压缩
+- 回归测试、视觉对比与文档同步
+
+### 涉及文件
+
+- `src/layouts/Layout.astro`
+- `src/layouts/ContentGridLayout.astro`
+- `src/pages/**/*.astro`
+- `src/pages/resources/index.astro`
+- `src/pages/resources/tools.astro`
+- `src/pages/resources/clips/index.astro`
+- `src/styles/resources.css`
+- `src/data/mikan.ts`
+- `content.example/resources/resources.json`
+- `scripts/validate-content.mjs`
+- `tests/mikan-data.test.ts`
+- `tests/mikan-pages.test.ts`
+- `README.md`
+- `docs/content-repository.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/superpowers/plans/2026-06-27-mikan-archive-focused-content-layout.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `ContentGridLayout`，将所有非主页从原三栏横幅布局迁移为导航栏下方直接开始的聚焦内容布局；首页继续使用原 `MainGridLayout`。
+- 非主页不再渲染壁纸横幅、人物资料、公告、分类、标签、站点统计、站点信息和日历通用侧栏；文章详情宽屏保留独立 sticky 目录，移动端继续使用浮动目录。
+- 为 `Layout.astro` 增加 `contentOnly` 状态，并修复通用网格脚本把 `data-sidebar-position="none"` 错当成左侧栏、导致正文缩窄的问题。
+- 工具导航按 `fqzlr/my-blog` 开源 collections 页面结构重做，包含紧凑标题、分类胶囊、滑动指示器、分类数量、分组线、图标、域名底栏、hover 外链箭头和三/二/一列响应式布局。
+- 资源模型新增可选 `icon` 字段；公开示例扩展为测试数据、开发文档、图片工具和 AI 助手四组九个工具，并新增 Iconify 名称存在性测试，避免无效图标阻断页面渲染。
+- 收藏总览与摘录收藏移除大块标题卡，改用紧凑标题区直接衔接入口卡片和内容列表。
+- 同步 README、内容仓库字段说明、CHANGELOG、设计规格、实施计划和下一步任务交接。
+
+### 验证情况
+
+- 已按 TDD 先后观察到非主页迁移、工具分类/图标、工具导航结构、紧凑标题、Iconify 图标和无侧栏网格契约测试按预期失败，再完成实现并运行通过。
+- 已运行 `npm.cmd run test:content-model`，6 项测试通过；其中包含已安装 Iconify 图标集存在性检查。
+- 已运行 `npm.cmd run test:pages`，12 项测试通过。
+- 已运行 `npm.cmd run check`，结果为 0 errors、0 warnings、1 个既有 Calendar 未使用事件参数 hint。
+- 已使用应用内浏览器在 1440×900 桌面视口检查首页、工具导航和文章详情：首页横幅与双侧栏保留，工具页无横幅和通用侧栏且三列卡片正常，文章详情显示独立目录。
+- 已在 390×844 移动视口检查工具导航和文章详情：工具标签完整换行、卡片单列、文章桌面目录隐藏且浮动目录按钮显示；两页横向溢出均为 0。
+- 已点击 `AI 助手` 分类，确认 `aria-pressed`、disabled、hash、内容区和滑动指示器同步更新，显示 3 张对应卡片。
+- 已重新运行完整验证链：`sync:content`、`validate:content`、`test:content-model`、`test:pages`、`check` 和 `build` 全部通过；正式构建生成 15 个页面，Pagefind 索引 3 个页面、205 个词。
+- 构建保留既有的重复动态导入、单个大 chunk、catch-all 首页冲突和 Markdown 旧选项弃用警告，本次改动未新增构建失败。
+- 已启动正式构建预览并检查 `/`、`/posts/`、示例文章、`/resources/`、`/resources/tools/`、`/resources/clips/`、`/friends/`、`/records/`、`/about/`，9 个路由均返回 200。
+- 已检查应用内浏览器控制台，错误日志为 0。

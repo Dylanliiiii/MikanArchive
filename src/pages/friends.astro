@@ -11,7 +11,7 @@ import {
 import { getMikanFriends } from "@/data/mikan";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
-import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 
 // 检查页面是否启用
 if (!siteConfig.pages.friends) {
@@ -52,7 +52,7 @@ const description =
 	friendsPageConfig.description || i18n(I18nKey.friendsDescription);
 ---
 
-<MainGridLayout title={title} description={description}>
+<ContentGridLayout title={title} description={description}>
   <div
     class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
   >
@@ -304,4 +304,4 @@ const description =
       gap: 0.75rem;
     }
   </style>
-</MainGridLayout>
+</ContentGridLayout>

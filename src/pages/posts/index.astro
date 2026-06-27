@@ -1,6 +1,6 @@
 ---
 import PostPage from "@/components/layout/PostPage.astro";
-import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getSortedPosts } from "@/utils/content-utils";
 
 const posts = await getSortedPosts();
@@ -22,6 +22,6 @@ const page = {
 };
 ---
 
-<MainGridLayout title="文库" description="文章、教程和笔记列表">
+<ContentGridLayout title="文库" description="文章、教程和笔记列表">
   <PostPage page={page} />
-</MainGridLayout>
+</ContentGridLayout>

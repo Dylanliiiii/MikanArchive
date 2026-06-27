@@ -1,11 +1,78 @@
 [
   {
+    "title": "中科大测速",
+    "url": "https://test.ustc.edu.cn/",
+    "kind": "tool",
+    "category": "测试数据",
+    "tags": ["测速", "网络", "下载"],
+    "note": "中国科学技术大学网络测速入口，用于快速检查当前网络的下载速度。",
+    "icon": "material-symbols:speed-rounded",
+    "featured": true,
+    "addedAt": "2026-06-27"
+  },
+  {
+    "title": "ITDOG",
+    "url": "https://www.itdog.cn/",
+    "kind": "tool",
+    "category": "测试数据",
+    "tags": ["Ping", "TCP", "DNS"],
+    "note": "提供 Ping、TCPing、网站测速、HTTP 测试和 DNS 查询等网络诊断能力。",
+    "icon": "material-symbols:network-check-rounded",
+    "featured": false,
+    "addedAt": "2026-06-27"
+  },
+  {
+    "title": "Squoosh",
+    "url": "https://squoosh.app/",
+    "kind": "tool",
+    "category": "图片工具",
+    "tags": ["图片", "压缩", "格式转换"],
+    "note": "在浏览器中完成图片压缩、尺寸调整和格式转换，适合发布前快速处理。",
+	"icon": "material-symbols:image-rounded",
+    "featured": true,
+    "addedAt": "2026-06-27"
+  },
+  {
+    "title": "ChatGPT",
+    "url": "https://chatgpt.com/",
+    "kind": "tool",
+    "category": "AI 助手",
+    "tags": ["AI", "写作", "编程"],
+    "note": "用于对话、写作、编程和分析任务的通用 AI 助手入口。",
+    "icon": "simple-icons:openai",
+    "featured": true,
+    "addedAt": "2026-06-27"
+  },
+  {
+    "title": "Claude",
+    "url": "https://claude.ai/",
+    "kind": "tool",
+    "category": "AI 助手",
+    "tags": ["AI", "长文本", "代码"],
+    "note": "适合长文档理解、内容整理和代码协作的 AI 助手入口。",
+    "icon": "simple-icons:anthropic",
+    "featured": false,
+    "addedAt": "2026-06-27"
+  },
+  {
+    "title": "Gemini",
+    "url": "https://gemini.google.com/",
+    "kind": "tool",
+    "category": "AI 助手",
+    "tags": ["AI", "Google", "多模态"],
+    "note": "Google 的多模态 AI 助手入口，适合文本、图片与资料协同处理。",
+    "icon": "simple-icons:googlegemini",
+    "featured": false,
+    "addedAt": "2026-06-27"
+  },
+  {
     "title": "Astro 文档",
     "url": "https://docs.astro.build/",
     "kind": "tool",
-    "category": "文档",
+	"category": "开发文档",
     "tags": ["Astro", "静态站点", "内容集合"],
     "note": "用于查询 Astro 项目结构、内容集合、Markdown/MDX 和部署方式。",
+    "icon": "simple-icons:astro",
     "featured": true,
     "addedAt": "2026-06-26"
   },
@@ -13,9 +80,10 @@
     "title": "MDN Web Docs",
     "url": "https://developer.mozilla.org/",
     "kind": "tool",
-    "category": "文档",
+	"category": "开发文档",
     "tags": ["Web", "JavaScript", "CSS"],
     "note": "面向 Web 标准、浏览器 API 和 CSS 细节的公开参考资料。",
+    "icon": "simple-icons:mdnwebdocs",
     "featured": true,
     "addedAt": "2026-06-26"
   },
@@ -23,9 +91,10 @@
     "title": "shadcn/ui",
     "url": "https://ui.shadcn.com/",
     "kind": "tool",
-    "category": "组件",
+	"category": "开发文档",
     "tags": ["UI", "React", "Tailwind"],
     "note": "作为简洁、可组合组件风格的公开参考，不包含任何私有设计素材。",
+	"icon": "simple-icons:shadcnui",
     "featured": false,
     "addedAt": "2026-06-26"
   },

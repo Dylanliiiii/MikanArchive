@@ -228,9 +228,11 @@ async function validateProfileContent() {
 }
 
 async function validateDataContent() {
+	const resources = await readJson("src/data/content/resources/resources.json", []);
+
   validateArrayFile(
     "src/data/content/resources/resources.json",
-    await readJson("src/data/content/resources/resources.json", []),
+	resources,
     {
       title: isNonEmptyString,
       url: isNonEmptyString,
@@ -240,6 +242,21 @@ async function validateDataContent() {
       note: isNonEmptyString
     }
   );
+
+	if (Array.isArray(resources)) {
+		for (const [index, resource] of resources.entries()) {
+			if (
+				isPlainObject(resource) &&
+				"icon" in resource &&
+				!isNonEmptyString(resource.icon)
+			) {
+				addError(
+					`src/data/content/resources/resources.json[${index}]`,
+					'invalid optional field "icon"'
+				);
+			}
+		}
+	}
 
   validateArrayFile(
     "src/data/content/links/friends.json",

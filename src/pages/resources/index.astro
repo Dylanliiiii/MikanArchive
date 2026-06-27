@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getMikanResourcesByKind } from "@/data/mikan";
 import { url } from "@/utils/url-utils";
 
@@ -28,19 +28,15 @@ const collections = [
 ];
 ---
 
-<MainGridLayout title="收藏" description="工具入口与知识线索分开整理">
-	<section class="card-base overflow-hidden px-6 py-7 sm:px-8 mb-4">
-		<div class="flex items-start gap-4">
-			<div class="h-11 w-11 shrink-0 rounded-2xl bg-(--primary) text-white dark:text-black/70 flex items-center justify-center shadow-lg shadow-(--primary)/20">
-				<Icon is:inline name="material-symbols:bookmark-heart-rounded" class="text-2xl" />
-			</div>
-			<div>
-				<p class="text-xs font-semibold tracking-[0.18em] text-(--primary)">MIKAN COLLECTION</p>
-				<h1 class="mt-1 text-2xl font-bold text-90">把“常用入口”和“有用网页”分开收藏</h1>
-				<p class="mt-2 max-w-2xl text-sm leading-6 text-50">工具导航回答“这个站点以后还会不会用”，摘录收藏回答“这篇网页具体帮我解决什么”。分开之后，再次寻找会轻松许多。</p>
-			</div>
+<ContentGridLayout title="收藏" description="工具入口与知识线索分开整理">
+	<header class="compact-page-header mb-5 px-1 py-2">
+		<div class="flex items-center gap-2 text-(--primary)">
+			<Icon is:inline name="material-symbols:bookmark-heart-rounded" class="text-xl" />
+			<p class="text-[0.68rem] font-bold tracking-[0.18em]">MIKAN COLLECTION</p>
 		</div>
-	</section>
+		<h1 class="mt-1 text-3xl font-black tracking-tight text-90">收藏</h1>
+		<p class="mt-2 max-w-2xl text-sm leading-6 text-50">把会反复打开的工具入口和解决具体问题的网页线索分开整理。</p>
+	</header>
 
 	<div class="grid gap-4 md:grid-cols-2">
 		{collections.map((item, index) => (
@@ -67,11 +63,11 @@ const collections = [
 			</a>
 		))}
 	</div>
-</MainGridLayout>
+</ContentGridLayout>
 
 <style>
 	.resource-entry {
-		min-height: 18rem;
+		min-height: 15rem;
 		transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 	}
 

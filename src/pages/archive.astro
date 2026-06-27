@@ -2,13 +2,13 @@
 import ArchivePanel from "@components/controls/ArchivePanel.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import MainGridLayout from "@layouts/MainGridLayout.astro";
+import ContentGridLayout from "@layouts/ContentGridLayout.astro";
 import { getSortedPostsList } from "@/utils/content-utils";
 
 const sortedPostsList = await getSortedPostsList();
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)}>
+<ContentGridLayout title={i18n(I18nKey.archive)}>
   <script is:inline>
     (function() {
       var p = new URLSearchParams(location.search);
@@ -25,4 +25,4 @@ const sortedPostsList = await getSortedPostsList();
     })();
   </script>
   <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte" />
-</MainGridLayout>
+</ContentGridLayout>

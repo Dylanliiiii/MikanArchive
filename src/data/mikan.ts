@@ -33,6 +33,7 @@ export type MikanResource = {
 	sourceName?: string;
 	scenario?: string;
 	addedAt?: string;
+	icon?: string;
 };
 
 export type MikanTimelineItem = {
