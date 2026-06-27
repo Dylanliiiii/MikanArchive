@@ -513,3 +513,4 @@
 - 构建保留既有的重复动态导入、单个大 chunk、catch-all 首页冲突和 Markdown 旧选项弃用警告，本次改动未新增构建失败。
 - 已启动正式构建预览并检查 `/`、`/posts/`、示例文章、`/resources/`、`/resources/tools/`、`/resources/clips/`、`/friends/`、`/records/`、`/about/`，9 个路由均返回 200。
 - 已检查应用内浏览器控制台，错误日志为 0。
+- 已创建实现提交 `d8ac3ac`（`feat: focus content pages and tools navigation`），并成功推送到 `origin/codex/firefly-rebuild`。
