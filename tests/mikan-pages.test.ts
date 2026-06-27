@@ -70,6 +70,13 @@ test("通用布局脚本不会给无侧栏页面重新添加侧栏网格", () =>
 	assert.match(source, /newGridClasses = "grid-cols-1"/);
 });
 
+test("聚焦布局为固定导航预留完整高度", () => {
+	const source = readSource("src/layouts/ContentGridLayout.astro");
+
+	assert.match(source, /:global\(body\.sticky-navbar\) \.focused-page-shell/);
+	assert.match(source, /padding-top:\s*4\.5rem/);
+});
+
 test("收藏总览提供工具导航和摘录收藏入口", () => {
 	const source = readSource("src/pages/resources/index.astro");
 

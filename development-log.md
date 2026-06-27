@@ -514,3 +514,34 @@
 - 已启动正式构建预览并检查 `/`、`/posts/`、示例文章、`/resources/`、`/resources/tools/`、`/resources/clips/`、`/friends/`、`/records/`、`/about/`，9 个路由均返回 200。
 - 已检查应用内浏览器控制台，错误日志为 0。
 - 已创建实现提交 `d8ac3ac`（`feat: focus content pages and tools navigation`），并成功推送到 `origin/codex/firefly-rebuild`。
+## 2026-06-27 19:11:46 +08:00
+
+### 修改范围
+
+- 聚焦布局固定导航遮挡修复
+- 页面布局回归测试与视觉验证
+
+### 涉及文件
+
+- `src/layouts/ContentGridLayout.astro`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 确认 `body.sticky-navbar` 会把 `#top-row` 固定为 `4.5rem` 高度，而聚焦内容容器此前没有预留空间，导致 CategoryBar 在首屏与导航重叠约 `48px`。
+- 为 `body.sticky-navbar` 下的 `.focused-page-shell` 增加 `4.5rem` 顶部占位，不改变首页布局，也不隐藏分类条。
+- 新增源码契约测试，防止后续移除固定导航占位后重新出现遮挡。
+- 在聚焦布局设计规格中明确固定导航必须预留完整高度。
+
+### 验证情况
+
+- 已先运行新增回归测试并观察到预期失败，再添加布局样式后运行 `npm.cmd run test:pages`，13 项测试全部通过。
+- 已运行 `npm.cmd run check`，结果为 0 errors、0 warnings、1 个既有 Calendar 未使用事件参数 hint。
+- 已在当前浏览器默认视口验证：页面顶部导航结束于 `72px`，CategoryBar 从 `96px` 开始，重叠由 `48px` 降为 `0px`，横向溢出为 0。
+- 已在 `390×844` 移动视口验证：导航结束于 `63px`，CategoryBar 从 `77px` 开始，重叠为 0，横向溢出为 0。
+- 已重新运行 `npm.cmd run test:pages`，13 项测试通过；运行 `npm.cmd run check` 为 0 errors、0 warnings、1 个既有 hint；运行 `npm.cmd run build` 成功生成 15 个页面并完成 Pagefind 索引。
+- 构建仍只有既有的重复动态导入、大 chunk、catch-all 首页冲突和 Markdown 旧选项弃用警告，本次修复未新增构建错误。
