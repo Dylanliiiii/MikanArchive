@@ -545,3 +545,4 @@
 - 已在 `390×844` 移动视口验证：导航结束于 `63px`，CategoryBar 从 `77px` 开始，重叠为 0，横向溢出为 0。
 - 已重新运行 `npm.cmd run test:pages`，13 项测试通过；运行 `npm.cmd run check` 为 0 errors、0 warnings、1 个既有 hint；运行 `npm.cmd run build` 成功生成 15 个页面并完成 Pagefind 索引。
 - 构建仍只有既有的重复动态导入、大 chunk、catch-all 首页冲突和 Markdown 旧选项弃用警告，本次修复未新增构建错误。
+- 已创建修复提交 `d02113c`（`fix: offset focused content below navbar`），并成功推送到 `origin/codex/firefly-rebuild`。
