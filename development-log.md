@@ -1,5 +1,37 @@
 ﻿# Development Log
 
+## 2026-06-27 17:54:49 +08:00
+
+### 修改范围
+
+- 非主页单列布局与工具导航正式设计
+- 项目视觉对比默认规则
+- 跨会话实施交接
+
+### 涉及文件
+
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/next-tasks.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 根据用户截图、浏览器视觉对比和 fqzlr/my-blog 公开源码，确定首页保留 Firefly 氛围布局，所有非主页改用无大横幅、无通用双侧栏的单列内容布局。
+- 确认文章详情保留独立悬浮目录，移动端自动收起。
+- 记录工具导航的分类胶囊、数量徽章、分组线、三列卡片、工具 Logo、域名与 hover 外链箭头等细节。
+- 在项目规则与项目专属 Skill 中新增“视觉任务默认启用浏览器对比”的约定，并说明 `.superpowers/` 只保存本地忽略草稿。
+- 更新 `docs/next-tasks.md`，记录当前等待规格审阅，确认后进入实施计划。
+
+### 验证情况
+
+- 已对照 fqzlr/my-blog `master` 分支的 `src/pages/collections.astro`、`src/styles/collections.css` 与 `src/layouts/MainGridLayout.astro`。
+- 已检查新规格不存在 `TODO`、`TBD` 或未决占位内容。
+- 本次只更新设计与项目规则，未运行应用构建；代码尚未修改。
+- `git diff --check`：通过。
+
 ## 2026-06-27 11:06:53 +08:00
 
 ### 修改范围

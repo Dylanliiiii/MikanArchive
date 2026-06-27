@@ -2,6 +2,8 @@
 
 日期：2026-06-27
 
+> 后续细化：非主页单列布局、横幅与通用侧栏移除、文章独立目录和工具导航细节，以 `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md` 为准；该规格覆盖本文中与非主页横幅、通用侧栏和收藏页面布局冲突的旧描述。
+
 ## 概要
 
 MikanArchive 下一阶段不再沿用当前第一版页面做小修小补，而是以 CuteLeaf/Firefly 的主题能力和 fqzlr.com 的公开页面体验为主要参考，重建站点壳层、首页、文章列表、文章详情、友链、收藏、足迹和个人资料页。
