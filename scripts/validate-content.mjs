@@ -22,6 +22,10 @@ function isStringArray(value) {
   return Array.isArray(value) && value.every(isNonEmptyString);
 }
 
+function isResourceKind(value) {
+  return value === "tool" || value === "clip";
+}
+
 function parseScalar(raw) {
   const value = raw.trim();
 
@@ -230,6 +234,7 @@ async function validateDataContent() {
     {
       title: isNonEmptyString,
       url: isNonEmptyString,
+      kind: isResourceKind,
       category: isNonEmptyString,
       tags: isStringArray,
       note: isNonEmptyString

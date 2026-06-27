@@ -2,6 +2,7 @@
   {
     "title": "Astro 文档",
     "url": "https://docs.astro.build/",
+    "kind": "tool",
     "category": "文档",
     "tags": ["Astro", "静态站点", "内容集合"],
     "note": "用于查询 Astro 项目结构、内容集合、Markdown/MDX 和部署方式。",
@@ -11,6 +12,7 @@
   {
     "title": "MDN Web Docs",
     "url": "https://developer.mozilla.org/",
+    "kind": "tool",
     "category": "文档",
     "tags": ["Web", "JavaScript", "CSS"],
     "note": "面向 Web 标准、浏览器 API 和 CSS 细节的公开参考资料。",
@@ -20,10 +22,35 @@
   {
     "title": "shadcn/ui",
     "url": "https://ui.shadcn.com/",
+    "kind": "tool",
     "category": "组件",
     "tags": ["UI", "React", "Tailwind"],
     "note": "作为简洁、可组合组件风格的公开参考，不包含任何私有设计素材。",
     "featured": false,
     "addedAt": "2026-06-26"
+  },
+  {
+    "title": "Astro 内容集合指南示例",
+    "url": "https://docs.astro.build/en/guides/content-collections/",
+    "kind": "clip",
+    "category": "Astro",
+    "tags": ["内容集合", "Schema", "教程线索"],
+    "note": "用于演示如何收藏某一篇解决具体问题的网页，不代表真实私人收藏。",
+    "sourceName": "Astro 官方文档",
+    "scenario": "需要确认内容集合 loader 与 schema 配置方式时查阅。",
+    "featured": true,
+    "addedAt": "2026-06-27"
+  },
+  {
+    "title": "CSS Grid 布局指南示例",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout",
+    "kind": "clip",
+    "category": "前端",
+    "tags": ["CSS", "Grid", "响应式"],
+    "note": "演示把一篇对特定知识点有帮助的网页保存为摘录线索。",
+    "sourceName": "MDN Web Docs",
+    "scenario": "设计响应式卡片网格并排查列宽问题时查阅。",
+    "featured": false,
+    "addedAt": "2026-06-27"
   }
 ]

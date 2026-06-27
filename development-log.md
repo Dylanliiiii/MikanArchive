@@ -1,4 +1,88 @@
-# Development Log
+﻿# Development Log
+
+## 2026-06-27 11:06:53 +08:00
+
+### 修改范围
+
+- 收藏数据模型与内容校验
+- 收藏总览、工具导航与摘录收藏页面
+- 足迹年份 / 月份 / 记录三层分支归档
+- 导航、测试、设计规格与内容仓库文档同步
+
+### 涉及文件
+
+- `content.example/resources/resources.json`
+- `scripts/validate-content.mjs`
+- `src/data/mikan.ts`
+- `src/pages/resources/index.astro`
+- `src/pages/resources/tools.astro`
+- `src/pages/resources/clips/index.astro`
+- `src/pages/records/index.astro`
+- `src/config/navBarConfig.ts`
+- `tests/mikan-data.test.ts`
+- `tests/mikan-pages.test.ts`
+- `package.json`
+- `README.md`
+- `docs/content-repository.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `.agents/skills/mikan-archive-maintenance/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 为资源收藏增加必填 `kind` 字段，支持 `tool` 与 `clip`，并补充摘录来源、适用场景和收藏日期示例。
+- 新增资源类型筛选、分类分组和足迹年份 / 月份归档 helper；时间线类型同步支持可选 `category`。
+- 采用红绿测试完成 4 项数据 helper 测试和 5 项收藏 / 足迹页面契约测试。
+- 将收藏入口改为总览页，并新增工具导航与摘录收藏独立路由；顶部“收藏”保持单一一级入口，通过下拉菜单进入三个页面。
+- 将足迹扁平时间线改为连接主干的年份、月份、记录三层分支；鼠标 hover 或键盘 focus 时当前分支由浅色虚线切换为主题色实线。
+- 同步 README、内容仓库说明、CHANGELOG、正式 Firefly 设计规格、AGENTS 和项目专属 Skill，并在任务完成后清理交接文档正文。
+
+### 验证情况
+
+- `node --check scripts/validate-content.mjs`：通过。
+- `npm.cmd run sync:content`：通过。
+- `npm.cmd run validate:content`：通过。
+- `npm.cmd run test:content-model`：4 项通过，0 项失败。
+- `npm.cmd run test:pages`：5 项通过，0 项失败。
+- `npm.cmd run check`：160 个文件，0 errors、0 warnings、1 个既有 Calendar 未使用事件参数提示。
+- `npm.cmd run build`：通过，生成 15 个页面及 Pagefind 索引；保留 Firefly 既有动态导入与 chunk 体积警告。
+- 本地预览检查 `/resources/`、`/resources/tools/`、`/resources/clips/`、`/records/`：桌面和 390px 移动视口标题、内容与导航正确，无横向溢出，浏览器控制台无 error/warning。
+- 足迹月份分支样式实测：默认 `dashed`，聚焦后变为 `2px solid` 主题色。
+- `git diff --check`：通过。
+
+## 2026-06-27 04:46:01 +08:00
+
+### 修改范围
+
+- 下一步任务交接文档
+- 跨会话任务管理规则
+- 项目专属 Skill 维护流程同步
+
+### 涉及文件
+
+- `docs/next-tasks.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `.agents/skills/mikan-archive-maintenance/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `docs/next-tasks.md`，用于记录跨会话待执行任务、技术实现步骤、阻塞点和下一次继续的位置。
+- 将收藏拆分与足迹归档精修的背景、技术步骤、验证命令和当前执行状态写入 `docs/next-tasks.md`。
+- 在 `AGENTS.md` 中新增“下一步任务交接”规则，明确它与 `development-log.md` 的区别和维护方式。
+- 同步更新 `mikan-archive-project` 与 `mikan-archive-maintenance` 项目专属 Skill，要求每次修改前读取 `docs/next-tasks.md`，暂停、阻塞、完成步骤或跨会话交接时更新它。
+- 清理被打断前残留的临时 `tests/` 目录；本次不继续实现收藏和足迹功能代码。
+
+### 验证情况
+
+- 已读回 `docs/next-tasks.md` 前 60 行，确认文档已落盘并包含当前目标和技术步骤。
+- 已使用 `Select-String` 检查 `AGENTS.md` 中“下一步任务交接”和“开发记录”标题位置，发现并修复了一次重复标题。
+- 本次只修改文档和项目规则，未运行应用构建或页面预览。
 
 ## 2026-06-27 02:09:10 +08:00
 

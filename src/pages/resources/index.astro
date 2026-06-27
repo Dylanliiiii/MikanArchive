@@ -1,53 +1,109 @@
 ---
 import { Icon } from "astro-icon/components";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getMikanResources } from "@/data/mikan";
+import { getMikanResourcesByKind } from "@/data/mikan";
+import { url } from "@/utils/url-utils";
 
-const resources = getMikanResources();
-const categories = [...new Set(resources.map((item) => item.category))].sort();
+const toolCount = getMikanResourcesByKind("tool").length;
+const clipCount = getMikanResourcesByKind("clip").length;
+const collections = [
+	{
+		title: "工具导航",
+		description: "保存站点本身具有长期使用价值的入口，适合那些会反复打开的文档、平台与效率工具。",
+		meta: `${toolCount} 个常用入口`,
+		href: url("/resources/tools/"),
+		icon: "material-symbols:rocket-launch-rounded",
+		accent: "resource-entry--tools",
+		label: "长期使用",
+	},
+	{
+		title: "摘录收藏",
+		description: "保存某篇网页在一个问题或知识点上的价值，留下来源、适用场景和再次查阅的理由。",
+		meta: `${clipCount} 条知识线索`,
+		href: url("/resources/clips/"),
+		icon: "material-symbols:bookmarks-rounded",
+		accent: "resource-entry--clips",
+		label: "按需回看",
+	},
+];
 ---
 
-<MainGridLayout title="收藏" description="资源、工具、文档和灵感收藏">
-	<section class="card-base px-8 py-6 mb-4">
-		<div class="flex items-center gap-3">
-			<div class="h-9 w-9 rounded-xl bg-(--primary) text-white dark:text-black/70 flex items-center justify-center">
+<MainGridLayout title="收藏" description="工具入口与知识线索分开整理">
+	<section class="card-base overflow-hidden px-6 py-7 sm:px-8 mb-4">
+		<div class="flex items-start gap-4">
+			<div class="h-11 w-11 shrink-0 rounded-2xl bg-(--primary) text-white dark:text-black/70 flex items-center justify-center shadow-lg shadow-(--primary)/20">
 				<Icon is:inline name="material-symbols:bookmark-heart-rounded" class="text-2xl" />
 			</div>
 			<div>
-				<h1 class="text-2xl font-bold text-90">收藏</h1>
-				<p class="mt-1 text-sm text-30">资源、工具、文档和灵感，按再次打开时能看懂的方式保存。</p>
+				<p class="text-xs font-semibold tracking-[0.18em] text-(--primary)">MIKAN COLLECTION</p>
+				<h1 class="mt-1 text-2xl font-bold text-90">把“常用入口”和“有用网页”分开收藏</h1>
+				<p class="mt-2 max-w-2xl text-sm leading-6 text-50">工具导航回答“这个站点以后还会不会用”，摘录收藏回答“这篇网页具体帮我解决什么”。分开之后，再次寻找会轻松许多。</p>
 			</div>
-		</div>
-		<div class="mt-5 flex flex-wrap gap-2">
-			<span class="rounded-lg bg-(--primary)/10 px-3 py-1.5 text-sm text-(--primary)">全部 {resources.length}</span>
-			{categories.map((category) => <span class="rounded-lg bg-black/5 dark:bg-white/10 px-3 py-1.5 text-sm text-50">{category}</span>)}
 		</div>
 	</section>
 
 	<div class="grid gap-4 md:grid-cols-2">
-		{resources.map((item, index) => (
+		{collections.map((item, index) => (
 			<a
-				href={item.url}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="card-base group p-5 onload-animation"
-				style={`animation-delay: calc(var(--content-delay) + ${index * 50}ms);`}
+				href={item.href}
+				class:list={["card-base resource-entry group relative overflow-hidden p-6 onload-animation", item.accent]}
+				style={`animation-delay: calc(var(--content-delay) + ${index * 80}ms);`}
 			>
-				<div class="flex items-start justify-between gap-4">
-					<div class="min-w-0">
-						<div class="flex items-center gap-2">
-							<h2 class="text-lg font-bold text-90 group-hover:text-(--primary) transition-colors truncate">{item.title}</h2>
-							{item.featured && <span class="rounded-md bg-(--primary)/10 px-2 py-0.5 text-xs text-(--primary)">推荐</span>}
-						</div>
-						<p class="mt-2 text-sm leading-6 text-50">{item.note}</p>
+				<div class="resource-entry__glow" aria-hidden="true"></div>
+				<div class="relative flex items-start justify-between gap-4">
+					<div class="resource-entry__icon flex h-12 w-12 items-center justify-center rounded-2xl">
+						<Icon is:inline name={item.icon} class="text-2xl" />
 					</div>
-					<Icon is:inline name="material-symbols:arrow-outward-rounded" class="text-xl text-(--primary) shrink-0 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+					<span class="rounded-full border border-white/35 bg-white/45 px-3 py-1 text-xs font-medium text-70 backdrop-blur-sm dark:border-white/10 dark:bg-black/15">{item.label}</span>
 				</div>
-				<div class="mt-4 flex flex-wrap gap-1.5">
-					<span class="rounded-md bg-black/5 dark:bg-white/10 px-2 py-1 text-[0.7rem] text-50">{item.category}</span>
-					{item.tags.map((tag) => <span class="rounded-md bg-black/5 dark:bg-white/10 px-2 py-1 text-[0.7rem] text-50">#{tag}</span>)}
+				<div class="relative mt-8">
+					<div class="flex items-center gap-2">
+						<h2 class="text-xl font-bold text-90 transition-colors group-hover:text-(--primary)">{item.title}</h2>
+						<Icon is:inline name="material-symbols:arrow-forward-rounded" class="text-xl text-(--primary) transition-transform group-hover:translate-x-1" />
+					</div>
+					<p class="mt-3 text-sm leading-6 text-50">{item.description}</p>
+					<p class="mt-5 text-xs font-semibold tracking-wide text-30">{item.meta}</p>
 				</div>
 			</a>
 		))}
 	</div>
 </MainGridLayout>
+
+<style>
+	.resource-entry {
+		min-height: 18rem;
+		transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+	}
+
+	.resource-entry:hover {
+		transform: translateY(-4px);
+		border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+		box-shadow: 0 18px 45px color-mix(in srgb, var(--primary) 13%, transparent);
+	}
+
+	.resource-entry__glow {
+		position: absolute;
+		inset: 0;
+		opacity: 0.58;
+		pointer-events: none;
+	}
+
+	.resource-entry--tools .resource-entry__glow {
+		background: radial-gradient(circle at 12% 8%, rgba(103, 210, 190, 0.28), transparent 42%), radial-gradient(circle at 92% 88%, rgba(121, 170, 255, 0.2), transparent 46%);
+	}
+
+	.resource-entry--clips .resource-entry__glow {
+		background: radial-gradient(circle at 12% 8%, rgba(255, 190, 105, 0.28), transparent 42%), radial-gradient(circle at 92% 88%, rgba(241, 145, 184, 0.2), transparent 46%);
+	}
+
+	.resource-entry__icon {
+		background: color-mix(in srgb, var(--primary) 14%, white);
+		color: var(--primary);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+	}
+
+	.resource-entry--clips .resource-entry__icon {
+		background: rgba(255, 190, 105, 0.18);
+		color: #d17858;
+	}
+</style>

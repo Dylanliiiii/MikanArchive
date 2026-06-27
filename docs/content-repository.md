@@ -145,15 +145,40 @@ draft: false
   {
     "title": "Astro 文档",
     "url": "https://docs.astro.build/",
+    "kind": "tool",
     "category": "文档",
     "tags": ["Astro", "静态站点"],
     "note": "用于查询 Astro 项目结构和内容集合配置。",
     "featured": true
+  },
+  {
+    "title": "内容集合指南示例",
+    "url": "https://docs.astro.build/en/guides/content-collections/",
+    "kind": "clip",
+    "category": "Astro",
+    "tags": ["内容集合", "教程线索"],
+    "note": "演示如何保存一篇针对具体问题有帮助的网页。",
+    "sourceName": "Astro 官方文档",
+    "scenario": "需要确认内容集合配置方式时查阅。",
+    "addedAt": "2026-06-27"
   }
 ]
 ```
 
-必填字段：`title`、`url`、`category`、`tags`、`note`。
+必填字段：`title`、`url`、`kind`、`category`、`tags`、`note`。
+
+`kind` 只允许以下值：
+
+- `tool`：工具导航。用于长期反复打开的网站、平台、文档和效率工具。
+- `clip`：摘录收藏。用于某一篇在具体问题或知识点上有帮助的网页。
+
+摘录收藏可额外使用：
+
+- `sourceName`：来源名称，例如官方文档、CSDN、知乎或个人博客。
+- `scenario`：适用场景，说明遇到什么问题时值得重新打开。
+- `addedAt`：收藏日期，建议使用 `YYYY-MM-DD`。
+
+工具导航页会按 `category` 分组；摘录收藏页会优先展示来源、适用场景、收藏日期和标签。示例内容只用于解释结构，不能冒充真实私人收藏。
 
 ## 友链与站点收藏
 

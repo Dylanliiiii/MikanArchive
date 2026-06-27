@@ -26,7 +26,16 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
-	links.push(LinkPresets.Resources);
+	links.push({
+		name: "收藏",
+		url: "#",
+		icon: "material-symbols:bookmark-heart",
+		children: [
+			LinkPresets.Resources,
+			LinkPresets.ResourceTools,
+			LinkPresets.ResourceClips,
+		],
+	});
 	links.push(LinkPresets.Friends);
 	links.push(LinkPresets.Records);
 	links.push({
@@ -94,9 +103,19 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		pageKey: "friends",
 	},
 	Resources: {
-		name: "收藏",
+		name: "收藏总览",
 		url: "/resources/",
 		icon: "material-symbols:bookmark-heart",
+	},
+	ResourceTools: {
+		name: "工具导航",
+		url: "/resources/tools/",
+		icon: "material-symbols:rocket-launch-rounded",
+	},
+	ResourceClips: {
+		name: "摘录收藏",
+		url: "/resources/clips/",
+		icon: "material-symbols:bookmarks-rounded",
 	},
 	Records: {
 		name: "足迹",
