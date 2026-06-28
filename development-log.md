@@ -24,6 +24,7 @@
 
 - 已完成规格占位符、矛盾、范围和歧义自审，未发现 `TBD`、`TODO` 或未决实现项。
 - 本次仅新增设计与交接文档，尚未修改生产代码，因此未运行页面测试、类型检查和构建；实现阶段将按规格完整验证。
+- 已创建提交 `bea5cd5 docs: define friends page refinement`；连续三次尝试推送 `origin/codex/firefly-rebuild` 均因无法连接 `github.com:443` 失败，已在 `docs/next-tasks.md` 保留恢复网络后推送的阻塞记录。
 
 ## 2026-06-28 19:30:20 +08:00
 
