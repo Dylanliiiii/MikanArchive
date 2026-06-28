@@ -2,14 +2,19 @@
 import { Icon } from "astro-icon/components";
 import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getMikanResourcesByKind, groupMikanResourcesByCategory } from "@/data/mikan";
+import { url } from "@/utils/url-utils";
 import "@/styles/resources.css";
 
 const resources = getMikanResourcesByKind("clip");
 const groups = groupMikanResourcesByCategory(resources);
+
+function getClipsCategoryUrl(category: string) {
+	return url(`/resources/clips/?category=${encodeURIComponent(category)}`);
+}
 ---
 
 <ContentGridLayout title="摘录收藏" description="为具体问题与知识点留下可回溯的网页线索" showCategoryBar={false}>
-	<section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+	<section data-clips-page class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
 		<header class="tools-page-header relative z-10 mb-7">
 			<div class="tools-eyebrow-row tools-eyebrow-row--clips">
 				<Icon is:inline name="material-symbols:bookmarks-rounded" />
@@ -21,16 +26,26 @@ const groups = groupMikanResourcesByCategory(resources);
 
 		{resources.length > 0 && (
 			<nav class="tools-tab-wrapper clip-filter-pill relative z-10" aria-label="摘录分类">
-				<div class="tools-tab-pill">
-					<span class="tools-tab-btn tools-tab-btn-active" aria-current="true">
+				<div class="tools-tab-pill" data-clips-tab-nav>
+					<div class="tools-tab-indicator" data-clips-tab-indicator></div>
+					<a
+						href={url("/resources/clips/")}
+						data-clips-tab="all"
+						class="tools-tab-btn tools-tab-btn-active"
+						aria-current="page"
+					>
 						全部
 						<span class="tools-tab-badge">{resources.length}</span>
-					</span>
+					</a>
 					{groups.map((group) => (
-						<span class="tools-tab-btn tools-tab-btn-inactive">
+						<a
+							href={getClipsCategoryUrl(group.category)}
+							data-clips-tab={group.category}
+							class="tools-tab-btn tools-tab-btn-inactive"
+						>
 							{group.category}
 							<span class="tools-tab-badge">{group.count}</span>
-						</span>
+						</a>
 					))}
 				</div>
 			</nav>
@@ -39,7 +54,7 @@ const groups = groupMikanResourcesByCategory(resources);
 		{resources.length > 0 ? (
 			<div class="relative z-10">
 				{groups.map((group) => (
-					<section class="tools-category-group">
+					<section class="tools-category-group" data-clips-section={group.category}>
 						<header class="tools-category-header">
 							<div class="tools-category-name">
 								<Icon is:inline name="material-symbols:label-outline-rounded" />
@@ -94,4 +109,117 @@ const groups = groupMikanResourcesByCategory(resources);
 			</div>
 		)}
 	</section>
+
+	<script is:inline>
+		(function () {
+			if (window.__mikanClipsReady) return;
+			window.__mikanClipsReady = true;
+
+			function getClipsRoot() {
+				return document.querySelector("[data-clips-page]");
+			}
+
+			function updateClipsIndicator(targetLink) {
+				if (!targetLink) return;
+				var nav = targetLink.closest("[data-clips-tab-nav]");
+				var indicator = nav && nav.querySelector("[data-clips-tab-indicator]");
+				if (!indicator) return;
+
+				indicator.style.left = targetLink.offsetLeft + "px";
+				indicator.style.top = targetLink.offsetTop + "px";
+				indicator.style.width = targetLink.offsetWidth + "px";
+				indicator.style.height = targetLink.offsetHeight + "px";
+				indicator.style.opacity = "1";
+			}
+
+			function getTabFromUrl() {
+				var params = new URLSearchParams(window.location.search);
+				return params.get("category") || "all";
+			}
+
+			function writeTabToUrl(targetTab) {
+				var nextUrl = new URL(window.location.href);
+				var params = new URLSearchParams(nextUrl.search);
+
+				if (!targetTab || targetTab === "all") {
+					params.delete("category");
+				} else {
+					params.set("category", targetTab);
+				}
+
+				nextUrl.search = params.toString();
+				nextUrl.hash = "";
+				history.pushState(null, "", nextUrl);
+			}
+
+			function activateClipsTab(targetTab, updateUrl) {
+				var root = getClipsRoot();
+				if (!root) return;
+
+				var links = root.querySelectorAll("[data-clips-tab]");
+				var sections = root.querySelectorAll("[data-clips-section]");
+				var resolvedTab = targetTab || "all";
+				var targetLink = null;
+
+				links.forEach(function (link) {
+					if (link.dataset.clipsTab === resolvedTab) targetLink = link;
+				});
+
+				if (!targetLink) {
+					resolvedTab = "all";
+					links.forEach(function (link) {
+						if (link.dataset.clipsTab === "all") targetLink = link;
+					});
+				}
+
+				links.forEach(function (link) {
+					var isActive = link === targetLink;
+					link.classList.toggle("tools-tab-btn-active", isActive);
+					link.classList.toggle("tools-tab-btn-inactive", !isActive);
+					if (isActive) {
+						link.setAttribute("aria-current", "page");
+					} else {
+						link.removeAttribute("aria-current");
+					}
+				});
+
+				sections.forEach(function (section) {
+					var isActive = resolvedTab === "all" || section.dataset.clipsSection === resolvedTab;
+					section.classList.toggle("hidden", !isActive);
+					if (isActive) {
+						section.querySelectorAll(".clip-card").forEach(function (card) {
+							card.style.animation = "none";
+							void card.offsetHeight;
+							card.style.animation = "";
+						});
+					}
+				});
+
+				requestAnimationFrame(function () {
+					updateClipsIndicator(targetLink);
+				});
+
+				if (updateUrl) writeTabToUrl(resolvedTab);
+			}
+
+			function initClipsTabs() {
+				activateClipsTab(getTabFromUrl(), false);
+			}
+
+			document.addEventListener("click", function (event) {
+				var target = event.target instanceof Element ? event.target.closest("[data-clips-tab]") : null;
+				if (!target) return;
+				event.preventDefault();
+				activateClipsTab(target.dataset.clipsTab || "all", true);
+			});
+			window.addEventListener("popstate", initClipsTabs);
+			window.addEventListener("resize", function () {
+				var activeLink = document.querySelector("[data-clips-page] .tools-tab-btn-active");
+				if (activeLink) updateClipsIndicator(activeLink);
+			});
+			document.addEventListener("astro:page-load", initClipsTabs);
+			document.addEventListener("swup:contentReplaced", initClipsTabs);
+			initClipsTabs();
+		})();
+	</script>
 </ContentGridLayout>

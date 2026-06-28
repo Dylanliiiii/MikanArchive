@@ -1,5 +1,37 @@
 ﻿# Development Log
 
+## 2026-06-28 17:30:03 +08:00
+
+### 修改范围
+
+- 收藏三页标题字距微调
+- 摘录收藏分类标签可见性与点击筛选修复
+- 页面契约测试补充
+
+### 涉及文件
+
+- `src/pages/resources/clips/index.astro`
+- `src/styles/resources.css`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 将收藏、工具导航、摘录收藏共用的 `tools-page-title` 从负字距改为轻微正字距，避免中文标题笔画挤压。
+- 将摘录收藏分类标签从静态 `span` 改为可访问链接，提供 `?category=` URL fallback。
+- 为摘录收藏增加 `data-clips-tab`、`data-clips-section` 与页面内脚本，使点击“全部”、分类标签后同步更新 URL、选中态和可见分组。
+- 为摘录收藏活动标签补充青蓝色胶囊背景，修复浅色模式下“全部”标签不明显的问题。
+- 补充页面契约测试，覆盖摘录分类链接、URL 参数、选中态脚本结构、活动胶囊背景和标题字距。
+
+### 验证情况
+
+- 已先运行 `npm.cmd run test:pages`，确认新增测试在修复前按预期失败。
+- `npm.cmd run test:pages`：16 项通过，0 项失败。
+- `npm.cmd run check`：0 errors；保留既有 `src/components/widget/Calendar.astro` 未使用事件参数 hint。
+- 已使用 Playwright CLI 通过临时 npm cache 截图验证 `/resources/`、`/resources/tools/`、`/resources/clips/`、`/resources/clips/?category=Astro` 桌面状态，以及 `/resources/clips/` 390px 移动视口。
+- Playwright CLI 的 iPhone 设备预设因本机缺少 WebKit 浏览器失败，已改用 Chromium 390×844 视口完成移动截图验证。
+- 已使用 Playwright 运行时脚本验证摘录收藏点击交互：默认“全部”、点击第一个分类、点击 `Astro`、返回“全部”时，URL、活动标签和可见分组均正确同步。
+
 ## 2026-06-28 17:08:22 +08:00
 
 ### 修改范围

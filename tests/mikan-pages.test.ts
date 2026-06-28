@@ -164,12 +164,28 @@ test("摘录收藏分类标签和卡片交互与工具导航统一", () => {
 	const styleSource = readSource("src/styles/resources.css");
 
 	assert.match(pageSource, /clip-filter-pill/);
+	assert.match(pageSource, /data-clips-tab-nav/);
+	assert.match(pageSource, /data-clips-tab-indicator/);
+	assert.match(pageSource, /data-clips-tab=\{group\.category\}/);
+	assert.match(pageSource, /data-clips-section=\{group\.category\}/);
+	assert.match(pageSource, /href=\{getClipsCategoryUrl\(group\.category\)\}/);
+	assert.match(pageSource, /history\.pushState/);
+	assert.match(pageSource, /URLSearchParams/);
 	assert.match(pageSource, /tools-tab-btn tools-tab-btn-active/);
 	assert.match(pageSource, /href=\{item\.url\}/);
 	assert.match(pageSource, /class="clip-card group/);
 	assert.doesNotMatch(pageSource, /class="clip-link\s/);
+	assert.match(styleSource, /\.clip-filter-pill \.tools-tab-btn-active/);
+	assert.match(styleSource, /background:\s*linear-gradient\(135deg, var\(--primary\)/);
 	assert.match(styleSource, /\.clip-card:hover/);
 	assert.match(styleSource, /box-shadow:\s*0 18px 44px/);
+});
+
+test("收藏标题使用轻微正字距避免中文标题挤压", () => {
+	const source = readSource("src/styles/resources.css");
+
+	assert.match(source, /\.tools-page-title[\s\S]*letter-spacing:\s*0\.015em/);
+	assert.doesNotMatch(source, /\.tools-page-title[\s\S]*letter-spacing:\s*-0\.055em/);
 });
 
 test("收藏导航保留主入口并提供两个子入口", () => {
