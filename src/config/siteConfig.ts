@@ -40,7 +40,7 @@ export const siteConfig: SiteConfig = {
 	pages: {
 		friends: true,
 		sponsor: false,
-		guestbook: false,
+		guestbook: true,
 		bangumi: false,
 		gallery: false,
 		anime: false,

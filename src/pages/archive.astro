@@ -2,13 +2,15 @@
 import ArchivePanel from "@components/controls/ArchivePanel.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
+import { Icon } from "astro-icon/components";
 import ContentGridLayout from "@layouts/ContentGridLayout.astro";
 import { getSortedPostsList } from "@/utils/content-utils";
+import "@/styles/resources.css";
 
 const sortedPostsList = await getSortedPostsList();
 ---
 
-<ContentGridLayout title={i18n(I18nKey.archive)}>
+<ContentGridLayout title={i18n(I18nKey.archive)} description="按时间归档文章和教程记录">
   <script is:inline>
     (function() {
       var p = new URLSearchParams(location.search);
@@ -24,5 +26,17 @@ const sortedPostsList = await getSortedPostsList();
       }
     })();
   </script>
-  <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte" />
+  <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+    <header class="tools-page-header relative z-10 mb-7">
+      <div class="tools-eyebrow-row">
+        <Icon is:inline name="material-symbols:archive-rounded" />
+        <p class="tools-eyebrow">MIKAN ARCHIVE</p>
+      </div>
+      <h1 class="tools-page-title">{i18n(I18nKey.archive)}</h1>
+      <p class="tools-page-description">按发布时间整理文章和教程记录，适合从时间线回看内容。</p>
+    </header>
+    <div class="relative z-10">
+      <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte" />
+    </div>
+  </section>
 </ContentGridLayout>

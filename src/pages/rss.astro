@@ -5,25 +5,22 @@ import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { Icon } from "astro-icon/components";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
+import "@/styles/resources.css";
 
 const posts = await getSortedPosts();
 const recentPosts = posts.slice(0, 6);
 ---
 
 <ContentGridLayout title={i18n(I18nKey.rss)} description={i18n(I18nKey.rssDescription)}>
-    <div class="onload-animation">
-        <!-- RSS 标题和介绍 -->
-        <div class="card-base rounded-(--radius-large) p-8 mb-6">
-            <div class="text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-(--primary) rounded-2xl mb-4">
-                    <Icon is:inline name="material-symbols:rss-feed" class="text-white text-3xl" />
-                </div>
-                <div class="text-3xl font-bold text-(--primary) mb-3">{i18n(I18nKey.rss)}</div>
-                <p class="text-75 max-w-2xl mx-auto">
-                    {i18n(I18nKey.rssSubtitle)}
-                </p>
+    <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9 onload-animation">
+        <header class="tools-page-header relative z-10 mb-7">
+            <div class="tools-eyebrow-row">
+                <Icon is:inline name="material-symbols:rss-feed-rounded" />
+                <p class="tools-eyebrow">MIKAN FEED</p>
             </div>
-        </div>
+            <h1 class="tools-page-title">{i18n(I18nKey.rss)}</h1>
+            <p class="tools-page-description">{i18n(I18nKey.rssSubtitle)}</p>
+        </header>
 
         <!-- RSS 链接复制区域 -->
         <div class="card-base rounded-(--radius-large) p-6 mb-6">
@@ -104,7 +101,7 @@ const recentPosts = posts.slice(0, 6);
                 </p>
             </div>
         </div>
-    </div>
+    </section>
 
     <script>
         function initRssCopy() {

@@ -36,7 +36,16 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			LinkPresets.ResourceClips,
 		],
 	});
-	links.push(LinkPresets.Friends);
+	links.push({
+		name: "联系我",
+		url: "#",
+		icon: "material-symbols:mail-rounded",
+		children: [
+			LinkPresets.Friends,
+			LinkPresets.Guestbook,
+			LinkPresets.QQGroup,
+		],
+	});
 	links.push(LinkPresets.Records);
 	links.push({
 		name: "我的",
@@ -97,10 +106,16 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		icon: "material-symbols:tag-rounded",
 	},
 	Friends: {
-		name: "友邻",
+		name: "友链",
 		url: "/friends/",
 		icon: "material-symbols:group",
 		pageKey: "friends",
+	},
+	QQGroup: {
+		name: "QQ群",
+		url: "https://qm.qq.com/",
+		external: true,
+		icon: "material-symbols:groups-rounded",
 	},
 	Resources: {
 		name: "收藏总览",

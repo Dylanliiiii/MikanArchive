@@ -344,6 +344,10 @@
 	transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
+.contact-entry {
+	min-height: 11rem;
+}
+
 .resource-entry:hover {
 	transform: translateY(-4px);
 	border-color: color-mix(in srgb, var(--primary) 40%, transparent);
@@ -506,6 +510,10 @@
 @media (max-width: 640px) {
 	.tools-card-grid {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.contact-entry {
+		min-height: 9.5rem;
 	}
 
 	.tools-page-title {

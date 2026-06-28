@@ -1,5 +1,74 @@
 ﻿# Development Log
 
+## 2026-06-28 19:30:20 +08:00
+
+### 修改范围
+
+- 联系我板块重构
+- 顶部导航与全站二级快捷栏整理
+- 主要非主页大标题视觉统一
+- 项目规则、设计文档和更新日志同步
+
+### 涉及文件
+
+- src/config/navBarConfig.ts
+- src/config/siteConfig.ts
+- src/config/friendsConfig.ts
+- src/layouts/ContentGridLayout.astro
+- src/layouts/MainGridLayout.astro
+- src/pages/friends.astro
+- src/pages/guestbook.astro
+- src/pages/about.astro
+- src/pages/categories/index.astro
+- src/pages/tags/index.astro
+- src/pages/rss.astro
+- src/pages/search.astro
+- src/pages/records/index.astro
+- src/pages/index.astro
+- src/components/pages/AdvancedSearch.svelte
+- tests/mikan-pages.test.ts
+- README.md
+- AGENTS.md
+- .agents/skills/mikan-archive-project/SKILL.md
+- docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md
+- docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md
+- CHANGELOG.md
+- docs/next-tasks.md
+- .gitignore
+- development-log.md
+
+### 具体内容
+
+- 将顶部一级导航“友邻”改为“联系我”，下拉菜单包含“友链 / 留言 / QQ群”，并启用留言页开关。
+- 新增 /guestbook/ 留言页，提供留言说明、友链申请提示、隐私提醒和评论系统未配置时的占位说明。
+- 将 /friends/ 改为联系我入口页，使用工具导航同款大标题系统，增加友链、留言、QQ 群三张入口卡片，并保留友链搜索与标签筛选。
+- 从 MainGridLayout 和 ContentGridLayout 移除导航下方通用分类快捷栏，避免其他页面继续显示“主页 / 归档 / 分类 / 更多”区域。
+- 将文库、归档、收藏、联系我、留言、分类、标签、RSS、足迹、关于和搜索等主要非主页的可见大标题统一为工具导航同款英文眉标、图标、主标题和说明节奏。
+- 将首页友链预览与足迹统计中的“友邻”文案调整为“友链”，避免和新的一级入口“联系我”混淆。
+- 同步 README、AGENTS、项目专属 Skill、Firefly 重构设计规格、聚焦布局规格和 CHANGELOG 中的导航、联系我页面职责和快捷栏规则。
+- 补充页面契约测试，覆盖 /guestbook/ 路由、联系我下拉、全站移除通用分类快捷栏、联系我相关页面与主要非主页标题系统统一，并纳入文库与归档页头。
+- 构建过程中发现 material-symbols:timeline-rounded 不存在；已验证本轮新增图标，确认仅该图标缺失，并替换为已安装的 material-symbols:timeline。
+- 清理本地 Headless Chrome / Playwright 检查产物，并将 `.playwright-cli/` 与 `output/` 加入 `.gitignore`，避免后续截图和控制台日志误进入提交范围。
+- 完成最终 diff、未跟踪文件和敏感信息检查后，清空 `docs/next-tasks.md` 中本轮已完成任务段，仅保留文档使用规则。
+
+### 验证情况
+
+- 已先运行 npm.cmd run test:pages，确认新增契约在实现前按预期失败。
+- npm.cmd run validate:content：通过。
+- npm.cmd run test:content-model：6 项通过，0 项失败。
+- npm.cmd run test:pages：20 项通过，0 项失败。
+- npm.cmd run check：通过，0 errors；保留既有 src/components/widget/Calendar.astro 未读参数提示。
+- npm.cmd run build：通过；保留既有 Vite 动态导入、大 chunk、Astro markdown deprecation 和 Pagefind 中文 stemming 提示。
+- 使用 Headless Chrome 生成并目检截图：output/visual/friends-desktop.png、output/visual/guestbook-desktop.png、output/visual/friends-mobile.png、output/visual/guestbook-mobile.png。
+- 使用 HTTP/HTML 结构检查 /friends/、/guestbook/、/categories/、/tags/、/rss/、/records/、/about/、/search/：均包含 tools-page-title 与 tools-eyebrow-row，且均未渲染 category-bar-wrapper 或 id=category-bar。
+- 视觉检查发现联系我和留言入口卡片复用 onload-animation 时在 headless 截图中出现透明空白；已移除该类入口卡片的入场透明动画，并新增 contact-entry 紧凑高度后重新截图确认桌面和移动端卡片可见。
+- 2026-06-28 19:54 重新运行提交前验证：`npm.cmd run sync:content`、`npm.cmd run validate:content`、`npm.cmd run test:content-model`、`npm.cmd run test:pages`、`npm.cmd run check`、`npm.cmd run build` 均通过。
+- `npm.cmd run test:content-model`：6 项通过，0 项失败；`npm.cmd run test:pages`：20 项通过，0 项失败。
+- `npm.cmd run check`：0 errors，保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
+- `git diff --check`：未发现空白错误，仅有 Windows 换行提示。
+- 敏感信息扫描：未发现真实 token、cookie、密码、私有仓库凭据、本机绝对路径或真实私人联系方式；命中项均为规则说明文案或测试正则误报。
+- Git 提交已在本地创建；`git push -u origin codex/firefly-rebuild` 多次失败，错误为无法连接 `github.com:443`。随后确认 Git 未配置代理，`curl.exe -I https://github.com` 同样在 HTTPS 请求阶段卡住；SSH push 因当前本机没有 GitHub SSH 公钥权限而失败。远端 push 已记录到 `docs/next-tasks.md` 待网络或凭据通道恢复后重试。
+
 ## 2026-06-28 18:24:55 +08:00
 
 ### 修改范围

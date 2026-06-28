@@ -111,26 +111,27 @@ const handleInput = () => {
 };
 </script>
 
-<div class="card-base px-6 py-6 md:px-9 md:py-6 mb-4 rounded-(--radius-large)">
+<div class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9 mb-4 rounded-(--radius-large)">
     <!-- Title Section -->
-    <div class="mb-4">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
-                <Icon icon="material-symbols:search" class="text-[1.5rem]"></Icon>
-            </div>
-            <div class="text-3xl font-bold text-90">
-                {title}
-            </div>
+    <header class="tools-page-header relative z-10 mb-7">
+        <div class="tools-eyebrow-row">
+            <Icon icon="material-symbols:search-rounded" />
+            <p class="tools-eyebrow">MIKAN SEARCH</p>
         </div>
+        <h1 class="tools-page-title">{title}</h1>
         {#if description}
-            <p class="text-base text-50 leading-relaxed">
+            <p class="tools-page-description">
                 {description}
             </p>
+        {:else}
+            <p class="tools-page-description">
+                输入关键词，在文章与页面内容中快速定位需要的线索。
+            </p>
         {/if}
-    </div>
+    </header>
 
     <!-- Search Bar -->
-    <div class="relative flex">
+    <div class="relative z-10 flex">
         <div class="relative flex-1">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Icon icon="material-symbols:search" class="text-2xl text-50" />

@@ -1,7 +1,6 @@
 ---
 import type { MarkdownHeading } from "astro";
 import FloatingControls from "@/components/controls/FloatingControls.astro";
-import CategoryBar from "@/components/layout/CategoryBar.astro";
 import Footer from "@/components/layout/Footer.astro";
 import Navbar from "@/components/layout/Navbar.astro";
 import SidebarTOC from "@/components/widget/SidebarTOC.astro";
@@ -20,7 +19,6 @@ interface Props {
 	postSlug?: string;
 	postCategory?: string;
 	headings?: MarkdownHeading[];
-	showCategoryBar?: boolean;
 	bannerPostMeta?: {
 		title: string;
 		published: Date;
@@ -37,14 +35,11 @@ const {
 	lang,
 	setOGTypeArticle,
 	postSlug,
-	postCategory,
 	headings = [],
-	showCategoryBar = true,
 } = Astro.props;
 
 const isPostPage = Boolean(postSlug);
 const showArticleTOC = isPostPage && headings.length > 0;
-const shouldRenderCategoryBar = showCategoryBar && Boolean(siteConfig.categoryBar);
 const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 ---
 
@@ -86,16 +81,9 @@ const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 			data-sidebar-position="none"
 		>
 			<div class="min-w-0">
-				{shouldRenderCategoryBar && (
-					<div id="category-bar-wrapper">
-						<CategoryBar currentPostCategory={postCategory} />
-					</div>
-				)}
-
 				<main
 					id="swup-container"
 					class="transition-main"
-					data-current-post-category={postCategory || ""}
 				>
 					<h1 class="sr-only">{title}</h1>
 					<div id="grid-class-carrier" data-grid-class="grid-cols-1" class="hidden"></div>

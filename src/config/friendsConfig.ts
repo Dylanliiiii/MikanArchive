@@ -1,8 +1,8 @@
 import type { FriendLink, FriendsPageConfig } from "../types/friendsConfig";
 
 export const friendsPageConfig: FriendsPageConfig = {
-	title: "友邻",
-	description: "把值得常去的站点放在近处。",
+	title: "联系我",
+	description: "友链、留言和社区入口集中放在这里。",
 	showCustomContent: true,
 	showComment: false,
 	randomizeSort: false,

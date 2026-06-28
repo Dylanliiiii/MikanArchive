@@ -12,7 +12,6 @@ import FloatingControls from "@/components/controls/FloatingControls.astro";
 import ScrollDownIndicator from "@/components/controls/ScrollDownIndicator.astro";
 import BackgroundPlayer from "@/components/features/BackgroundPlayer.astro";
 import TypewriterText from "@/components/features/TypewriterText.astro";
-import CategoryBar from "@/components/layout/CategoryBar.astro";
 import {
 	backgroundWallpaper,
 	live2dWidgetConfig,
@@ -112,8 +111,6 @@ const shouldRenderGradient =
 
 // 检查是否为首页
 const isHomePageCheck = isHomePage(Astro.url.pathname);
-
-const shouldRenderCategoryBar = !!siteConfig.categoryBar;
 
 // 检查是否在文章详情页
 const isPostPage = !!postSlug;
@@ -834,8 +831,6 @@ const hasMultipleImages =
                     
             {/* 主内容区包装器 - 包含静态栏位和swup容器，作为单个grid item */}
             <div class={staticBarClass}>
-                {/* 分类导航栏 - 全站渲染并显示 */}
-                {shouldRenderCategoryBar && <div id="category-bar-wrapper"><CategoryBar currentPostCategory={postCategory} /></div>}
                 {/* 主内容区 - 始终渲染，确保 Swup 容器存在 */}
                 <main
                     id="swup-container"

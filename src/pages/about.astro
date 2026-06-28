@@ -1,10 +1,11 @@
 ---
-
 import { getEntry, render } from "astro:content";
 import Markdown from "@components/common/Markdown.astro";
+import { Icon } from "astro-icon/components";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
+import "@/styles/resources.css";
 
 const aboutPost = await getEntry("spec", "about");
 
@@ -13,13 +14,24 @@ if (!aboutPost) {
 }
 
 const { Content } = await render(aboutPost);
+const title = i18n(I18nKey.about);
+const description = "公开示例个人介绍。真实站点请替换为自己的简介，并避免提交私人敏感信息。";
 ---
-<ContentGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
-    <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full ">
+<ContentGridLayout title={title} description={description}>
+    <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+        <header class="tools-page-header relative z-10 mb-7">
+            <div class="tools-eyebrow-row">
+                <Icon is:inline name="material-symbols:person-rounded" />
+                <p class="tools-eyebrow">MIKAN PROFILE</p>
+            </div>
+            <h1 class="tools-page-title">{title}</h1>
+            <p class="tools-page-description">{description}</p>
+        </header>
+
+        <div class="relative z-10 rounded-2xl border border-(--line-divider) bg-black/[0.015] p-5 dark:bg-white/[0.025] sm:p-6">
             <Markdown class="mt-2">
                 <Content />
             </Markdown>
         </div>
-    </div>
+    </section>
 </ContentGridLayout>

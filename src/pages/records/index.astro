@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getMikanArchiveGroups, getMikanFriends, getMikanResources, getMikanUpdates } from "@/data/mikan";
 import { getSortedPostsList, getTagList } from "@/utils/content-utils";
+import "@/styles/resources.css";
 
 const posts = await getSortedPostsList();
 const tags = await getTagList();
@@ -14,12 +15,22 @@ const stats = [
 	{ label: "文章", value: posts.length, icon: "material-symbols:article-rounded", tone: "stat-card--blue" },
 	{ label: "标签", value: tags.length, icon: "material-symbols:tag-rounded", tone: "stat-card--mint" },
 	{ label: "收藏", value: resources.length, icon: "material-symbols:bookmark-heart-rounded", tone: "stat-card--pink" },
-	{ label: "友邻", value: friends.length, icon: "material-symbols:group-rounded", tone: "stat-card--yellow" },
+	{ label: "友链", value: friends.length, icon: "material-symbols:group-rounded", tone: "stat-card--yellow" },
 ];
 ---
 
 <ContentGridLayout title="足迹" description="写作、收藏和站点维护记录">
-	<section class="grid gap-3 sm:grid-cols-2 md:grid-cols-4 mb-4">
+	<section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+		<header class="tools-page-header relative z-10 mb-7">
+			<div class="tools-eyebrow-row">
+				<Icon is:inline name="material-symbols:timeline" />
+				<p class="tools-eyebrow">MIKAN RECORDS</p>
+			</div>
+			<h1 class="tools-page-title">足迹</h1>
+			<p class="tools-page-description">写作、收藏和站点维护记录，按最近更新与时间归档两条线整理。</p>
+		</header>
+
+	<section class="relative z-10 grid gap-3 sm:grid-cols-2 md:grid-cols-4 mb-4">
 		{stats.map((item) => (
 			<div class:list={["card-base stat-card p-5", item.tone]}>
 				<div class="stat-card__icon flex h-10 w-10 items-center justify-center rounded-xl">
@@ -31,7 +42,7 @@ const stats = [
 		))}
 	</section>
 
-	<section class="card-base p-5 sm:p-6 mb-4">
+	<section class="relative z-10 rounded-2xl border border-(--line-divider) bg-black/[0.015] p-5 dark:bg-white/[0.025] sm:p-6 mb-4">
 		<div class="mb-5 flex items-center gap-3">
 			<div class="h-9 w-9 rounded-xl bg-(--primary) text-white dark:text-black/70 flex items-center justify-center">
 				<Icon is:inline name="material-symbols:update-rounded" class="text-2xl" />
@@ -55,7 +66,7 @@ const stats = [
 		</div>
 	</section>
 
-	<section class="card-base archive-card p-5 sm:p-6">
+	<section class="relative z-10 rounded-2xl border border-(--line-divider) bg-black/[0.015] p-5 dark:bg-white/[0.025] sm:p-6 archive-card">
 		<div class="mb-7 flex items-start gap-3">
 			<div class="h-9 w-9 shrink-0 rounded-xl bg-(--primary)/12 text-(--primary) flex items-center justify-center">
 				<Icon is:inline name="material-symbols:account-tree-rounded" class="text-2xl" />
@@ -109,6 +120,7 @@ const stats = [
 				</section>
 			))}
 		</div>
+	</section>
 	</section>
 </ContentGridLayout>
 

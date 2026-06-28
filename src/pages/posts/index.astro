@@ -1,7 +1,9 @@
 ---
 import PostPage from "@/components/layout/PostPage.astro";
+import { Icon } from "astro-icon/components";
 import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getSortedPosts } from "@/utils/content-utils";
+import "@/styles/resources.css";
 
 const posts = await getSortedPosts();
 const page = {
@@ -23,5 +25,17 @@ const page = {
 ---
 
 <ContentGridLayout title="文库" description="文章、教程和笔记列表">
-  <PostPage page={page} />
+  <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+    <header class="tools-page-header relative z-10 mb-7">
+      <div class="tools-eyebrow-row">
+        <Icon is:inline name="material-symbols:article-rounded" />
+        <p class="tools-eyebrow">MIKAN LIBRARY</p>
+      </div>
+      <h1 class="tools-page-title">文库</h1>
+      <p class="tools-page-description">文章、教程和笔记列表。把可反复查阅的记录放在同一处。</p>
+    </header>
+    <div class="relative z-10">
+      <PostPage page={page} />
+    </div>
+  </section>
 </ContentGridLayout>

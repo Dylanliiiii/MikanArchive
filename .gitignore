@@ -26,6 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .superpowers/
+.playwright-cli/
+output/
 .tmp/
 .DS_Store
 Thumbs.db
