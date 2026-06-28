@@ -67,7 +67,7 @@
 - `npm.cmd run check`：0 errors，保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
 - `git diff --check`：未发现空白错误，仅有 Windows 换行提示。
 - 敏感信息扫描：未发现真实 token、cookie、密码、私有仓库凭据、本机绝对路径或真实私人联系方式；命中项均为规则说明文案或测试正则误报。
-- Git 提交已在本地创建；`git push -u origin codex/firefly-rebuild` 多次失败，错误为无法连接 `github.com:443`。随后确认 Git 未配置代理，`curl.exe -I https://github.com` 同样在 HTTPS 请求阶段卡住；SSH push 因当前本机没有 GitHub SSH 公钥权限而失败。远端 push 已记录到 `docs/next-tasks.md` 待网络或凭据通道恢复后重试。
+- Git 提交已创建并推送到 `origin/codex/firefly-rebuild`。推送前几次曾因无法连接 `github.com:443` 失败；随后 HTTPS push 恢复并成功完成，`docs/next-tasks.md` 已清空本轮任务段。
 
 ## 2026-06-28 18:24:55 +08:00
 
