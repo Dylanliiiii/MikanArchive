@@ -174,6 +174,7 @@ test("摘录收藏分类标签和卡片交互与工具导航统一", () => {
 	assert.match(pageSource, /href=\{getClipsCategoryUrl\(group\.category\)\}/);
 	assert.match(pageSource, /history\.pushState/);
 	assert.match(pageSource, /URLSearchParams/);
+	assert.match(pageSource, /data-clips-filtered/);
 	assert.match(pageSource, /tools-tab-btn tools-tab-btn-active/);
 	assert.match(pageSource, /href=\{item\.url\}/);
 	assert.match(pageSource, /class="clip-card group/);
@@ -183,6 +184,10 @@ test("摘录收藏分类标签和卡片交互与工具导航统一", () => {
 	assert.doesNotMatch(clipActiveRule, /var\(--primary\)/);
 	assert.match(styleSource, /\.clip-card:hover/);
 	assert.match(styleSource, /box-shadow:\s*0 18px 44px/);
+	assert.match(styleSource, /\[data-clips-filtered="true"\] \.tools-category-header/);
+	assert.match(styleSource, /display:\s*none/);
+	assert.match(styleSource, /\[data-clips-filtered="true"\] \.tools-category-group/);
+	assert.match(styleSource, /margin-top:\s*0/);
 });
 
 test("收藏标题使用轻微正字距避免中文标题挤压", () => {

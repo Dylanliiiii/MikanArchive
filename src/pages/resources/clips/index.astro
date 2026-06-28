@@ -172,6 +172,8 @@ function getClipsCategoryUrl(category: string) {
 					});
 				}
 
+				root.setAttribute("data-clips-filtered", String(resolvedTab !== "all"));
+
 				links.forEach(function (link) {
 					var isActive = link === targetLink;
 					link.classList.toggle("tools-tab-btn-active", isActive);

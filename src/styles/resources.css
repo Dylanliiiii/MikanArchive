@@ -207,6 +207,14 @@
 	background: linear-gradient(90deg, var(--tools-border-strong), color-mix(in srgb, var(--primary) 18%, transparent));
 }
 
+[data-clips-filtered="true"] .tools-category-group {
+	margin-top: 0;
+}
+
+[data-clips-filtered="true"] .tools-category-header {
+	display: none;
+}
+
 .tools-card-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));

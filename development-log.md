@@ -1,5 +1,33 @@
 ﻿# Development Log
 
+## 2026-06-28 18:24:55 +08:00
+
+### 修改范围
+
+- 摘录收藏单分类筛选布局调整
+- 页面契约测试同步
+
+### 涉及文件
+
+- `src/pages/resources/clips/index.astro`
+- `src/styles/resources.css`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 为摘录收藏页增加 `data-clips-filtered` 状态，区分“全部”和单分类筛选模式。
+- 单分类筛选时隐藏当前分组标题、数量和横向分割线，只保留筛选后的卡片内容。
+- “全部”模式继续显示所有分组标题线，顶部分类标签的数量徽章保持不变。
+- 补充页面契约测试，覆盖筛选状态属性、单分类隐藏分组标题和清除额外顶部间距。
+
+### 验证情况
+
+- 已先运行 `npm.cmd run test:pages`，确认新增测试在修复前按预期失败。
+- `npm.cmd run test:pages`：16 项通过，0 项失败。
+- 已使用 Playwright 运行时脚本验证：全部模式显示 2 个分组标题，点击分类后 `data-clips-filtered="true"`、仅显示 1 个分组、该分组标题 computed display 为 `none`，活动标签数量徽章仍显示 `1`，回到“全部”后标题恢复。
+- 已使用 Playwright CLI 截图验证 `/resources/clips/` 全部模式和 `/resources/clips/?category=Astro` 单分类稳定状态。
+
 ## 2026-06-28 18:01:45 +08:00
 
 ### 修改范围
