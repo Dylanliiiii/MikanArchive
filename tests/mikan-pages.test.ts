@@ -142,6 +142,34 @@ test("友链标签筛选复用工具导航滑动胶囊", () => {
 	assert.match(source, /applyFilters\(\)/);
 });
 
+test("友链申请说明由友链页文档弹窗承载", () => {
+	const pageSource = readSource("src/pages/friends.astro");
+	const dialogSource = readSource("src/components/pages/FriendApplyDialog.astro");
+
+	assert.match(pageSource, /FriendApplyDialog/);
+	assert.match(pageSource, /data-open-friend-guide/);
+	assert.match(pageSource, /aria-controls="friend-apply-dialog"/);
+	assert.match(pageSource, /<FriendApplyDialog>[\s\S]*<Markdown/);
+	assert.doesNotMatch(pageSource, /showCustomContent[\s\S]*<section class="relative z-10 mt-6/);
+	assert.match(dialogSource, /<dialog/);
+	assert.match(dialogSource, /aria-modal="true"/);
+	assert.match(dialogSource, /data-close-friend-guide/);
+	assert.match(dialogSource, /showModal\(\)/);
+	assert.match(dialogSource, /dialog\.close\(\)/);
+	assert.match(dialogSource, /::backdrop/);
+});
+
+test("留言页不再承载友链申请入口", () => {
+	const source = readSource("src/pages/guestbook.astro");
+
+	assert.doesNotMatch(source, /友链申请/);
+	assert.doesNotMatch(source, /查看友链说明/);
+	assert.doesNotMatch(source, /url\("\/friends\/"\)/);
+	assert.doesNotMatch(source, /@\/utils\/url-utils/);
+	assert.match(source, /随手留言/);
+	assert.match(source, /私密信息/);
+});
+
 test("工具导航页按 kind 和分类读取资源", () => {
 	const source = readSource("src/pages/resources/tools.astro");
 

@@ -3,7 +3,6 @@ import Comment from "@components/comment/index.astro";
 import { Icon } from "astro-icon/components";
 import { commentConfig, siteConfig } from "@/config";
 import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
-import { url } from "@/utils/url-utils";
 import "@/styles/resources.css";
 
 if (!siteConfig.pages.guestbook) {
@@ -11,7 +10,7 @@ if (!siteConfig.pages.guestbook) {
 }
 
 const title = "留言";
-const description = "把想法、反馈、问题或友链申请放在这里。公开示例不会写入真实联系方式。";
+const description = "把想法、反馈、问题或想继续交流的话放在这里。公开示例不会写入真实联系方式。";
 const isCommentEnabled = Boolean(commentConfig?.type && commentConfig.type !== "none");
 
 const guideItems = [
@@ -19,11 +18,6 @@ const guideItems = [
 		title: "随手留言",
 		description: "适合留下阅读反馈、站点建议或想继续交流的话题。",
 		icon: "material-symbols:chat-rounded",
-	},
-	{
-		title: "友链申请",
-		description: "请附上站点名称、简介、链接和头像地址，方便后续手动整理。",
-		icon: "material-symbols:group-add-rounded",
 	},
 	{
 		title: "私密信息",
@@ -44,7 +38,7 @@ const guideItems = [
 			<p class="tools-page-description">{description}</p>
 		</header>
 
-		<div class="relative z-10 grid gap-4 md:grid-cols-3">
+		<div class="relative z-10 grid gap-4 sm:grid-cols-2">
 			{guideItems.map((item, index) => (
 				<div
 					class:list={["card-base resource-entry contact-entry group relative overflow-hidden p-5", index === 1 ? "resource-entry--clips" : "resource-entry--tools"]}
@@ -76,18 +70,10 @@ const guideItems = [
 				<Comment customPath="/guestbook/" title="留言" />
 			) : (
 				<div class="rounded-2xl border border-(--line-divider) bg-black/[0.015] p-6 dark:bg-white/[0.025]">
-					<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-						<div>
-							<h3 class="text-lg font-bold text-90">留言系统暂未启用</h3>
-							<p class="mt-2 text-sm leading-6 text-50">
-								当前公开示例仓库没有配置评论服务。需要留言功能时，在 src/config/commentConfig.ts 中启用 Twikoo、Waline、Giscus、Disqus 或 Artalk 后，本区域会自动渲染对应评论框。
-							</p>
-						</div>
-						<a href={url("/friends/")} class="clip-link-hint inline-flex shrink-0 items-center justify-center gap-1 rounded-xl px-3 py-2 text-xs font-medium">
-							查看友链说明
-							<Icon is:inline name="material-symbols:arrow-forward-rounded" class="text-base" />
-						</a>
-					</div>
+					<h3 class="text-lg font-bold text-90">留言系统暂未启用</h3>
+					<p class="mt-2 text-sm leading-6 text-50">
+						当前公开示例仓库没有配置评论服务。需要留言功能时，在 src/config/commentConfig.ts 中启用 Twikoo、Waline、Giscus、Disqus 或 Artalk 后，本区域会自动渲染对应评论框。
+					</p>
 				</div>
 			)}
 		</section>

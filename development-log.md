@@ -1,5 +1,44 @@
 ﻿# Development Log
 
+## 2026-06-28 22:47:00 +08:00
+
+### 修改范围
+
+- 友链申请说明文档弹窗
+- 友链页标题区申请入口
+- 留言页职责精简
+- 页面契约测试与响应式验收
+
+### 涉及文件
+
+- `src/components/pages/FriendApplyDialog.astro`
+- `src/pages/friends.astro`
+- `src/pages/guestbook.astro`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/specs/2026-06-28-mikan-friends-page-refinement-design.md`
+- `docs/superpowers/plans/2026-06-28-mikan-friend-application-dialog.md`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 在友链页标题区右侧新增“如何申请友链”按钮，移动端自动换行到标题说明下方。
+- 新增原生 `<dialog>` 文档弹窗，复用既有 `friends.mdx` 申请格式；支持关闭按钮、点击遮罩关闭、焦点返回和弹窗内部滚动，并为后续切换独立文档或外部链接保留稳定入口。
+- 删除友链页底部内联申请说明，避免同一页重复展示入口与正文。
+- 从留言页删除“友链申请”说明卡和“查看友链说明”链接，仅保留随手留言、私密信息及评论系统状态说明。
+- 新增两项页面契约测试，覆盖友链页弹窗职责和留言页不再承载友链申请入口。
+- 本次不改变内容模型、部署流程或公开使用方式，无需同步 README、AGENTS、项目专属 Skill、示例内容和 CHANGELOG。
+
+### 验证情况
+
+- TDD 红灯：`npm.cmd run test:pages` 为 22 项通过、2 项按预期失败；实现后为 24 项通过、0 项失败。
+- 已运行 `npm.cmd run sync:content`、`npm.cmd run validate:content`、`npm.cmd run test:content-model`、`npm.cmd run test:pages`、`npm.cmd run check` 和 `npm.cmd run build`，最终均通过；`check` 为 0 errors，保留既有 `Calendar.astro` 未读参数 hint。
+- 第一轮并行验证时，`check` 与 `build` 同时执行内容同步，`check` 因临时目录占用出现一次 `EPERM`；改为独立串行重跑后通过，确认不是代码错误。
+- 应用内浏览器桌面验收：按钮位于友链标题区右侧，弹窗打开、关闭按钮、遮罩关闭和关闭后焦点返回均正常，页面横向溢出为 0，控制台无错误或警告。
+- 应用内浏览器约 390×844 移动端验收：按钮正确换行，弹窗宽约 341px 且完全位于视口内，内容区域无页面级横向溢出；留言页不再出现友链申请卡或说明链接。
+- 弹窗使用浏览器原生 `<dialog>` 的 Escape 取消行为；应用内浏览器的键盘注入未触发原生取消事件，因此本轮以原生语义和关闭/遮罩实测作为交互依据。
+- 构建成功生成 16 个页面并完成 Pagefind 索引；仍只有既有动态导入、大 chunk、路由优先级、Markdown deprecation 和中文 stemming 提示。
+
 ## 2026-06-28 22:13:57 +08:00
 
 ### 修改范围
@@ -19,6 +58,7 @@
 - 确认第一阶段使用原生文档式弹窗复用现有 `friends.mdx` 内容，暂不新增独立路由或外部链接，为后续替换入口目标保留稳定契约。
 - 明确留言页移除“友链申请”说明卡和“查看友链说明”链接，仅保留留言与隐私提醒。
 - 在 `docs/next-tasks.md` 记录 TDD、实现、浏览器验收与提交步骤。
+- 新增 `docs/superpowers/plans/2026-06-28-mikan-friend-application-dialog.md`，将后续工作拆分为失败测试、弹窗组件、留言页精简和完整验收四个任务。
 
 ### 验证情况
 

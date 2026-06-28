@@ -2,6 +2,7 @@
 import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
+import FriendApplyDialog from "@components/pages/FriendApplyDialog.astro";
 import { Icon } from "astro-icon/components";
 import { commentConfig, friendsPageConfig, siteConfig } from "@/config";
 import { getMikanFriends } from "@/data/mikan";
@@ -47,13 +48,27 @@ const description = "把值得常去的站点放在近处，也可以按标签�
 
 <ContentGridLayout title={title} description={description}>
 	<section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
-		<header class="tools-page-header relative z-10 mb-7">
-			<div class="tools-eyebrow-row">
-				<Icon is:inline name="material-symbols:group-rounded" />
-				<p class="tools-eyebrow">FRIENDS</p>
+		<header class="tools-page-header relative z-10 mb-7 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+			<div class="min-w-0">
+				<div class="tools-eyebrow-row">
+					<Icon is:inline name="material-symbols:group-rounded" />
+					<p class="tools-eyebrow">FRIENDS</p>
+				</div>
+				<h1 class="tools-page-title">{title}</h1>
+				<p class="tools-page-description">{description}</p>
 			</div>
-			<h1 class="tools-page-title">{title}</h1>
-			<p class="tools-page-description">{description}</p>
+			{friendsPageConfig.showCustomContent !== false && (
+				<button
+					type="button"
+					data-open-friend-guide
+					aria-haspopup="dialog"
+					aria-controls="friend-apply-dialog"
+					class="friend-guide-trigger inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-(--tools-border-strong) bg-(--card-bg)/70 px-4 py-2.5 text-sm font-semibold text-90 shadow-sm transition hover:border-(--primary) hover:text-(--primary) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--primary) sm:mt-5"
+				>
+					<Icon is:inline name="material-symbols:help-outline-rounded" class="text-lg" />
+					如何申请友链
+				</button>
+			)}
 		</header>
 
 		{items.length > 0 && (
@@ -139,11 +154,11 @@ const description = "把值得常去的站点放在近处，也可以按标签�
 		</div>
 
 		{friendsPageConfig.showCustomContent !== false && (
-			<section class="relative z-10 mt-6 rounded-2xl border border-(--line-divider) bg-black/[0.015] p-5 dark:bg-white/[0.025]">
+			<FriendApplyDialog>
 				<Markdown class="">
 					<Content />
 				</Markdown>
-			</section>
+			</FriendApplyDialog>
 		)}
 	</section>
 
