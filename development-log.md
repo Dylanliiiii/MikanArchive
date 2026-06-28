@@ -38,6 +38,7 @@
 - 应用内浏览器约 390×844 移动端验收：按钮正确换行，弹窗宽约 341px 且完全位于视口内，内容区域无页面级横向溢出；留言页不再出现友链申请卡或说明链接。
 - 弹窗使用浏览器原生 `<dialog>` 的 Escape 取消行为；应用内浏览器的键盘注入未触发原生取消事件，因此本轮以原生语义和关闭/遮罩实测作为交互依据。
 - 构建成功生成 16 个页面并完成 Pagefind 索引；仍只有既有动态导入、大 chunk、路由优先级、Markdown deprecation 和中文 stemming 提示。
+- 已创建实现提交 `b97348f feat: add friend application dialog` 并成功推送到 `origin/codex/firefly-rebuild`；随后勾完实施计划并清空本次 `docs/next-tasks.md` 目标段。
 
 ## 2026-06-28 22:13:57 +08:00
 
