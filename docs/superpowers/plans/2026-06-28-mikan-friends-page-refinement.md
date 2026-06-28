@@ -210,7 +210,7 @@ git diff -- src/pages/friends.astro tests/mikan-pages.test.ts docs/superpowers/s
 
 Expected: 无空白错误、无私有内容或凭据、无本机绝对路径进入仓库文件。
 
-- [ ] **Step 4: 创建普通提交并推送当前分支**
+- [x] **Step 4: 创建普通提交并推送当前分支**
 
 ```powershell
 git add -- src/pages/friends.astro tests/mikan-pages.test.ts docs/superpowers/specs/2026-06-28-mikan-friends-page-refinement-design.md docs/superpowers/plans/2026-06-28-mikan-friends-page-refinement.md docs/next-tasks.md development-log.md
