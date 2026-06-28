@@ -1,5 +1,33 @@
 ﻿# Development Log
 
+## 2026-06-28 17:08:22 +08:00
+
+### 修改范围
+
+- 项目协作规则更新
+- 项目专属 Skill 维护规则同步
+- 更新后页面链接交付要求
+
+### 涉及文件
+
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `.agents/skills/mikan-archive-maintenance/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增“更新后链接规则”，要求每次完成页面、UI、布局、交互、内容展示、导航或可浏览文档相关更新后，在最终回复中提供开发者可直接打开的对应页面链接。
+- 明确本地服务运行时优先给 `http://localhost:4321/...` 的具体页面路径，未运行时必须同时给启动命令和页面路径。
+- 明确未合并分支的改动需要说明正式线上站点暂时看不到，应使用本地链接查看。
+- 同步更新 `mikan-archive-project` 和 `mikan-archive-maintenance` 项目专属 Skill，使后续项目任务收尾时默认执行该链接交付规则。
+
+### 验证情况
+
+- 已运行文本检索确认 `AGENTS.md`、两个项目专属 Skill 和 `development-log.md` 均包含更新后链接规则相关内容。
+- 本次只修改项目规则和维护说明，未修改应用代码或页面样式，因此未运行应用构建。
+- `git diff --check`：通过。
+
 ## 2026-06-28 16:35:40 +08:00
 
 ### 修改范围
