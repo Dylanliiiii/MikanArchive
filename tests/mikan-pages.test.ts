@@ -115,6 +115,33 @@ test("主导航把友邻升级为联系我下拉，并包含友链、留言和 Q
 	assert.doesNotMatch(source, /links\.push\(LinkPresets\.Friends\)/);
 });
 
+test("友链页只展示友链内容，不重复联系我入口", () => {
+	const source = readSource("src/pages/friends.astro");
+
+	assert.match(source, /const title = "友链"/);
+	assert.match(source, /FRIENDS/);
+	assert.doesNotMatch(source, /const contactEntries/);
+	assert.doesNotMatch(source, /contactEntries\.map/);
+	assert.doesNotMatch(source, /contact-entry/);
+	assert.doesNotMatch(source, /id="friends-board"/);
+});
+
+test("友链标签筛选复用工具导航滑动胶囊", () => {
+	const source = readSource("src/pages/friends.astro");
+
+	assert.match(source, /data-friend-tab-nav/);
+	assert.match(source, /data-friend-tab-indicator/);
+	assert.match(source, /tools-tab-indicator/);
+	assert.match(source, /updateIndicator\(targetButton\)/);
+	assert.match(source, /window\.addEventListener\("resize"/);
+	assert.match(source, /window\.removeEventListener\("resize"/);
+	assert.match(source, /this\.addEventListener\("input", this\.handleInput\)/);
+	assert.match(source, /this\.removeEventListener\("input", this\.handleInput\)/);
+	assert.doesNotMatch(source, /input\.addEventListener\("input"/);
+	assert.match(source, /data-search/);
+	assert.match(source, /applyFilters\(\)/);
+});
+
 test("工具导航页按 kind 和分类读取资源", () => {
 	const source = readSource("src/pages/resources/tools.astro");
 

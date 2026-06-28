@@ -1,5 +1,43 @@
 ﻿# Development Log
 
+## 2026-06-28 21:39:44 +08:00
+
+### 修改范围
+
+- 友链页内容职责精简
+- 标签筛选滑动胶囊修复
+- 搜索筛选解析时序修复
+- 页面契约测试、设计规格和实施计划同步
+
+### 涉及文件
+
+- `src/pages/friends.astro`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/specs/2026-06-28-mikan-friends-page-refinement-design.md`
+- `docs/superpowers/plans/2026-06-28-mikan-friends-page-refinement.md`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将 `/friends/` 从重复的“联系我”总览改为纯友链页面，删除友链、留言、QQ群三张入口卡片，并把主标题、英文眉标和说明改为友链语义。
+- 移除内容区重复的第二个“友链”分组标题，让页面按“标题说明 / 搜索 / 标签 / 卡片 / 申请说明”顺序展开。
+- 在友链标签栏加入工具导航同款 `tools-tab-indicator`，首次载入、点击标签和视口缩放时同步胶囊位置、尺寸与激活状态。
+- 浏览器验收发现 `<head>` 脚本中的自定义元素会在子输入框解析前执行 `connectedCallback()`；将搜索监听改为宿主元素上的 `input` 事件委托，避免直接查询子节点导致监听漏绑。
+- 新增页面契约测试，覆盖纯友链页面职责、滑动胶囊 DOM 与定位、缩放监听、搜索事件委托和原有筛选入口。
+- 新增并执行实施计划，同步设计规格和跨会话任务状态；本次是日常局部修复，不调整内容模型、部署流程或公开使用方式，因此无需修改 README、AGENTS、项目专属 Skill、示例内容和 CHANGELOG。
+
+### 验证情况
+
+- TDD 基线：`npm.cmd run test:pages` 为 20 项通过、0 项失败。
+- 第一轮红灯：新增纯友链与胶囊契约后为 20 项通过、2 项按预期失败；最小实现后为 22 项通过、0 项失败。
+- 浏览器复测搜索时发现事件监听时序问题；补充事件委托契约后为 21 项通过、1 项按预期失败，修复后为 22 项通过、0 项失败。
+- `npm.cmd run sync:content`、`npm.cmd run validate:content`、`npm.cmd run test:content-model`、`npm.cmd run test:pages`、`npm.cmd run check`、`npm.cmd run build` 均已通过；`check` 为 0 errors，保留既有 `Calendar.astro` 未读参数 hint，构建保留既有动态导入、大 chunk、路由优先级、Markdown deprecation 和 Pagefind 中文 stemming 提示。
+- 浏览器桌面亮色验证：页面无“联系我”标题和入口卡片；默认与 Maker 标签胶囊均和激活按钮重合，Maker 筛选只显示 1 张匹配卡片；搜索不存在词条时显示“找不到相关结果”。
+- 浏览器移动端验证：约 390×844 视口下标签栏换行，第二行“示例”胶囊与按钮重合并只显示 1 张匹配卡片；页面级横向溢出为 0。
+- 浏览器暗色验证：桌面与移动端激活文字均为白色，胶囊不透明度为 1，页面级横向溢出为 0；检查结束后已恢复默认视口和亮色模式。
+- 浏览器控制台未发现新增错误或警告。
+
 ## 2026-06-28 21:17:04 +08:00
 
 ### 修改范围
@@ -19,6 +57,7 @@
 - 明确友链标签筛选复用工具导航的彩色滑动胶囊，并在首次载入、点击和视口变化后同步定位。
 - 记录局部修复、固定背景和抽取共享组件三种方案的取舍，采用影响面最小的友链页局部修复。
 - 在 `docs/next-tasks.md` 记录书面规格复核、TDD 实现和视觉验证的后续步骤。
+- 用户复核书面规格后，新增 `docs/superpowers/plans/2026-06-28-mikan-friends-page-refinement.md`，将实施拆分为失败测试、最小实现、自动化与浏览器验收、记录与提交四个任务。
 
 ### 验证情况
 
