@@ -20,6 +20,7 @@ interface Props {
 	postSlug?: string;
 	postCategory?: string;
 	headings?: MarkdownHeading[];
+	showCategoryBar?: boolean;
 	bannerPostMeta?: {
 		title: string;
 		published: Date;
@@ -38,11 +39,12 @@ const {
 	postSlug,
 	postCategory,
 	headings = [],
+	showCategoryBar = true,
 } = Astro.props;
 
 const isPostPage = Boolean(postSlug);
 const showArticleTOC = isPostPage && headings.length > 0;
-const shouldRenderCategoryBar = Boolean(siteConfig.categoryBar);
+const shouldRenderCategoryBar = showCategoryBar && Boolean(siteConfig.categoryBar);
 const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 ---
 

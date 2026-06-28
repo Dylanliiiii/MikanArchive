@@ -1,5 +1,51 @@
 ﻿# Development Log
 
+## 2026-06-28 16:35:40 +08:00
+
+### 修改范围
+
+- 收藏总览、工具导航与摘录收藏视觉统一
+- 摘录收藏整卡跳转与 hover 交互
+- 收藏三页顶部通用分类条移除
+- 结构测试、设计规格、CHANGELOG 与任务交接同步
+
+### 涉及文件
+
+- `src/layouts/ContentGridLayout.astro`
+- `src/pages/resources/index.astro`
+- `src/pages/resources/tools.astro`
+- `src/pages/resources/clips/index.astro`
+- `src/styles/resources.css`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 为 `ContentGridLayout` 增加 `showCategoryBar` 开关，并在收藏总览、工具导航和摘录收藏三页关闭顶部通用分类条。
+- 将收藏总览与摘录收藏包入与工具导航一致的白色 / 半透明 section 打底容器，统一标题字号、英文眉标、图标和描述文案节奏。
+- 将工具导航英文眉标从 `MIKAN COLLECTIONS` 调整为 `MIKAN TOOLBOX`，并增加火箭图标，使语义更贴合长期工具入口。
+- 将摘录收藏分类标签改为工具导航胶囊风格，分组标题改为图标、数量与延展分割线结构。
+- 将摘录条目从内部“查看原文”按钮跳转改为整张卡片外链跳转；“查看原文”保留为视觉提示，不再作为唯一点击区域。
+- 为摘录卡片增加暖色底色、轻边框、底部 / 右侧层级阴影，以及 hover 时的彩色阴影和提示按钮反馈。
+- 新增页面源码契约测试，覆盖收藏三页关闭通用分类条、标题系统统一、section 打底、摘录整卡跳转和 hover 样式。
+- 同步更新聚焦内容布局设计规格、CHANGELOG 和 `docs/next-tasks.md`，记录收藏页当前视觉规则。
+
+### 验证情况
+
+- 已先运行 `npm.cmd run test:pages` 并观察到新增测试按预期失败，再完成实现。
+- `npm.cmd run test:pages`：15 项通过，0 项失败。
+- `npm.cmd run sync:content`：通过，示例内容同步成功。
+- `npm.cmd run validate:content`：通过，输出 `Content validation passed.`。
+- `npm.cmd run test:content-model`：6 项通过，0 项失败。
+- `npm.cmd run check`：0 errors、0 warnings、1 个既有 Calendar 未使用事件参数 hint。
+- `npm.cmd run build`：通过，生成 15 个页面并完成 Pagefind 索引；保留既有动态导入、chunk 体积、catch-all 首页冲突、Markdown 旧选项和中文 Pagefind stemming 警告。
+- 已使用 Playwright CLI 截图检查 `/resources/`、`/resources/tools/`、`/resources/clips/` 的桌面视口，以及 `/resources/`、`/resources/clips/` 的 390px 移动视口。
+- 已使用 Playwright 脚本验证：收藏三页均无 `#category-bar`，均有 1 个 section 打底，英文眉标和中文标题正确，桌面与移动端横向溢出为 0，浏览器 console error/warning 为 0。
+- 已验证摘录收藏首张卡片 hover 前后 `box-shadow` 发生变化，点击整张卡片可打开 MDN 原文 URL。
+
 ## 2026-06-27 17:54:49 +08:00
 
 ### 修改范围

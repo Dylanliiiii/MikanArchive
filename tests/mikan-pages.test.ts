@@ -86,6 +86,21 @@ test("收藏总览提供工具导航和摘录收藏入口", () => {
 	assert.match(source, /resources\/clips/);
 });
 
+test("收藏三页关闭顶部通用分类栏", () => {
+	const layoutSource = readSource("src/layouts/ContentGridLayout.astro");
+	assert.match(layoutSource, /showCategoryBar\?:\s*boolean/);
+	assert.match(layoutSource, /showCategoryBar\s*&&\s*Boolean\(siteConfig\.categoryBar\)/);
+
+	for (const page of [
+		"src/pages/resources/index.astro",
+		"src/pages/resources/tools.astro",
+		"src/pages/resources/clips/index.astro",
+	]) {
+		const source = readSource(page);
+		assert.match(source, /showCategoryBar=\{false\}/, `${page} 应关闭顶部通用分类栏`);
+	}
+});
+
 test("工具导航页按 kind 和分类读取资源", () => {
 	const source = readSource("src/pages/resources/tools.astro");
 
@@ -96,6 +111,8 @@ test("工具导航页按 kind 和分类读取资源", () => {
 test("工具导航提供可访问分类标签、分组线、图标和外链箭头", () => {
 	const source = readSource("src/pages/resources/tools.astro");
 
+	assert.match(source, /tools-eyebrow-row/);
+	assert.match(source, /MIKAN TOOLBOX/);
 	assert.match(source, /data-tools-tab-nav/);
 	assert.match(source, /data-tools-tab-indicator/);
 	assert.match(source, /data-tools-section/);
@@ -126,16 +143,33 @@ test("摘录收藏页展示来源与适用场景", () => {
 	assert.match(source, /scenario/);
 });
 
-test("收藏总览与摘录收藏使用紧凑标题区", () => {
+test("收藏总览与摘录收藏使用工具导航同款标题系统和 section 打底", () => {
 	for (const page of [
 		"src/pages/resources/index.astro",
 		"src/pages/resources/clips/index.astro",
 	]) {
 		const source = readSource(page);
 
-		assert.match(source, /compact-page-header/, `${page} 应使用紧凑标题区`);
+		assert.match(source, /resources-page card-base/, `${page} 应使用半透明 section 打底`);
+		assert.match(source, /tools-eyebrow-row/, `${page} 应使用带图标的英文眉标`);
+		assert.match(source, /tools-page-title/, `${page} 应复用工具导航标题字号`);
+		assert.match(source, /tools-page-description/, `${page} 应复用工具导航描述节奏`);
+		assert.doesNotMatch(source, /compact-page-header/, `${page} 不应继续使用旧紧凑标题区`);
 		assert.doesNotMatch(source, /class="card-base px-6 py-7 sm:px-8 mb-4"/);
 	}
+});
+
+test("摘录收藏分类标签和卡片交互与工具导航统一", () => {
+	const pageSource = readSource("src/pages/resources/clips/index.astro");
+	const styleSource = readSource("src/styles/resources.css");
+
+	assert.match(pageSource, /clip-filter-pill/);
+	assert.match(pageSource, /tools-tab-btn tools-tab-btn-active/);
+	assert.match(pageSource, /href=\{item\.url\}/);
+	assert.match(pageSource, /class="clip-card group/);
+	assert.doesNotMatch(pageSource, /class="clip-link\s/);
+	assert.match(styleSource, /\.clip-card:hover/);
+	assert.match(styleSource, /box-shadow:\s*0 18px 44px/);
 });
 
 test("收藏导航保留主入口并提供两个子入口", () => {

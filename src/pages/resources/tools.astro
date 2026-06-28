@@ -16,10 +16,13 @@ function getHost(target: string) {
 }
 ---
 
-<ContentGridLayout title="工具导航" description="长期反复使用的网站、平台与文档入口">
+<ContentGridLayout title="工具导航" description="长期反复使用的网站、平台与文档入口" showCategoryBar={false}>
 	<section class="tools-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
 		<header class="tools-page-header relative z-10 mb-7">
-			<p class="tools-eyebrow">MIKAN COLLECTIONS</p>
+			<div class="tools-eyebrow-row">
+				<Icon is:inline name="material-symbols:rocket-launch-rounded" />
+				<p class="tools-eyebrow">MIKAN TOOLBOX</p>
+			</div>
 			<h1 class="tools-page-title">工具导航</h1>
 			<p class="tools-page-description">收集和整理常用网站与工具。按分类停靠，下一次需要时不必重新搜索。</p>
 		</header>
