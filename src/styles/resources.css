@@ -377,9 +377,14 @@
 }
 
 .clip-filter-pill .tools-tab-btn-active {
-	background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 62%, #78c9d4));
-	box-shadow: 0 6px 18px color-mix(in srgb, var(--primary) 20%, transparent);
+	background: linear-gradient(135deg, #cf7958, #b85f43);
+	box-shadow: 0 6px 18px color-mix(in srgb, #cf7958 24%, transparent);
 	cursor: default;
+}
+
+:root.dark .clip-filter-pill .tools-tab-btn-active {
+	background: linear-gradient(135deg, #f0ad8c, #cf7958);
+	box-shadow: 0 6px 18px rgba(240, 173, 140, 0.22);
 }
 
 .clip-filter-pill .tools-tab-indicator {

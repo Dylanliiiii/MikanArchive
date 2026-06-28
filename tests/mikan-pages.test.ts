@@ -162,6 +162,9 @@ test("收藏总览与摘录收藏使用工具导航同款标题系统和 section
 test("摘录收藏分类标签和卡片交互与工具导航统一", () => {
 	const pageSource = readSource("src/pages/resources/clips/index.astro");
 	const styleSource = readSource("src/styles/resources.css");
+	const clipActiveRule =
+		/\.clip-filter-pill \.tools-tab-btn-active\s*\{(?<rule>[\s\S]*?)\}/.exec(styleSource)
+			?.groups?.rule ?? "";
 
 	assert.match(pageSource, /clip-filter-pill/);
 	assert.match(pageSource, /data-clips-tab-nav/);
@@ -176,7 +179,8 @@ test("摘录收藏分类标签和卡片交互与工具导航统一", () => {
 	assert.match(pageSource, /class="clip-card group/);
 	assert.doesNotMatch(pageSource, /class="clip-link\s/);
 	assert.match(styleSource, /\.clip-filter-pill \.tools-tab-btn-active/);
-	assert.match(styleSource, /background:\s*linear-gradient\(135deg, var\(--primary\)/);
+	assert.match(clipActiveRule, /background:\s*linear-gradient\(135deg, #cf7958/);
+	assert.doesNotMatch(clipActiveRule, /var\(--primary\)/);
 	assert.match(styleSource, /\.clip-card:hover/);
 	assert.match(styleSource, /box-shadow:\s*0 18px 44px/);
 });
