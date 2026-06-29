@@ -14,11 +14,11 @@
 
 设计规格：`docs/superpowers/specs/2026-06-29-mikan-article-archive-design.md`
 
-当前状态：设计已确认，等待用户复核已提交的规格后进入实施。
+当前状态：规格已复核，实施计划已编写，准备按 TDD 开始执行。
 
 后续步骤：
 
-1. 使用 `writing-plans` 编写实施计划。
+1. ~~使用 `writing-plans` 编写实施计划。~~
 2. 按 TDD 先添加标签筛选、统计、年月分组与热力图数据测试并确认红灯。
 3. 实现归档数据 helper、标签筛选、文章热力图和连续时间线。
 4. 同步页面契约测试、CHANGELOG 与开发日志。
