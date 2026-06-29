@@ -1,0 +1,176 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<dialog
+	id="friend-apply-dialog"
+	class="friend-guide-dialog"
+	aria-labelledby="friend-guide-title"
+	aria-modal="true"
+	data-friend-guide-dialog
+>
+	<article class="friend-guide-dialog__panel" data-friend-guide-panel>
+		<header class="friend-guide-dialog__header">
+			<div class="min-w-0">
+				<div class="friend-guide-dialog__eyebrow">
+					<Icon is:inline name="material-symbols:help-outline-rounded" />
+					<span>FRIEND LINK GUIDE</span>
+				</div>
+				<h2 id="friend-guide-title">友链申请说明</h2>
+				<p>先阅读申请格式与互换说明，后续可再接入独立文档或外部申请地址。</p>
+			</div>
+			<button
+				type="button"
+				class="friend-guide-dialog__close"
+				data-close-friend-guide
+				aria-label="关闭友链申请说明"
+			>
+				<Icon is:inline name="material-symbols:close-rounded" />
+			</button>
+		</header>
+
+		<div class="friend-guide-dialog__body">
+			<slot />
+		</div>
+	</article>
+</dialog>
+
+<script is:inline>
+	(function () {
+		if (window.__mikanFriendGuideReady) return;
+		window.__mikanFriendGuideReady = true;
+
+		document.addEventListener("click", function (event) {
+			const target = event.target instanceof Element ? event.target : null;
+			if (!target) return;
+
+			const openButton = target.closest("[data-open-friend-guide]");
+			if (openButton) {
+				const dialogId = openButton.getAttribute("aria-controls");
+				const dialog = dialogId ? document.getElementById(dialogId) : null;
+				if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
+				return;
+			}
+
+			const closeButton = target.closest("[data-close-friend-guide]");
+			if (closeButton) {
+				const dialog = closeButton.closest("dialog");
+				if (dialog instanceof HTMLDialogElement) dialog.close();
+				return;
+			}
+
+			if (target instanceof HTMLDialogElement && target.matches("[data-friend-guide-dialog]")) {
+				target.close();
+			}
+		});
+	})();
+</script>
+
+<style>
+	.friend-guide-dialog {
+		width: min(46rem, calc(100% - 2rem));
+		max-height: 84vh;
+		margin: auto;
+		padding: 0;
+		border: 1px solid var(--line-divider);
+		border-radius: 1.25rem;
+		background: var(--card-bg);
+		color: var(--tools-text-strong);
+		box-shadow: 0 24px 80px rgba(20, 36, 48, 0.3);
+		overflow: hidden;
+	}
+
+	.friend-guide-dialog::backdrop {
+		background: rgba(15, 23, 32, 0.52);
+		backdrop-filter: blur(6px);
+	}
+
+	.friend-guide-dialog__panel {
+		max-height: 84vh;
+		overflow-y: auto;
+	}
+
+	.friend-guide-dialog__header {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1.35rem 1.5rem 1.15rem;
+		border-bottom: 1px solid var(--line-divider);
+		background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+		backdrop-filter: blur(16px);
+	}
+
+	.friend-guide-dialog__eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.68rem;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		color: var(--primary);
+	}
+
+	.friend-guide-dialog__header h2 {
+		margin: 0.3rem 0 0;
+		font-size: 1.35rem;
+		font-weight: 850;
+		color: var(--tools-text-strong);
+	}
+
+	.friend-guide-dialog__header p {
+		margin: 0.5rem 0 0;
+		font-size: 0.8rem;
+		line-height: 1.65;
+		color: var(--tools-text-body);
+	}
+
+	.friend-guide-dialog__close {
+		display: inline-flex;
+		width: 2.25rem;
+		height: 2.25rem;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid var(--line-divider);
+		border-radius: 0.75rem;
+		background: color-mix(in srgb, var(--card-bg) 84%, transparent);
+		color: var(--tools-text-body);
+		cursor: pointer;
+		transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+	}
+
+	.friend-guide-dialog__close:hover,
+	.friend-guide-dialog__close:focus-visible {
+		border-color: var(--primary);
+		background: color-mix(in srgb, var(--card-bg) 88%, var(--primary) 12%);
+		color: var(--primary);
+	}
+
+	.friend-guide-dialog__body {
+		padding: 0.25rem 1.5rem 1.5rem;
+	}
+
+	@media (max-width: 640px) {
+		.friend-guide-dialog {
+			width: calc(100% - 1rem);
+			max-height: 90vh;
+			border-radius: 1rem;
+		}
+
+		.friend-guide-dialog__panel {
+			max-height: 90vh;
+		}
+
+		.friend-guide-dialog__header {
+			padding: 1.1rem 1rem 0.95rem;
+		}
+
+		.friend-guide-dialog__body {
+			padding: 0.2rem 1rem 1rem;
+		}
+	}
+</style>

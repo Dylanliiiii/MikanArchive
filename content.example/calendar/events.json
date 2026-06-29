@@ -1,0 +1,86 @@
+[
+  {
+    "id": "example-national-day",
+    "title": "国庆节",
+    "kind": "holiday",
+    "date": "2026-10-01",
+    "allDay": true,
+    "note": "公开节日示例，用于展示年度重复节日。",
+    "color": "pink",
+    "icon": "material-symbols:festival-rounded",
+    "recurring": {
+      "freq": "yearly",
+      "month": 10,
+      "day": 1
+    },
+    "visibility": "public"
+  },
+  {
+    "id": "example-site-anniversary",
+    "title": "MikanArchive 建站纪念日",
+    "kind": "anniversary",
+    "date": "2026-06-26",
+    "allDay": true,
+    "note": "公开示例纪念日，用于展示年度重复事件。",
+    "color": "mint",
+    "icon": "material-symbols:celebration",
+    "recurring": {
+      "freq": "yearly",
+      "month": 6,
+      "day": 26
+    },
+    "visibility": "public"
+  },
+  {
+    "id": "example-study-block",
+    "title": "公开学习时段",
+    "kind": "schedule",
+    "start": "2026-06-29T19:30",
+    "end": "2026-06-29T21:00",
+    "note": "示例日程：用于验证周视图和日视图时间轴。",
+    "color": "blue",
+    "icon": "material-symbols:school",
+    "visibility": "public"
+  },
+  {
+    "id": "example-weekly-review",
+    "title": "每周公开复盘",
+    "kind": "schedule",
+    "start": "2026-06-30T20:00",
+    "end": "2026-06-30T21:00",
+    "note": "示例重复日程，展示 weekly recurrence。",
+    "color": "yellow",
+    "icon": "material-symbols:edit-calendar",
+    "recurring": {
+      "freq": "weekly",
+      "weekday": 2
+    },
+    "visibility": "public"
+  },
+  {
+    "id": "example-project-maintenance",
+    "title": "站点维护窗口",
+    "kind": "site",
+    "start": "2026-07-03T09:00",
+    "end": "2026-07-03T10:30",
+    "note": "公开示例维护安排，不代表真实服务中断。",
+    "color": "pink",
+    "icon": "material-symbols:build",
+    "visibility": "public"
+  },
+  {
+    "id": "example-monthly-summary",
+    "title": "月度资料整理",
+    "kind": "schedule",
+    "date": "2026-07-01",
+    "allDay": true,
+    "note": "示例全天日程，展示月视图事件胶囊。",
+    "color": "neutral",
+    "icon": "material-symbols:inventory",
+    "recurring": {
+      "freq": "monthly",
+      "day": 1
+    },
+    "visibility": "public"
+  }
+]

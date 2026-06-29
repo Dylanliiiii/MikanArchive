@@ -16,6 +16,7 @@ content/
 .tmp-content-repo/
 src/content/posts/
 src/content/profile/
+src/content/spec/
 src/data/content/
 public/assets/
 
@@ -24,5 +25,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+.superpowers/
+.playwright-cli/
+output/
+.tmp/
 .DS_Store
 Thumbs.db

@@ -1,0 +1,271 @@
+---
+import { getEntry, render } from "astro:content";
+import Comment from "@components/comment/index.astro";
+import Markdown from "@components/common/Markdown.astro";
+import FriendApplyDialog from "@components/pages/FriendApplyDialog.astro";
+import { Icon } from "astro-icon/components";
+import { commentConfig, friendsPageConfig, siteConfig } from "@/config";
+import { getMikanFriends } from "@/data/mikan";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
+import "@/styles/resources.css";
+
+if (!siteConfig.pages.friends) {
+	return Astro.redirect("/404/");
+}
+
+const friendsPost = await getEntry("spec", "friends");
+
+if (!friendsPost) {
+	throw new Error("friends page content not found");
+}
+
+const { Content } = await render(friendsPost);
+
+const isCommentEnabled =
+	commentConfig?.type &&
+	commentConfig.type !== "none" &&
+	friendsPageConfig.showComment !== false;
+
+const items = getMikanFriends()
+	.map((friend, index) => ({
+		title: friend.name,
+		imgurl: friend.avatar,
+		desc: friend.description,
+		siteurl: friend.url,
+		tags: friend.tags?.length ? friend.tags : [friend.category],
+		weight: friend.featured ? 1000 - index : 100 - index,
+		enabled: friend.status !== "hidden",
+	}))
+	.filter((friend) => friend.enabled)
+	.sort((a, b) => b.weight - a.weight);
+const allTags = [...new Set(items.flatMap((item) => item.tags || []))].sort();
+
+const title = "友链";
+const description = "把值得常去的站点放在近处，也可以按标签寻找同好。公开示例只展示结构，不包含真实私人联系方式。";
+---
+
+<ContentGridLayout title={title} description={description}>
+	<section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+		<header class="tools-page-header relative z-10 mb-7 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+			<div class="min-w-0">
+				<div class="tools-eyebrow-row">
+					<Icon is:inline name="material-symbols:group-rounded" />
+					<p class="tools-eyebrow">FRIENDS</p>
+				</div>
+				<h1 class="tools-page-title">{title}</h1>
+				<p class="tools-page-description">{description}</p>
+			</div>
+			{friendsPageConfig.showCustomContent !== false && (
+				<button
+					type="button"
+					data-open-friend-guide
+					aria-haspopup="dialog"
+					aria-controls="friend-apply-dialog"
+					class="friend-guide-trigger inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-(--tools-border-strong) bg-(--card-bg)/70 px-4 py-2.5 text-sm font-semibold text-90 shadow-sm transition hover:border-(--primary) hover:text-(--primary) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--primary) sm:mt-5"
+				>
+					<Icon is:inline name="material-symbols:help-outline-rounded" class="text-lg" />
+					如何申请友链
+				</button>
+			)}
+		</header>
+
+		{items.length > 0 && (
+			<friend-filter class="relative z-10 mb-6 block">
+				<div class="relative mb-3">
+					<Icon
+						is:inline
+						name="material-symbols:search"
+						class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-lg text-neutral-400 dark:text-neutral-500"
+					/>
+					<input
+						type="text"
+						data-search
+						placeholder={i18n(I18nKey.searchFriends) || "搜索友链..."}
+						class="w-full rounded-xl border border-(--line-divider) bg-transparent py-2.5 pl-10 pr-4 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder-neutral-400 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) dark:text-neutral-100 dark:placeholder-neutral-500"
+					/>
+				</div>
+				<div class="tools-tab-wrapper">
+					<div class="tools-tab-pill" data-friend-tab-nav>
+						<div class="tools-tab-indicator" data-friend-tab-indicator></div>
+						<button type="button" data-tag="all" class="tools-tab-btn tools-tab-btn-active" aria-pressed="true">
+							全部
+							<span class="tools-tab-badge">{items.length}</span>
+						</button>
+						{allTags.map((tag) => (
+							<button type="button" data-tag={tag} class="tools-tab-btn tools-tab-btn-inactive" aria-pressed="false">
+								{tag}
+							</button>
+						))}
+					</div>
+				</div>
+			</friend-filter>
+		)}
+
+		<div class="friends-grid relative z-10 my-4">
+			{items.length === 0 && (
+				<div class="col-span-full flex flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
+					<Icon is:inline name="material-symbols:group-off-outline" class="mb-3 text-4xl" />
+					<div class="text-sm">{i18n(I18nKey.friendsEmpty)}</div>
+				</div>
+			)}
+			{items.map((item) => (
+				<a
+					href={item.siteurl}
+					target="_blank"
+					rel="noopener noreferrer"
+					data-tags={item.tags?.join(",")}
+					class="friend-card group relative flex items-center gap-3 overflow-hidden rounded-xl border border-(--line-divider) p-2.5 transition-all duration-300 hover:border-(--primary) hover:bg-(--card-bg) hover:shadow-lg"
+				>
+					<div class="pointer-events-none absolute inset-0 bg-(--primary) opacity-0 transition-opacity duration-300 group-hover:opacity-5"></div>
+					<div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-black/5 bg-zinc-100 transition-transform duration-300 group-hover:scale-105 dark:border-white/5 dark:bg-zinc-800">
+						<img src={item.imgurl} alt={item.title} class="h-full w-full object-cover" />
+					</div>
+					<div class="flex min-w-0 grow flex-col justify-center gap-0.5">
+						<div class="flex items-center justify-between">
+							<div class="truncate pr-4 text-base font-bold text-neutral-900 transition-colors group-hover:text-(--primary) dark:text-neutral-100">
+								{item.title}
+							</div>
+							<Icon
+								is:inline
+								name="material-symbols:arrow-outward-rounded"
+								class="-translate-x-2 text-lg text-(--primary) opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+							/>
+						</div>
+						<div class="line-clamp-1 text-sm text-neutral-500 dark:text-neutral-400" title={item.desc}>
+							{item.desc}
+						</div>
+						<div class="mt-1 flex flex-wrap gap-1">
+							{item.tags?.slice(0, 3).map((tag) => (
+								<span class="rounded bg-neutral-100 px-1.5 py-0.5 text-[0.65rem] text-neutral-500 transition-colors duration-300 dark:bg-neutral-800 dark:text-neutral-400">
+									{tag}
+								</span>
+							))}
+						</div>
+					</div>
+				</a>
+			))}
+		</div>
+
+		<div class="friends-empty relative z-10 hidden flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
+			<Icon is:inline name="material-symbols:search-off-rounded" class="mb-3 text-4xl" />
+			<div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
+		</div>
+
+		{friendsPageConfig.showCustomContent !== false && (
+			<FriendApplyDialog>
+				<Markdown class="">
+					<Content />
+				</Markdown>
+			</FriendApplyDialog>
+		)}
+	</section>
+
+	{isCommentEnabled && (
+		<div class="mt-4">
+			<Comment post={friendsPost} customPath="/friends/" />
+		</div>
+	)}
+
+	<script slot="head" is:inline>
+		if (!customElements.get("friend-filter")) {
+			class FriendFilter extends HTMLElement {
+				selectedTag = "all";
+
+				connectedCallback() {
+					this.addEventListener("click", this.handleClick);
+					this.addEventListener("input", this.handleInput);
+					window.addEventListener("resize", this.handleResize);
+					requestAnimationFrame(this.handleResize);
+				}
+
+				disconnectedCallback() {
+					this.removeEventListener("click", this.handleClick);
+					this.removeEventListener("input", this.handleInput);
+					window.removeEventListener("resize", this.handleResize);
+				}
+
+				handleInput = () => this.applyFilters();
+
+				handleResize = () => {
+					const targetButton = this.querySelector(".tools-tab-btn-active");
+					this.updateIndicator(targetButton);
+				};
+
+				updateIndicator(targetButton) {
+					const nav = this.querySelector("[data-friend-tab-nav]");
+					const indicator = this.querySelector("[data-friend-tab-indicator]");
+					if (!nav || !indicator || !targetButton) return;
+
+					indicator.style.left = targetButton.offsetLeft + "px";
+					indicator.style.top = targetButton.offsetTop + "px";
+					indicator.style.width = targetButton.offsetWidth + "px";
+					indicator.style.height = targetButton.offsetHeight + "px";
+					indicator.style.opacity = "1";
+				}
+
+				handleClick = (event) => {
+					const target = event.target;
+					const button = target instanceof Element ? target.closest("[data-tag]") : null;
+					if (!button || !this.contains(button)) return;
+
+					this.selectedTag = button.dataset.tag || "all";
+					const filters = this.querySelectorAll("button");
+
+					filters.forEach((filter) => {
+						const isActive = filter === button;
+						filter.classList.toggle("tools-tab-btn-active", isActive);
+						filter.classList.toggle("tools-tab-btn-inactive", !isActive);
+						filter.setAttribute("aria-pressed", String(isActive));
+					});
+
+					this.applyFilters();
+					requestAnimationFrame(() => this.updateIndicator(button));
+				};
+
+				applyFilters() {
+					const container = this.closest(".resources-page");
+					if (!container) return;
+
+					const input = this.querySelector("[data-search]");
+					const query = ((input && input.value) || "").toLowerCase().trim();
+					const cards = container.querySelectorAll(".friend-card");
+
+					let hasVisible = false;
+
+					cards.forEach((card) => {
+						const tags = (card.dataset.tags || "").split(",");
+						const name = (card.querySelector(".font-bold")?.textContent || "").toLowerCase();
+						const desc = (card.querySelector(".line-clamp-1")?.textContent || "").toLowerCase();
+
+						const tagMatch = this.selectedTag === "all" || tags.includes(this.selectedTag);
+						const searchMatch = !query || name.includes(query) || desc.includes(query) || tags.some((tag) => tag.toLowerCase().includes(query));
+
+						if (tagMatch && searchMatch) {
+							card.style.display = "";
+							hasVisible = true;
+						} else {
+							card.style.display = "none";
+						}
+					});
+
+					const emptyEl = container.querySelector(".friends-empty");
+					if (emptyEl) {
+						emptyEl.classList.toggle("hidden", hasVisible);
+						emptyEl.classList.toggle("flex", !hasVisible);
+					}
+				}
+			}
+			customElements.define("friend-filter", FriendFilter);
+		}
+	</script>
+
+	<style is:global>
+		.friends-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: 0.75rem;
+		}
+	</style>
+</ContentGridLayout>

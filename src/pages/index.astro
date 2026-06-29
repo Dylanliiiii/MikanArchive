@@ -1,75 +1,107 @@
 ---
-import FriendCard from "@/components/cards/FriendCard.astro";
-import FeaturedResources from "@/components/home/FeaturedResources.astro";
-import FootprintPreview from "@/components/home/FootprintPreview.astro";
-import HomeHero from "@/components/home/HomeHero.astro";
-import RecentPosts from "@/components/home/RecentPosts.astro";
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { withBase } from "@/utils/paths";
-import { getCollection } from "astro:content";
-import {
-  formatDate,
-  getFriends,
-  getResources,
-  getResume,
-  getTimeline,
-  getUpdates,
-  postHref,
-  sortPosts
-} from "./_data";
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getMikanFriends, getMikanResources } from "@/data/mikan";
+import { getSortedPostsList } from "@/utils/content-utils";
+import { getPostUrlBySlug } from "@/utils/url-utils";
 
-const rawPosts = await getCollection("posts");
-const posts = sortPosts(rawPosts);
-const resources = await getResources();
-const friends = await getFriends();
-const timeline = await getTimeline();
-const updates = await getUpdates();
-const resume = await getResume();
+const posts = (await getSortedPostsList()).slice(0, 6);
+const resources = getMikanResources();
 const featuredResources = [
-  ...resources.filter((item) => item.featured),
-  ...resources.filter((item) => !item.featured)
-].slice(0, 3);
-
-const postCards = posts.map((post) => ({
-  title: post.data.title,
-  description: post.data.description,
-  href: postHref(post),
-  category: post.data.category,
-  tags: post.data.tags,
-  published: formatDate(post.data.published)
-}));
+	...resources.filter((item) => item.featured),
+	...resources.filter((item) => !item.featured),
+].slice(0, 4);
+const friends = getMikanFriends().slice(0, 4);
+const profileStats = [
+	{ label: "文章", value: posts.length },
+	{ label: "收藏", value: resources.length },
+	{ label: "友链", value: friends.length },
+];
 ---
 
-<BaseLayout title="MikanArchive" description="个人知识收藏博客">
-  <HomeHero postCount={posts.length} resourceCount={resources.length} friendCount={friends.length} />
-  <RecentPosts posts={postCards} />
-  <FeaturedResources resources={featuredResources} />
-  <FootprintPreview timeline={timeline} updates={updates} />
+<MainGridLayout title="主页" description="MikanArchive 知识收藏馆">
+	<section class="card-base p-6 md:p-8 mb-4">
+		<div class="flex items-center gap-3 mb-5">
+			<div class="h-10 w-10 rounded-xl bg-(--primary) text-white dark:text-black/70 flex items-center justify-center">
+				<Icon is:inline name="material-symbols:auto-stories-rounded" class="text-2xl" />
+			</div>
+			<div>
+				<h2 class="text-2xl font-bold text-90">最近整理</h2>
+				<p class="text-sm text-30 mt-1">教程、笔记和问题解决记录。</p>
+			</div>
+		</div>
+		<div class="grid gap-3">
+			{posts.map((post) => (
+				<a href={getPostUrlBySlug(post.id)} class="group rounded-2xl border border-(--line-divider) p-4 hover:border-(--primary) hover:bg-(--btn-card-bg-hover) transition-all">
+					<div class="flex items-start justify-between gap-4">
+						<div class="min-w-0">
+							<h3 class="font-bold text-lg text-90 group-hover:text-(--primary) transition-colors truncate">{post.data.title}</h3>
+							<p class="text-sm text-50 mt-1 line-clamp-2">{post.data.description}</p>
+							<div class="mt-3 flex flex-wrap gap-1.5">
+								{post.data.tags.slice(0, 4).map((tag) => <span class="text-[0.7rem] rounded-md bg-black/5 dark:bg-white/10 px-2 py-1 text-50">#{tag}</span>)}
+							</div>
+						</div>
+						<Icon is:inline name="material-symbols:arrow-forward-rounded" class="text-2xl text-(--primary) shrink-0 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+					</div>
+				</a>
+			))}
+		</div>
+	</section>
 
-  <section class="container py-10">
-    <div class="grid gap-4 lg:grid-cols-[1fr_1fr]">
-      <div>
-        <div class="section-title">
-          <div>
-            <h2>友邻一角</h2>
-            <p>把值得常去的站点放在近处。</p>
-          </div>
-          <a class="button-ghost" href={withBase("/friends/")}>友邻墙</a>
-        </div>
-        <div class="grid gap-4">
-          {friends.slice(0, 2).map((friend) => <FriendCard {...friend} />)}
-        </div>
-      </div>
-      <div class="surface p-5">
-        <p class="text-sm font-semibold text-primary">我的</p>
-        <h2 class="mt-3 text-2xl font-bold">{resume.name}</h2>
-        <p class="mt-2 text-base leading-7 text-foreground/70">{resume.headline}</p>
-        {resume.summary && <p class="mt-4 text-sm leading-7 text-foreground/60">{resume.summary}</p>}
-        <div class="mt-5 flex flex-wrap gap-2">
-          {(resume.skills ?? []).slice(0, 5).map((skill) => <span class="badge">{skill}</span>)}
-        </div>
-        <a class="button-outline mt-5" href={withBase("/about/")}>查看资料</a>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+	<div class="grid gap-4 lg:grid-cols-2">
+		<section class="card-base p-6">
+			<div class="mb-4 flex items-center justify-between gap-3">
+				<h2 class="text-xl font-bold text-90">精选收藏</h2>
+				<a class="text-sm text-(--primary) font-medium" href="/resources/tools/">全部</a>
+			</div>
+			<div class="grid gap-3">
+				{featuredResources.map((item) => (
+					<a href={item.url} target="_blank" rel="noopener noreferrer" class="rounded-xl border border-(--line-divider) p-4 hover:border-(--primary) transition-colors">
+						<div class="font-bold text-90">{item.title}</div>
+						<p class="mt-1 text-sm text-50 line-clamp-2">{item.note}</p>
+					</a>
+				))}
+			</div>
+		</section>
+
+		<section class="card-base p-6">
+			<div class="mb-4 flex items-center justify-between gap-3">
+				<h2 class="text-xl font-bold text-90">个人介绍</h2>
+				<a class="text-sm text-(--primary) font-medium" href="/about/">查看</a>
+			</div>
+			<div class="space-y-3">
+				<div class="rounded-xl bg-black/5 dark:bg-white/8 px-4 py-3">
+					<div class="text-xs text-30">MIKAN PROFILE</div>
+					<div class="mt-1 font-semibold text-90">公开示例个人介绍</div>
+					<p class="mt-1 text-sm text-50">展示简介、技能栈和项目入口，真实站点可替换为自己的资料。</p>
+				</div>
+				<div class="grid grid-cols-3 gap-2">
+					{profileStats.map((item) => (
+						<div class="rounded-xl border border-(--line-divider) px-3 py-2 text-center">
+							<div class="text-lg font-bold text-90">{item.value}</div>
+							<div class="mt-0.5 text-xs text-30">{item.label}</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<section class="card-base p-6 mt-4">
+		<div class="mb-4 flex items-center justify-between gap-3">
+			<h2 class="text-xl font-bold text-90">友链一角</h2>
+			<a class="text-sm text-(--primary) font-medium" href="/friends/">联系我</a>
+		</div>
+		<div class="grid gap-3 md:grid-cols-2">
+			{friends.map((friend) => (
+				<a href={friend.url} target="_blank" rel="noopener noreferrer" class="group flex items-center gap-3 rounded-xl border border-(--line-divider) p-3 hover:border-(--primary) transition-colors">
+					<img src={friend.avatar} alt={friend.name} class="h-12 w-12 rounded-xl object-cover bg-black/5 dark:bg-white/10" />
+					<div class="min-w-0">
+						<div class="font-bold text-90 group-hover:text-(--primary) truncate">{friend.name}</div>
+						<div class="text-sm text-50 truncate">{friend.description}</div>
+					</div>
+				</a>
+			))}
+		</div>
+	</section>
+</MainGridLayout>

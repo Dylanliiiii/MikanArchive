@@ -128,6 +128,8 @@ rg "MikanArchive|Cloudflare Pages|content.example|ENABLE_CONTENT_SYNC|developmen
 
 如果验证命令失败，需要说明失败原因、已确认的范围，以及是否属于当前任务写入范围之外的问题。
 
+`npm run check` 当前会先执行内容同步再运行 Astro 检查；`npm run build` 会自动执行内容同步、内容校验、Astro 构建和 Pagefind 索引生成。需要分段排查时，再单独运行 `sync:content` 或 `validate:content`。
+
 ## 文档同步检查
 
 修改以下内容时，需要同步检查相关文档：

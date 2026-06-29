@@ -1,0 +1,165 @@
+---
+import { Icon } from "astro-icon/components";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
+import { getSortedPosts, getTagList } from "@/utils/content-utils";
+import { getTagUrl } from "@/utils/url-utils";
+import "@/styles/resources.css";
+
+const posts = await getSortedPosts();
+const categories = await getTagList();
+const totalPosts = posts.length;
+const totalTaggedPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
+const circumference = 100;
+const palette = ["#5b73d6", "#93cf7a", "#f6bd4f", "#41bed4", "#ef89ad", "#8fc7ef"];
+let cursor = 0;
+const taxonomySlices = categories.map((categoryItem, index) => {
+	const ratio = totalTaggedPosts > 0 ? categoryItem.count / totalTaggedPosts : 0;
+	const dash = Math.max(ratio * circumference, categories.length === 1 ? circumference : 0);
+	const offset = -cursor;
+	cursor += dash;
+	return {
+		...categoryItem,
+		color: palette[index % palette.length],
+		dash,
+		offset,
+		url: getTagUrl(categoryItem.name),
+	};
+});
+---
+
+<ContentGridLayout title="分类标签" description="按文章标签统计主题分布">
+    <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+        <header class="tools-page-header relative z-10 mb-7">
+            <div class="tools-eyebrow-row">
+                <Icon is:inline name="material-symbols:category-rounded" />
+                <p class="tools-eyebrow">MIKAN TAXONOMY</p>
+            </div>
+            <h1 class="tools-page-title">分类标签</h1>
+            <p class="tools-page-description">
+                标签就是文章分类。用扇形图查看主题占比，右侧列出每个分类标签下的文章数量。
+            </p>
+        </header>
+
+        {categories.length > 0 ? (
+            <div class="taxonomy-layout relative z-10">
+                <div class="taxonomy-chart" aria-label="分类标签文章分布">
+                    <svg class="taxonomy-donut" viewBox="0 0 240 240" role="img">
+                        <title>分类标签文章分布</title>
+                        <circle class="taxonomy-track" cx="120" cy="120" r="68" pathLength={circumference} />
+                        {taxonomySlices.map((slice, index) => {
+                            const angle = ((slice.offset + slice.dash / 2) / circumference) * 360 - 90;
+                            const radians = (angle * Math.PI) / 180;
+                            const labelX = 120 + Math.cos(radians) * 102;
+                            const labelY = 120 + Math.sin(radians) * 102;
+                            const lineStartX = 120 + Math.cos(radians) * 76;
+                            const lineStartY = 120 + Math.sin(radians) * 76;
+                            const lineEndX = 120 + Math.cos(radians) * 94;
+                            const lineEndY = 120 + Math.sin(radians) * 94;
+
+                            return (
+                                <>
+                                    <line
+                                        class="taxonomy-leader-line"
+                                        data-taxonomy-leader={slice.name}
+                                        x1={lineStartX}
+                                        y1={lineStartY}
+                                        x2={lineEndX}
+                                        y2={lineEndY}
+                                    />
+                                    <a href={slice.url} aria-label={`${slice.name}：${slice.count} 篇文章`}>
+                                        <circle
+                                            class="taxonomy-sector"
+                                            data-taxonomy-sector={slice.name}
+                                            cx="120"
+                                            cy="120"
+                                            r="68"
+                                            pathLength={circumference}
+                                            stroke={slice.color}
+                                            stroke-dasharray={`${slice.dash} ${circumference - slice.dash}`}
+                                            stroke-dashoffset={slice.offset}
+                                            style={`--sector-color: ${slice.color}; --sector-delay: ${index * 55}ms;`}
+                                        />
+                                    </a>
+                                    <text
+                                        class="taxonomy-chart-label"
+                                        data-taxonomy-label={slice.name}
+                                        x={labelX}
+                                        y={labelY}
+                                        text-anchor={labelX >= 120 ? "start" : "end"}
+                                    >
+                                        <tspan x={labelX} dy="0">{slice.name}</tspan>
+                                        <tspan x={labelX} dy="13">{slice.count} 篇</tspan>
+                                    </text>
+                                </>
+                            );
+                        })}
+                        <text class="taxonomy-center-label" x="120" y="112" text-anchor="middle">
+                            <tspan x="120">共</tspan>
+                            <tspan x="120" dy="24">{totalPosts}</tspan>
+                            <tspan x="120" dy="22">篇文章</tspan>
+                        </text>
+                    </svg>
+                </div>
+
+                <aside class="taxonomy-list" aria-label="分类标签篇数">
+                    {taxonomySlices.map((slice) => (
+                        <a
+                            href={slice.url}
+                            class="taxonomy-list-item"
+                            data-taxonomy-item={slice.name}
+                            style={`--sector-color: ${slice.color};`}
+                        >
+                            <span class="taxonomy-list-name">
+                                <span class="taxonomy-list-dot"></span>
+                                {slice.name}
+                            </span>
+                            <span class="taxonomy-list-count">{slice.count} 篇</span>
+                        </a>
+                    ))}
+                    <div class="taxonomy-total">共 {totalPosts} 篇文章</div>
+                </aside>
+            </div>
+        ) : (
+            <div class="tools-empty relative z-10">
+                <Icon is:inline name="material-symbols:category-outline-rounded" />
+                <p>还没有可统计的分类标签。</p>
+            </div>
+        )}
+
+    </section>
+
+    <script is:inline>
+        (function () {
+            if (window.__mikanTaxonomyReady) return;
+            window.__mikanTaxonomyReady = true;
+
+            function setActiveTaxonomy(name, active) {
+                document.querySelectorAll("[data-taxonomy-sector], [data-taxonomy-item], [data-taxonomy-label], [data-taxonomy-leader]").forEach(function (node) {
+                    var matched =
+                        node.getAttribute("data-taxonomy-sector") === name ||
+                        node.getAttribute("data-taxonomy-item") === name ||
+                        node.getAttribute("data-taxonomy-label") === name ||
+                        node.getAttribute("data-taxonomy-leader") === name;
+                    node.classList.toggle("taxonomy-active", Boolean(active && matched));
+                    node.classList.toggle("taxonomy-muted", Boolean(active && !matched));
+                });
+            }
+
+            function bindTaxonomyHover() {
+                document.querySelectorAll("[data-taxonomy-sector], [data-taxonomy-item]").forEach(function (node) {
+                    if (node.dataset.taxonomyBound === "true") return;
+                    node.dataset.taxonomyBound = "true";
+                    var name = node.getAttribute("data-taxonomy-sector") || node.getAttribute("data-taxonomy-item");
+                    node.addEventListener("mouseenter", function () { setActiveTaxonomy(name, true); });
+                    node.addEventListener("mouseleave", function () { setActiveTaxonomy(name, false); });
+                    node.addEventListener("focus", function () { setActiveTaxonomy(name, true); });
+                    node.addEventListener("blur", function () { setActiveTaxonomy(name, false); });
+                });
+            }
+
+            document.addEventListener("astro:page-load", bindTaxonomyHover);
+            document.addEventListener("swup:contentReplaced", bindTaxonomyHover);
+            bindTaxonomyHover();
+        })();
+    </script>
+</ContentGridLayout>

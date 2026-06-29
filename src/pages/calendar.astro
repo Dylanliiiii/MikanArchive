@@ -1,0 +1,296 @@
+---
+import { Icon } from "astro-icon/components";
+import { getMikanCalendarEvents } from "@/data/mikan";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
+import { getSortedPosts } from "@/utils/content-utils";
+import {
+	bucketCalendarEvents,
+	buildCalendarEventInstances,
+	buildPostCalendarEvents,
+	formatCalendarDate,
+	getCalendarRange,
+	getDayTimelineEvents,
+	getLunarDayLabel,
+	getMonthCells,
+	getWeekTimelineDays,
+} from "@/utils/calendar-utils";
+import "@/styles/resources.css";
+
+const title = "日历";
+const description = "公开节日、纪念日、学习安排和文章发布日。";
+const today = new Date();
+const todayKey = formatCalendarDate(today);
+const { startYear, endYear } = getCalendarRange(today.getFullYear());
+const posts = await getSortedPosts();
+const postEvents = buildPostCalendarEvents(posts.map((post) => ({
+	id: post.id,
+	title: post.data.title,
+	published: post.data.published,
+})));
+const baseEvents = [...getMikanCalendarEvents(), ...postEvents];
+const instances = buildCalendarEventInstances(baseEvents, startYear, endYear);
+const bucket = bucketCalendarEvents(instances);
+const monthCells = getMonthCells(today.getFullYear(), today.getMonth(), bucket);
+const weekDays = getWeekTimelineDays(todayKey);
+const dayTimelineEvents = getDayTimelineEvents(instances, todayKey);
+const todayEvents = bucket[todayKey] ?? [];
+const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index);
+const hours = Array.from({ length: 24 }, (_, hour) => `${String(hour).padStart(2, "0")}:00`);
+const colorClassMap = {
+	pink: "calendar-event--pink",
+	blue: "calendar-event--blue",
+	mint: "calendar-event--mint",
+	yellow: "calendar-event--yellow",
+	neutral: "calendar-event--neutral",
+};
+
+function eventClass(event: { color?: keyof typeof colorClassMap }) {
+	return colorClassMap[event.color || "neutral"];
+}
+
+function eventTimeLabel(event: { startDate?: Date; endDate?: Date; allDay?: boolean }) {
+	if (event.allDay || !event.startDate) return "全天";
+	const start = `${String(event.startDate.getHours()).padStart(2, "0")}:${String(event.startDate.getMinutes()).padStart(2, "0")}`;
+	if (!event.endDate) return start;
+	const end = `${String(event.endDate.getHours()).padStart(2, "0")}:${String(event.endDate.getMinutes()).padStart(2, "0")}`;
+	return `${start} - ${end}`;
+}
+
+const calendarDateDetails = Object.fromEntries(monthCells.map((cell) => [
+	cell.dateKey,
+	{
+		dateLabel: `${cell.dateKey} · 农历${getLunarDayLabel(cell.dateKey)}`,
+		events: (bucket[cell.dateKey] ?? []).map((event) => ({
+			title: event.title,
+			meta: `${eventTimeLabel(event)} · ${event.note || event.kind}`,
+			url: event.url || `#date-${event.dateKey}`,
+			className: eventClass(event),
+		})),
+	},
+]));
+const calendarDateDetailsJson = JSON.stringify(calendarDateDetails).replace(/</g, "\\u003c");
+---
+
+<ContentGridLayout title={title} description={description}>
+	<section class="calendar-page resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9" data-calendar-page data-selected-date={todayKey}>
+		<header class="tools-page-header relative z-10 mb-7">
+			<div class="tools-eyebrow-row">
+				<Icon is:inline name="material-symbols:calendar-month-rounded" />
+				<p class="tools-eyebrow">MIKAN CALENDAR</p>
+			</div>
+			<h1 class="tools-page-title">{title}</h1>
+			<p class="tools-page-description">{description}</p>
+		</header>
+
+		<div class="calendar-shell relative z-10">
+			<aside class="calendar-overview-panel">
+				<div class="site-overview-section-heading">
+					<Icon is:inline name="material-symbols:today-rounded" />
+					<h2>今日摘要</h2>
+				</div>
+				<p class="calendar-date-label">{todayKey} · 农历{getLunarDayLabel(todayKey)}</p>
+				<div class="calendar-mini-list">
+					{todayEvents.length > 0 ? todayEvents.slice(0, 5).map((event) => (
+						<a href={event.url || `#date-${event.dateKey}`} class={`calendar-mini-item ${eventClass(event)}`}>
+							<span>{event.title}</span>
+							<small>{eventTimeLabel(event)}</small>
+						</a>
+					)) : <p class="calendar-empty-text">今天没有公开日程。</p>}
+				</div>
+			</aside>
+
+			<main class="calendar-main-panel">
+				<div class="calendar-toolbar">
+					<div>
+						<p class="calendar-toolbar-kicker">Public Calendar</p>
+						<h2>{today.getFullYear()} 年 {today.getMonth() + 1} 月</h2>
+					</div>
+					<div class="calendar-view-switch" role="tablist" aria-label="日历视图">
+						<button type="button" class="calendar-view-button" data-calendar-view-button="year">年</button>
+						<button type="button" class="calendar-view-button is-active" data-calendar-view-button="month">月</button>
+						<button type="button" class="calendar-view-button" data-calendar-view-button="week">周</button>
+						<button type="button" class="calendar-view-button" data-calendar-view-button="day">日</button>
+					</div>
+				</div>
+
+				<section class="calendar-view is-active" data-calendar-view="month" aria-label="月视图">
+					<div class="calendar-weekday-row">
+						{["日", "一", "二", "三", "四", "五", "六"].map((day) => <span>{day}</span>)}
+					</div>
+					<div class="calendar-month-grid">
+						{monthCells.map((cell) => (
+							<button
+								type="button"
+								class:list={["calendar-month-cell", { "is-muted": !cell.isCurrentMonth, "is-today": cell.dateKey === todayKey, "is-selected": cell.dateKey === todayKey }]}
+								data-calendar-date={cell.dateKey}
+								id={`date-${cell.dateKey}`}
+								aria-pressed={cell.dateKey === todayKey ? "true" : "false"}
+							>
+								<span class="calendar-cell-day">{cell.day}</span>
+								<span class="calendar-cell-lunar">{getLunarDayLabel(cell.dateKey)}</span>
+								<div class="calendar-cell-events">
+									{cell.events.slice(0, 3).map((event) => (
+										<span class={`calendar-event-chip ${eventClass(event)}`}>{event.title}</span>
+									))}
+									{cell.events.length > 3 && <span class="calendar-more-chip">+{cell.events.length - 3}</span>}
+								</div>
+							</button>
+						))}
+					</div>
+				</section>
+
+				<section class="calendar-view" data-calendar-view="year" aria-label="年视图">
+					<div class="calendar-year-grid">
+						{years.map((year) => (
+							<div class="calendar-year-card">
+								<strong>{year}</strong>
+								<span>{instances.filter((event) => event.dateKey.startsWith(String(year))).length} 个公开事件</span>
+							</div>
+						))}
+					</div>
+				</section>
+
+				<section class="calendar-view" data-calendar-view="week" aria-label="周视图">
+					<div class="calendar-week-timeline">
+						<div class="calendar-time-axis">{hours.map((hour) => <span>{hour}</span>)}</div>
+						<div class="calendar-week-columns">
+							{weekDays.map((day) => (
+								<div class="calendar-week-column">
+									<header>{day.weekday}<span>{day.label}</span></header>
+									<div class="calendar-day-lane">
+										{getDayTimelineEvents(instances, day.dateKey).map((event) => (
+											<a href={event.url || `#date-${event.dateKey}`} class={`calendar-timeline-event ${eventClass(event)}`} style={`top:${event.topPercent}%;height:${event.heightPercent}%`}>
+												{event.title}
+											</a>
+										))}
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+
+				<section class="calendar-view" data-calendar-view="day" aria-label="日视图">
+					<div class="calendar-day-view">
+						<div class="calendar-time-axis">{hours.map((hour) => <span>{hour}</span>)}</div>
+						<div class="calendar-day-lane">
+							{dayTimelineEvents.map((event) => (
+								<a href={event.url || `#date-${event.dateKey}`} class={`calendar-timeline-event ${eventClass(event)}`} style={`top:${event.topPercent}%;height:${event.heightPercent}%`}>
+									{event.title}
+								</a>
+							))}
+						</div>
+					</div>
+				</section>
+			</main>
+
+			<aside class="calendar-detail-panel">
+				<div class="site-overview-section-heading">
+					<Icon is:inline name="material-symbols:event-note-rounded" />
+					<h2>日期详情</h2>
+				</div>
+				<p class="calendar-date-label" data-calendar-detail-date>{todayKey} · 农历{getLunarDayLabel(todayKey)}</p>
+				<div data-calendar-detail-list>
+					{todayEvents.length > 0 ? todayEvents.map((event) => (
+						<a href={event.url || `#date-${event.dateKey}`} class={`calendar-detail-item ${eventClass(event)}`}>
+							<strong>{event.title}</strong>
+							<span>{eventTimeLabel(event)} · {event.note || event.kind}</span>
+						</a>
+					)) : <p class="calendar-empty-text">选择的日期没有公开日程。</p>}
+				</div>
+			</aside>
+		</div>
+		<script type="application/json" data-calendar-events-json set:html={calendarDateDetailsJson} />
+	</section>
+
+	<script is:inline>
+		(function () {
+			function escapeHtml(value) {
+				return String(value || "").replace(/[&<>"']/g, function (char) {
+					return {
+						"&": "&amp;",
+						"<": "&lt;",
+						">": "&gt;",
+						'"': "&quot;",
+						"'": "&#039;",
+					}[char];
+				});
+			}
+
+			function safeEventClass(value) {
+				return /^calendar-event--[a-z]+$/.test(String(value || "")) ? value : "calendar-event--neutral";
+			}
+
+			function initCalendarPage() {
+				var root = document.querySelector("[data-calendar-page]");
+				if (!root || root.dataset.calendarReady === "true") return;
+				root.dataset.calendarReady = "true";
+				var buttons = root.querySelectorAll("[data-calendar-view-button]");
+				var views = root.querySelectorAll("[data-calendar-view]");
+				var dateButtons = root.querySelectorAll("[data-calendar-date]");
+				var detailDate = root.querySelector("[data-calendar-detail-date]");
+				var detailList = root.querySelector("[data-calendar-detail-list]");
+				var eventsJson = root.querySelector("[data-calendar-events-json]");
+				var calendarEvents = {};
+				try {
+					calendarEvents = JSON.parse(eventsJson ? eventsJson.textContent || "{}" : "{}");
+				} catch (error) {
+					calendarEvents = {};
+				}
+
+				function selectCalendarDate(dateKey, updateHash) {
+					var detail = calendarEvents[dateKey] || { dateLabel: dateKey, events: [] };
+					root.dataset.selectedDate = dateKey;
+					dateButtons.forEach(function (button) {
+						var isSelected = button.getAttribute("data-calendar-date") === dateKey;
+						button.classList.toggle("is-selected", isSelected);
+						button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+					});
+
+					if (detailDate) {
+						detailDate.textContent = detail.dateLabel || dateKey;
+					}
+
+					if (detailList) {
+						if (detail.events && detail.events.length > 0) {
+							detailList.innerHTML = detail.events.map(function (event) {
+								var href = event.url || "#date-" + dateKey;
+								return '<a href="' + escapeHtml(href) + '" class="calendar-detail-item ' + safeEventClass(event.className) + '"><strong>' + escapeHtml(event.title) + '</strong><span>' + escapeHtml(event.meta) + '</span></a>';
+							}).join("");
+						} else {
+							detailList.innerHTML = '<p class="calendar-empty-text">选择的日期没有公开日程。</p>';
+						}
+					}
+
+					if (updateHash && window.history && window.history.replaceState) {
+						history.replaceState(null, "", `#date-${dateKey}`);
+					}
+				}
+
+				buttons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var target = button.getAttribute("data-calendar-view-button");
+						buttons.forEach(function (item) { item.classList.toggle("is-active", item === button); });
+						views.forEach(function (view) {
+							view.classList.toggle("is-active", view.getAttribute("data-calendar-view") === target);
+						});
+					});
+				});
+				dateButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var dateKey = button.getAttribute("data-calendar-date");
+						if (dateKey) selectCalendarDate(dateKey, true);
+					});
+				});
+
+				var hashDate = /^#date-(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash);
+				if (hashDate) {
+					selectCalendarDate(hashDate[1], false);
+				}
+			}
+			document.addEventListener("astro:page-load", initCalendarPage);
+			document.addEventListener("swup:contentReplaced", initCalendarPage);
+			initCalendarPage();
+		})();
+	</script>
+</ContentGridLayout>

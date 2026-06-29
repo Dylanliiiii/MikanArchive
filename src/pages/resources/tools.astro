@@ -1,0 +1,233 @@
+---
+import { Icon } from "astro-icon/components";
+import { getMikanResourcesByKind, groupMikanResourcesByCategory } from "@/data/mikan";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
+import "@/styles/resources.css";
+
+const resources = getMikanResourcesByKind("tool");
+const groups = groupMikanResourcesByCategory(resources);
+
+function getHost(target: string) {
+	try {
+		return new URL(target).host.replace(/^www\./, "");
+	} catch {
+		return target;
+	}
+}
+---
+
+<ContentGridLayout title="工具导航" description="长期反复使用的网站、平台与文档入口">
+	<section class="tools-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+		<header class="tools-page-header relative z-10 mb-7">
+			<div class="tools-eyebrow-row">
+				<Icon is:inline name="material-symbols:rocket-launch-rounded" />
+				<p class="tools-eyebrow">MIKAN TOOLBOX</p>
+			</div>
+			<h1 class="tools-page-title">工具导航</h1>
+			<p class="tools-page-description">收集和整理常用网站与工具。按分类停靠，下一次需要时不必重新搜索。</p>
+		</header>
+
+		{resources.length > 0 && (
+			<nav class="tools-tab-wrapper relative z-10" aria-label="工具分类">
+				<div class="tools-tab-pill" data-tools-tab-nav>
+					<div class="tools-tab-indicator" data-tools-tab-indicator></div>
+					<button
+						type="button"
+						data-tools-tab="all"
+						class="tools-tab-btn tools-tab-btn-active"
+						aria-pressed="true"
+						disabled
+					>
+						全部
+						<span class="tools-tab-badge">{resources.length}</span>
+					</button>
+					{groups.map((group) => (
+						<button
+							type="button"
+							data-tools-tab={group.category}
+							class="tools-tab-btn tools-tab-btn-inactive"
+							aria-pressed="false"
+						>
+							{group.category}
+							<span class="tools-tab-badge">{group.count}</span>
+						</button>
+					))}
+				</div>
+			</nav>
+		)}
+
+		{resources.length > 0 ? (
+			<div class="relative z-10">
+				<div data-tools-section="all">
+					{groups.map((group) => (
+						<section class="tools-category-group">
+							<header class="tools-category-header">
+								<div class="tools-category-name">
+									<Icon is:inline name="material-symbols:label-outline-rounded" />
+									<h2>{group.category}</h2>
+								</div>
+								<span class="tools-category-count">{group.count}</span>
+								<span class="tools-category-line"></span>
+							</header>
+
+							<div class="tools-card-grid">
+								{group.items.map((item, index) => (
+									<a
+										href={item.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="tools-card group"
+										style={`animation-delay: ${index * 55}ms`}
+									>
+										<span class="tools-card-jump-icon" aria-hidden="true">
+											<Icon is:inline name="material-symbols:arrow-outward-rounded" />
+										</span>
+										<div class="tools-card-heading">
+											{item.icon?.startsWith("http") ? (
+												<img src={item.icon} alt="" loading="lazy" decoding="async" class="tools-card-logo" />
+											) : (
+												<Icon is:inline name={item.icon || "material-symbols:bookmarks-rounded"} class="tools-card-logo" />
+											)}
+											<h3>{item.title}</h3>
+										</div>
+										<p class="tools-card-desc">{item.note}</p>
+										<footer class="tools-card-footer">
+											<span>{getHost(item.url)}</span>
+										</footer>
+									</a>
+								))}
+							</div>
+						</section>
+					))}
+				</div>
+
+				{groups.map((group) => (
+					<div data-tools-section={group.category} class="hidden">
+						<div class="tools-card-grid">
+							{group.items.map((item, index) => (
+								<a
+									href={item.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="tools-card group"
+									style={`animation-delay: ${index * 55}ms`}
+								>
+									<span class="tools-card-jump-icon" aria-hidden="true">
+										<Icon is:inline name="material-symbols:arrow-outward-rounded" />
+									</span>
+									<div class="tools-card-heading">
+										{item.icon?.startsWith("http") ? (
+											<img src={item.icon} alt="" loading="lazy" decoding="async" class="tools-card-logo" />
+										) : (
+											<Icon is:inline name={item.icon || "material-symbols:bookmarks-rounded"} class="tools-card-logo" />
+										)}
+										<h3>{item.title}</h3>
+									</div>
+									<p class="tools-card-desc">{item.note}</p>
+									<footer class="tools-card-footer">
+										<span>{getHost(item.url)}</span>
+									</footer>
+								</a>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		) : (
+			<div class="tools-empty relative z-10">
+				<Icon is:inline name="material-symbols:bookmarks-outline-rounded" />
+				<p>还没有配置工具入口。</p>
+			</div>
+		)}
+	</section>
+
+	<script is:inline>
+		(function () {
+			if (window.__mikanToolsReady) return;
+			window.__mikanToolsReady = true;
+
+			function getToolsRoot() {
+				return document.querySelector(".tools-page");
+			}
+
+			function updateIndicator(targetButton) {
+				if (!targetButton) return;
+				var nav = targetButton.closest("[data-tools-tab-nav]");
+				var indicator = nav && nav.querySelector("[data-tools-tab-indicator]");
+				if (!indicator) return;
+
+				indicator.style.left = targetButton.offsetLeft + "px";
+				indicator.style.top = targetButton.offsetTop + "px";
+				indicator.style.width = targetButton.offsetWidth + "px";
+				indicator.style.height = targetButton.offsetHeight + "px";
+				indicator.style.opacity = "1";
+			}
+
+			function activateToolsTab(targetTab, updateHash) {
+				var root = getToolsRoot();
+				if (!root || !targetTab) return;
+
+				var buttons = root.querySelectorAll("[data-tools-tab]");
+				var sections = root.querySelectorAll("[data-tools-section]");
+				var targetButton = null;
+				buttons.forEach(function (button) {
+					if (button.dataset.toolsTab === targetTab) targetButton = button;
+				});
+				if (!targetButton) return;
+
+				buttons.forEach(function (button) {
+					var isActive = button === targetButton;
+					button.classList.toggle("tools-tab-btn-active", isActive);
+					button.classList.toggle("tools-tab-btn-inactive", !isActive);
+					button.setAttribute("aria-pressed", String(isActive));
+					button.disabled = isActive;
+				});
+
+				sections.forEach(function (section) {
+					var isActive = section.dataset.toolsSection === targetTab;
+					section.classList.toggle("hidden", !isActive);
+					if (isActive) {
+						section.querySelectorAll(".tools-card").forEach(function (card) {
+							card.style.animation = "none";
+							void card.offsetHeight;
+							card.style.animation = "";
+						});
+					}
+				});
+
+				requestAnimationFrame(function () { updateIndicator(targetButton); });
+				if (updateHash !== false) {
+					var nextHash = "#tools-" + encodeURIComponent(targetTab);
+					if (window.location.hash !== nextHash) history.replaceState(null, "", nextHash);
+				}
+			}
+
+			function initToolsTabs() {
+				var root = getToolsRoot();
+				if (!root) return;
+				var targetTab = "all";
+				if (window.location.hash.indexOf("#tools-") === 0) {
+					try {
+						targetTab = decodeURIComponent(window.location.hash.slice(7));
+					} catch (_) {
+						targetTab = "all";
+					}
+				}
+				activateToolsTab(targetTab, false);
+			}
+
+			document.addEventListener("click", function (event) {
+				var target = event.target instanceof Element ? event.target.closest("[data-tools-tab]") : null;
+				if (target) activateToolsTab(target.dataset.toolsTab, true);
+			});
+			window.addEventListener("hashchange", initToolsTabs);
+			window.addEventListener("resize", function () {
+				var activeButton = document.querySelector(".tools-page .tools-tab-btn-active");
+				if (activeButton) updateIndicator(activeButton);
+			});
+			document.addEventListener("astro:page-load", initToolsTabs);
+			document.addEventListener("swup:contentReplaced", initToolsTabs);
+			initToolsTabs();
+		})();
+	</script>
+</ContentGridLayout>

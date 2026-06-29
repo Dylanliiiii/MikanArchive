@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { cp, mkdir, readdir, rm } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -10,6 +10,7 @@ const tmpRepoDir = path.join(root, ".tmp-content-repo");
 const contentTargets = [
   "src/content/posts",
   "src/content/profile",
+  "src/content/spec",
   "src/data/content",
   "public/assets"
 ];
@@ -17,15 +18,40 @@ const contentTargets = [
 const mappings = [
   { source: "posts", target: "src/content/posts", kind: "directory" },
   { source: "profile", target: "src/content/profile", kind: "markdown" },
+  { source: "profile/about.md", target: "src/content/spec/about.md", kind: "file" },
   { source: "resources", target: "src/data/content/resources", kind: "directory" },
   { source: "links", target: "src/data/content/links", kind: "directory" },
   { source: "records", target: "src/data/content/records", kind: "directory" },
+  { source: "calendar", target: "src/data/content/calendar", kind: "directory" },
   { source: "profile/resume.json", target: "src/data/content/profile/resume.json", kind: "file" },
   { source: "assets", target: "public/assets", kind: "directory" }
 ];
 
 function env(name, fallback = "") {
   return process.env[name]?.trim() || fallback;
+}
+
+async function ensureSpecContent(sourceRoot) {
+  const specDir = path.join(root, "src/content/spec");
+  await mkdir(specDir, { recursive: true });
+
+  const aboutSource = path.join(sourceRoot, "profile/about.md");
+  const aboutTarget = path.join(specDir, "about.md");
+  if (!existsSync(aboutTarget)) {
+    const aboutBody = existsSync(aboutSource)
+      ? await readFile(aboutSource, "utf8")
+      : "# 关于 MikanArchive\n\n这里是个人资料示例内容。";
+    await writeFile(aboutTarget, aboutBody, "utf8");
+  }
+
+  const friendsTarget = path.join(specDir, "friends.mdx");
+  if (!existsSync(friendsTarget)) {
+    await writeFile(
+      friendsTarget,
+      `---\ntitle: "友邻"\ndescription: "把值得常去的站点放在近处。"\n---\n\nexport const site = {\n  name: "MikanArchive",\n  desc: "一个记录教程、收藏资源和整理足迹的个人知识收藏博客。",\n  url: "https://example.com",\n  avatar: "/assets/avatars/example-maker.svg",\n  email: "hello@example.com",\n};\n\nexport const notes = [\n  { title: "互换原则", content: "请先将本站添加到您的友链页面，确认后会添加您的友链。" },\n  { title: "链接维护", content: "友链网站长期无法访问或内容违规，将会被移除。" },\n  { title: "内容要求", content: "内容积极向上，不包含违法或有害内容。" },\n  { title: "站点要求", content: "支持 HTTPS，以原创内容为主，能够正常访问且有持续更新。" },\n];\n\n<div class="not-prose my-4 rounded-2xl border border-(--line-divider) p-5 leading-7">\n  <h3 class="mb-3 text-lg font-bold">友链申请</h3>\n  <p>欢迎交换友链。请先添加本站信息，再通过邮件或评论发送你的站点名称、描述、链接和头像。</p>\n  <pre class="mt-4 overflow-x-auto rounded-xl bg-black/5 p-4 text-xs dark:bg-white/10">站点名称：你的站点名称\n站点描述：你的站点描述\n站点链接：https://example.com\n头像链接：https://example.com/avatar.png</pre>\n</div>\n`,
+      "utf8"
+    );
+  }
 }
 
 function isEnabled(value) {
@@ -41,7 +67,7 @@ async function resetGeneratedContent() {
 }
 
 function hasSupportedContent(sourceRoot) {
-  return ["posts", "resources", "links", "profile", "records", "assets"].some((name) =>
+  return ["posts", "resources", "links", "profile", "records", "calendar", "assets"].some((name) =>
     existsSync(path.join(sourceRoot, name))
   );
 }
@@ -128,6 +154,8 @@ async function syncFrom(sourceRoot) {
   if (copied.length === 0) {
     throw new Error(`No supported content files found in: ${contentRoot}`);
   }
+
+  await ensureSpecContent(contentRoot);
 
   console.log("Content synced successfully.");
   for (const item of copied) {

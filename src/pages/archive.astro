@@ -1,0 +1,36 @@
+---
+import ArchivePanel from "@components/controls/ArchivePanel.svelte";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import { Icon } from "astro-icon/components";
+import ContentGridLayout from "@layouts/ContentGridLayout.astro";
+import { siteConfig } from "@/config";
+import { getSortedPostsList } from "@/utils/content-utils";
+import "@/styles/resources.css";
+
+const sortedPostsList = await getSortedPostsList();
+const configuredGithubUsername = siteConfig.heatmap?.github?.username ?? "";
+const githubUsername = siteConfig.heatmap?.github?.enabled === false ? "" : configuredGithubUsername;
+const githubProfile = siteConfig.heatmap?.github?.profileUrl ?? "https://github.com/" + configuredGithubUsername;
+---
+
+<ContentGridLayout title={i18n(I18nKey.archive)} description="按时间归档文章和教程记录">
+  <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+    <header class="tools-page-header relative z-10 mb-7">
+      <div class="tools-eyebrow-row">
+        <Icon is:inline name="material-symbols:archive-rounded" />
+        <p class="tools-eyebrow">MIKAN ARCHIVE</p>
+      </div>
+      <h1 class="tools-page-title">{i18n(I18nKey.archive)}</h1>
+      <p class="tools-page-description">用文章活动热力图回看更新节奏，并按标签浏览不同主题的归档时间线。</p>
+    </header>
+    <div class="relative z-10">
+      <ArchivePanel
+        sortedPosts={sortedPostsList}
+        githubUsername={githubUsername}
+        githubProfile={githubProfile}
+        client:only="svelte"
+      />
+    </div>
+  </section>
+</ContentGridLayout>
