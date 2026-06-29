@@ -409,6 +409,24 @@ test("公开日历页面不提供前台创建或后台编辑入口", () => {
 	assert.doesNotMatch(source, /fetch\(["']\/api\/calendar/);
 });
 
+test("公开日历样式包含多视图、时间轴和移动端防溢出规则", () => {
+	const source = readSource("src/styles/resources.css");
+
+	assert.match(source, /\.calendar-shell/);
+	assert.match(source, /\.calendar-view-switch/);
+	assert.match(source, /\.calendar-month-grid/);
+	assert.match(source, /\.calendar-cell-lunar/);
+	assert.match(source, /\.calendar-year-grid/);
+	assert.match(source, /\.calendar-week-timeline/);
+	assert.match(source, /\.calendar-day-view/);
+	assert.match(source, /\.calendar-timeline-event/);
+	assert.match(source, /grid-template-columns:\s*minmax\(12rem,\s*0\.72fr\)\s*minmax\(0,\s*1\.8fr\)\s*minmax\(14rem,\s*0\.8fr\)/);
+	assert.match(source, /@media\s*\(max-width:\s*1100px\)/);
+	assert.match(source, /@media\s*\(max-width:\s*640px\)/);
+	assert.match(source, /overflow-x:\s*auto/);
+	assert.doesNotMatch(source, /letter-spacing:\s*-/);
+});
+
 test("站点概览页展示站点统计、构建信息和相关入口", () => {
 	const source = readSource("src/pages/site.astro");
 	const breadcrumbSource = readSource("src/utils/focused-breadcrumb.ts");
