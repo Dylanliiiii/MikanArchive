@@ -26,6 +26,56 @@
 - 已运行文本检索，确认现有 `src/styles/resources.css` 没有负字距规则，后续日历样式防溢出契约不会被旧样式误伤。
 - 本次仅新增和更新计划、交接与日志文档，未改动应用代码，因此未运行应用测试或构建。
 
+## 2026-06-29 21:18:15 +08:00
+
+### 修改范围
+
+- 公开日历功能实现
+- 内容模型、同步与校验规则
+- 导航、面包屑、页面、样式与文档同步
+
+### 涉及文件
+
+- `content.example/calendar/events.json`
+- `scripts/sync-content.mjs`
+- `scripts/validate-content.mjs`
+- `src/data/mikan.ts`
+- `src/utils/calendar-utils.ts`
+- `src/pages/calendar.astro`
+- `src/config/navBarConfig.ts`
+- `src/utils/focused-breadcrumb.ts`
+- `src/styles/resources.css`
+- `tests/mikan-data.test.ts`
+- `tests/calendar-utils.test.ts`
+- `tests/mikan-pages.test.ts`
+- `package.json`
+- `package-lock.json`
+- `README.md`
+- `docs/content-repository.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `content.example/calendar/events.json`，用公开示例事件演示节日、纪念日、一次性日程、周重复、月重复和站点维护事件。
+- 内容同步脚本新增 `calendar/ -> src/data/content/calendar/` 映射，内容校验脚本新增公开日历事件字段、时间范围、重复规则、颜色和 `visibility: "public"` 校验。
+- `src/data/mikan.ts` 新增公开日历事件类型和 `getMikanCalendarEvents()` 数据读取。
+- 新增 `src/utils/calendar-utils.ts`，支持日期格式化、农历日标签、事件实例展开、按日期聚合、月格生成、周起点、日/周时间轴位置计算和文章发布事件转换。
+- “我的”下拉新增 `/calendar/` 日历入口，聚焦面包屑新增“主页 › 日历”。
+- 新增 `/calendar/` 公开日历页，合并内容事件和文章发布事件，提供年 / 月 / 周 / 日视图；周视图和日视图使用 24 小时时间轴展示公开定时事件。
+- 新增公开日历样式，包含三栏桌面布局、月格、年卡片、周 / 日时间轴、事件色彩、移动端单列和横向滚动防溢出规则。
+- 更新 README、内容仓库说明、CHANGELOG 和下一步任务，记录公开日历数据路径、字段规则、验证命令和隐私边界。
+
+### 验证情况
+
+- 已运行 `npm.cmd run sync:content`，确认 `calendar -> src/data/content/calendar` 被同步。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:content-model`，内容模型测试通过。
+- 已运行 `npm.cmd run test:calendar`，日历工具测试通过。
+- 已运行 `npm.cmd run test:pages`，页面契约测试通过。
+- 全量 `check`、`build` 和浏览器视觉验收待后续收尾执行。
+
 ## 2026-06-29 20:39:48 +08:00
 
 ### 修改范围

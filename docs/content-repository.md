@@ -23,6 +23,8 @@ content.example/
   records/
     timeline.json
     updates.json
+  calendar/
+    events.json
   assets/
     images/
     backgrounds/
@@ -53,6 +55,7 @@ profile/about.md     -> src/content/spec/about.md
 resources/           -> src/data/content/resources/
 links/               -> src/data/content/links/
 records/             -> src/data/content/records/
+calendar/            -> src/data/content/calendar/
 profile/resume.json  -> src/data/content/profile/resume.json
 assets/              -> public/assets/
 ```
@@ -185,6 +188,56 @@ draft: false
 - `icon`：可选。优先填写项目已安装的 Iconify 名称，例如 `simple-icons:astro`、`simple-icons:openai` 或 `material-symbols:speed-rounded`；也可以填写 `https://` 开头的公开图标 URL。配置的 Iconify 名称必须真实存在于已安装图标集，缺失时页面会回退到通用收藏图标。
 
 公开仓库的工具数据只用于演示分类、数量和卡片布局，不应写入真实私人收藏或账号资料。
+
+## 公开日历
+
+`calendar/events.json` 使用数组维护公开日历事件：
+
+```json
+[
+  {
+    "id": "example-study-block",
+    "title": "公开学习时段",
+    "kind": "schedule",
+    "start": "2026-06-29T19:30",
+    "end": "2026-06-29T21:00",
+    "note": "示例日程：用于验证周视图和日视图时间轴。",
+    "color": "blue",
+    "icon": "material-symbols:school",
+    "visibility": "public"
+  }
+]
+```
+
+必填字段：
+
+- `id`：唯一标识。
+- `title`：公开展示标题。
+- `kind`：事件类型，只允许 `holiday`、`anniversary`、`schedule`、`site`、`post`。
+- `visibility`：必须是 `public`。
+- `date` 或 `start`：二选一；`date` 使用 `YYYY-MM-DD`，`start` 使用 `YYYY-MM-DDTHH:mm`。
+
+可选字段：
+
+- `end`：结束时间，格式为 `YYYY-MM-DDTHH:mm`，必须晚于 `start`。
+- `allDay`：是否全天事件。
+- `note`：公开备注。
+- `color`：颜色，只允许 `pink`、`blue`、`mint`、`yellow`、`neutral`。
+- `icon`：Iconify 图标名。
+- `url`：事件跳转链接。
+- `recurring`：重复规则，支持 `weekly`、`monthly`、`yearly`。
+
+重复规则示例：
+
+```json
+{
+  "freq": "yearly",
+  "month": 10,
+  "day": 1
+}
+```
+
+周重复需要 `weekday`，范围为 `0` 到 `6`，其中 `0` 表示周日；月重复需要 `day`；年重复需要 `month` 和 `day`。公开日历页面会把内容事件与文章发布日期合并展示，并在月视图中显示农历日标签。不要在公开日历里写入私人行程、住址、联系方式、账号、token 或任何不适合公开的安排。
 
 ## 友链与站点收藏
 
