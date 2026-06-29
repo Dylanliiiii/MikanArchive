@@ -8,6 +8,8 @@
 
 **Tech Stack:** Astro 7、Svelte 5、TypeScript、Node.js test runner、Tailwind CSS 4、组件内 CSS
 
+**Status:** 已完成并验证；实现阶段额外保留既有 `category` 与 `uncategorized` 归档查询兼容，并清理筛选菜单的 Svelte 无障碍警告。
+
 ---
 
 ## 文件结构

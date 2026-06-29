@@ -1,5 +1,54 @@
 ﻿# Development Log
 
+## 2026-06-29 11:01:00 +08:00
+
+### 修改范围
+
+- 文章归档活动热力图
+- URL 标签筛选与既有分类查询兼容
+- 年/月/文章连续时间线与三级统计
+- 归档数据测试、页面契约、响应式与构建验收
+
+### 涉及文件
+
+- `src/utils/archive-utils.ts`
+- `src/components/controls/ArchivePanel.svelte`
+- `src/pages/archive.astro`
+- `tests/archive-utils.test.ts`
+- `tests/mikan-pages.test.ts`
+- `package.json`
+- `CHANGELOG.md`
+- `docs/superpowers/specs/2026-06-29-mikan-article-archive-design.md`
+- `docs/superpowers/plans/2026-06-29-mikan-article-archive.md`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增归档纯数据 helper，负责标签数量汇总、单标签筛选、既有分类/未分类查询兼容、年月分组、总文章数、覆盖年份数和基于 `updated ?? published` 的文章活动热力图。
+- 将 `/archive/` 改为可见标签下拉、文章活动热力图、结果摘要和年/月/文章三层连续时间线；标签选择写入 `?tag=`，刷新和分享链接可恢复。
+- 热力图使用 12 月 × 4 时间段网格、0 至 4 级色阶、中文单元说明、年份切换和少到多图例；筛选后热力图与时间线共同更新。
+- 汇总区显示“文章数 · 覆盖年份数”，年份与月份标题分别显示对应文章数量；文章行显示日期、主要标签和标题。
+- 时间线使用静态虚线表达完整层级，文章 hover/focus 时计算单条圆角 SVG 路径，从年份节点经过月份节点连接文章节点。
+- 增加未知标签空状态和“查看全部文章”恢复入口；390px 视口中页面不横向溢出，热力图在自身区域滚动。
+- 保留 `/archive/?category=` 与 `/archive/?uncategorized=1` 的既有入口，修复 Svelte 模板辅助函数无法追踪分类显示状态的问题，分类筛选同样联动热力图、统计和时间线。
+- 移除聚焦布局中已经无效的横幅标题修改脚本，并移除筛选菜单非交互容器上的点击拦截，清理 Svelte 无障碍警告。
+- README 对文库归档的现有概述仍准确；本次不改变导航、内容模型、示例内容、部署命令、环境变量、AGENTS 或项目专属 Skill，无需同步这些文件。
+
+### 验证情况
+
+- 基线验证：内容模型 6/6、页面契约 24/24 通过，`astro check` 为 0 errors，仅保留既有 `Calendar.astro` 未读参数 hint。
+- TDD 数据红灯：`tests/archive-utils.test.ts` 首次因 `archive-utils.ts` 不存在失败；最小实现后 4/4 通过，加入分类兼容回归后按预期 1 项失败、修复后最终 5/5 通过。
+- TDD 页面红灯：新增归档结构测试后为旧测试 24 项通过、新测试 2 项按预期失败；实现后转绿。分类查询、菜单无障碍和 Svelte 派生状态问题均先添加失败契约再修复，最终页面测试 29/29 通过。
+- 完整自动验证已按顺序运行 `npm.cmd run sync:content`、`validate:content`、`test:archive`、`test:content-model`、`test:pages`、`check` 和 `build`，全部退出码为 0。
+- `astro check` 最终结果为 164 个文件、0 errors、0 warnings、1 个既有 hint；生产构建生成 16 个页面和 `/archive/index.html`，Pagefind 索引完成。
+- 构建仍保留既有动态导入、大 chunk、路由优先级、Markdown deprecation 和中文 stemming 提示，本次没有新增构建失败或类型错误。
+- 应用内浏览器桌面验收：默认热力图为 48 格，标签菜单显示全部及标签数量；选择 `Astro` 后 URL 变为 `?tag=Astro`，热力图、总计、年份、月份和文章同步，刷新后状态恢复。
+- 未知标签验收：显示 0 篇文章、0 年、热力图空状态和恢复按钮；点击后恢复全部文章。既有 `?category=教程` 显示“分类 / 教程”，`?uncategorized=1` 显示“分类 / 未分类”。
+- 移动端约 390×844 验收：页面级横向溢出为 0，热力图容器宽 302px、内部滚动宽 504px，筛选菜单完整落在 375px 客户区内，三级数量保留。
+- 亮暗色模式的计算样式均使用现有变量；最终浏览器控制台无错误或警告。开发服务热更新期间曾出现一次 Astro `astro:server-app.js` 全量重载错误，重启 dev daemon 后路由均返回 200，不影响生产构建。
+- 浏览器 DOM 与自动契约确认文章链接具备 mouseenter/mouseleave/focus/blur 连续路径入口；应用内浏览器的鼠标移动和 Tab 注入没有触发可观察的 hover/focus 状态，因此没有把连续高亮视觉记为直接实测，保留为源码、类型检查和契约测试验证项。
+
 ## 2026-06-29 10:24:29 +08:00
 
 ### 修改范围
