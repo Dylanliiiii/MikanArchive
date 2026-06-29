@@ -22,7 +22,6 @@ const focusedPages = [
 	"src/pages/posts/[...slug].astro",
 	"src/pages/posts/index.astro",
 	"src/pages/records/index.astro",
-	"src/pages/resources/index.astro",
 	"src/pages/resources/tools.astro",
 	"src/pages/resources/clips/index.astro",
 	"src/pages/rss.astro",
@@ -78,13 +77,13 @@ test("聚焦布局为固定导航预留完整高度", () => {
 	assert.match(source, /padding-top:\s*4\.5rem/);
 });
 
-test("收藏总览提供工具导航和摘录收藏入口", () => {
+test("收藏页不再作为收藏总览功能页，只保留旧链接兼容跳转", () => {
 	const source = readSource("src/pages/resources/index.astro");
 
-	assert.match(source, /工具导航/);
-	assert.match(source, /摘录收藏/);
-	assert.match(source, /resources\/tools/);
-	assert.match(source, /resources\/clips/);
+	assert.match(source, /http-equiv="refresh"/);
+	assert.match(source, /\/resources\/tools\//);
+	assert.doesNotMatch(source, /collections\.map/);
+	assert.doesNotMatch(source, /resource-entry/);
 });
 
 test("全站聚焦页面不再渲染导航下方通用分类快捷栏", () => {
@@ -212,11 +211,8 @@ test("摘录收藏页展示来源与适用场景", () => {
 	assert.match(source, /scenario/);
 });
 
-test("收藏总览与摘录收藏使用工具导航同款标题系统和 section 打底", () => {
-	for (const page of [
-		"src/pages/resources/index.astro",
-		"src/pages/resources/clips/index.astro",
-	]) {
+test("摘录收藏使用工具导航同款标题系统和 section 打底", () => {
+	for (const page of ["src/pages/resources/clips/index.astro"]) {
 		const source = readSource(page);
 
 		assert.match(source, /resources-page card-base/, `${page} 应使用半透明 section 打底`);
@@ -310,9 +306,43 @@ test("收藏标题使用轻微正字距避免中文标题挤压", () => {
 test("收藏导航保留主入口并提供两个子入口", () => {
 	const source = readSource("src/config/navBarConfig.ts");
 
-	assert.match(source, /收藏总览/);
+	assert.doesNotMatch(source, /收藏总览/);
+	assert.doesNotMatch(source, /LinkPresets\.Resources/);
 	assert.match(source, /\/resources\/tools\//);
 	assert.match(source, /\/resources\/clips\//);
+});
+
+test("聚焦布局提供从主页直达当前功能页的面包屑", () => {
+	const layoutSource = readSource("src/layouts/ContentGridLayout.astro");
+	const breadcrumbSource = readSource("src/components/layout/FocusedBreadcrumb.astro");
+	const breadcrumbConfigSource = readSource("src/utils/focused-breadcrumb.ts");
+
+	assert.match(layoutSource, /FocusedBreadcrumb/);
+	assert.match(layoutSource, /<FocusedBreadcrumb/);
+	assert.match(breadcrumbSource, /aria-label="面包屑"/);
+	assert.match(breadcrumbSource, /getFocusedBreadcrumb/);
+	assert.match(breadcrumbSource, /item\.label/);
+	assert.match(breadcrumbSource, /item\.icon/);
+	assert.match(breadcrumbConfigSource, /label:\s*"主页"/);
+	assert.match(breadcrumbConfigSource, /material-symbols:home-rounded/);
+});
+
+test("面包屑配置跳过无实质页面的父级入口", () => {
+	const source = readSource("src/utils/focused-breadcrumb.ts");
+
+	assert.match(source, /\/guestbook\/[\s\S]*label:\s*"留言"/);
+	assert.doesNotMatch(source, /联系我[\s\S]{0,120}留言/);
+	assert.match(source, /\/friends\/[\s\S]*label:\s*"友链"/);
+	assert.match(source, /\/resources\/tools\/[\s\S]*label:\s*"工具导航"/);
+	assert.match(source, /\/resources\/clips\/[\s\S]*label:\s*"摘录收藏"/);
+	assert.doesNotMatch(source, /收藏[\s\S]{0,120}工具导航/);
+});
+
+test("面包屑只使用已安装的可构建图标", () => {
+	const source = readSource("src/utils/focused-breadcrumb.ts");
+
+	assert.doesNotMatch(source, /material-symbols:timeline-rounded/);
+	assert.match(source, /material-symbols:timeline/);
 });
 
 test("足迹页使用三层归档分支结构", () => {
@@ -336,6 +366,27 @@ test("文章归档提供标签筛选、活动热力图和三级数量", () => {
 	assert.match(panel, /archive-summary-count/);
 	assert.match(panel, /yearGroup\.totalCount/);
 	assert.match(panel, /monthGroup\.count/);
+});
+
+test("文章归档活动区左侧连接 GitHub 贡献，右侧展示周度文章分布", () => {
+	const page = readSource("src/pages/archive.astro");
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+	const config = readSource("src/config/siteConfig.ts");
+	const typeSource = readSource("src/types/siteConfig.ts");
+
+	assert.match(page, /githubProfile/);
+	assert.match(page, /githubUsername/);
+	assert.match(panel, /export let githubUsername/);
+	assert.match(panel, /export let githubProfile/);
+	assert.match(panel, /data-github-heatmap/);
+	assert.match(panel, /GitHub 贡献/);
+	assert.match(panel, /github-contributions-api\.jogruber\.de/);
+	assert.match(panel, /data-weekly-post-heatmap/);
+	assert.match(panel, /文章分布/);
+	assert.match(config, /heatmap:/);
+	assert.match(config, /username:\s*"Dylanliiiii"/);
+	assert.match(config, /profileUrl:\s*"https:\/\/github\.com\/Dylanliiiii"/);
+	assert.match(typeSource, /heatmap\?:/);
 });
 
 test("文章归档使用年、月、文章连续路径并支持键盘聚焦", () => {

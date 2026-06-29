@@ -3,6 +3,7 @@ import test from "node:test";
 import {
 	buildArchiveHeatmaps,
 	filterArchivePosts,
+	getArchiveActivityLevel,
 	getArchiveActivityDate,
 	groupArchivePosts,
 	summarizeArchiveTags,
@@ -114,4 +115,29 @@ test("热力图优先使用更新日期并回退发布时间", () => {
 	);
 	assert.equal(heatmaps[0].grid[3][5].count, 1);
 	assert.equal(heatmaps[0].grid[0][4].count, 1);
+});
+
+test("周度文章热力图使用固定阈值，六篇才进入最高色阶", () => {
+	assert.equal(getArchiveActivityLevel(0), 0);
+	assert.equal(getArchiveActivityLevel(1), 1);
+	assert.equal(getArchiveActivityLevel(3), 2);
+	assert.equal(getArchiveActivityLevel(5), 3);
+	assert.equal(getArchiveActivityLevel(6), 4);
+
+	const weeklyPosts = Array.from({ length: 6 }, (_, index) => ({
+		id: `weekly-${index}`,
+		data: {
+			title: `第 ${index + 1} 篇`,
+			tags: ["Astro"],
+			category: "教程",
+			published: new Date("2026-06-24"),
+		},
+	}));
+
+	const singlePostHeatmap = buildArchiveHeatmaps([weeklyPosts[0]]);
+	const sixPostHeatmap = buildArchiveHeatmaps(weeklyPosts);
+
+	assert.equal(singlePostHeatmap[0].grid[3][5].level, 1);
+	assert.equal(sixPostHeatmap[0].grid[3][5].count, 6);
+	assert.equal(sixPostHeatmap[0].grid[3][5].level, 4);
 });

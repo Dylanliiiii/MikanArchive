@@ -11,10 +11,32 @@ import {
 import { getPostUrlBySlug } from "@/utils/url-utils";
 
 export let sortedPosts: ArchivePost[] = [];
+export let githubUsername = "";
+export let githubProfile = "";
 
 const months = Array.from({ length: 12 }, (_, index) => index + 1);
 const levels = [0, 1, 2, 3, 4];
 const tagColors = ["#d69b42", "#4eb69b", "#6f9ee8", "#d97fa8", "#8d83dc"];
+const githubDayLabels = ["", "一", "", "三", "", "五", ""];
+
+type GithubContributionDay = {
+	date: string;
+	count: number;
+	level: number;
+};
+
+type GithubHeatmapCell = {
+	date: string;
+	count: number;
+	level: number;
+	visible: boolean;
+};
+
+type GithubMonthBoundary = {
+	label: string;
+	weekIndex: number;
+	span: number;
+};
 
 let activeTag: string | null = null;
 let activeCategory: string | null = null;
@@ -28,6 +50,12 @@ let activePostId: string | null = null;
 let highlightedYear: number | null = null;
 let highlightedMonth: string | null = null;
 let highlightPathD = "";
+let githubWeeks: GithubHeatmapCell[][] = [];
+let githubMonthBoundaries: GithubMonthBoundary[] = [];
+let githubFetchState: "idle" | "loading" | "ready" | "error" = "idle";
+let githubError = "";
+let githubTotalContributions = 0;
+let githubActiveDays = 0;
 
 const yearNodeRefs = new Map<number, HTMLElement>();
 const monthNodeRefs = new Map<string, HTMLElement>();
@@ -56,6 +84,7 @@ $: activeFilterLabel = activeTag
 $: activeFilterValue = activeTag
 	? `#${activeTag}`
 	: activeCategory || (showUncategorized ? "未分类" : "全部");
+$: githubLink = githubProfile || (githubUsername ? "https://github.com/" + githubUsername : "");
 $: if (
 	heatmaps.length > 0 &&
 	!heatmaps.some((item) => item.year === selectedHeatmapYear)
@@ -70,6 +99,117 @@ function formatDate(date: Date) {
 	const month = String(date.getMonth() + 1).padStart(2, "0");
 	const day = String(date.getDate()).padStart(2, "0");
 	return `${month}-${day}`;
+}
+
+function formatDateKey(date: Date) {
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	return date.getFullYear() + "-" + month + "-" + day;
+}
+
+function getGithubFallbackLevel(count: number, maxCount: number) {
+	if (count <= 0) return 0;
+	if (maxCount <= 1) return 1;
+	const ratio = count / maxCount;
+	if (ratio <= 0.25) return 1;
+	if (ratio <= 0.5) return 2;
+	if (ratio <= 0.75) return 3;
+	return 4;
+}
+
+function getAlignedYearStart(year: number) {
+	const start = new Date(year, 0, 1);
+	const startDay = start.getDay();
+	const startOffset = startDay === 0 ? -6 : 1 - startDay;
+	start.setDate(start.getDate() + startOffset);
+	return start;
+}
+
+function buildGithubMonthBoundaries() {
+	const now = new Date();
+	const currentYear = now.getFullYear();
+	const yearStart = getAlignedYearStart(currentYear);
+	const rawBoundaries: Array<Omit<GithubMonthBoundary, "span">> = [];
+
+	for (let month = 0; month < 12; month += 1) {
+		const firstDay = new Date(currentYear, month, 1);
+		if (firstDay > now) break;
+		const monthStart = new Date(firstDay);
+		const firstDayOfWeek = firstDay.getDay();
+		const monthOffset = firstDayOfWeek === 0 ? -6 : 1 - firstDayOfWeek;
+		monthStart.setDate(firstDay.getDate() + monthOffset);
+		const diff = monthStart.getTime() - yearStart.getTime();
+		rawBoundaries.push({
+			label: String(month + 1),
+			weekIndex: Math.max(0, Math.round(diff / (7 * 24 * 60 * 60 * 1000))),
+		});
+	}
+
+	return rawBoundaries.map((boundary, index): GithubMonthBoundary => ({
+		...boundary,
+		span: Math.max(2, (rawBoundaries[index + 1]?.weekIndex ?? boundary.weekIndex + 4) - boundary.weekIndex),
+	}));
+}
+
+function buildGithubWeeks(contributions: GithubContributionDay[]) {
+	const now = new Date();
+	const currentYear = now.getFullYear();
+	const countByDate = new Map(contributions.map((day) => [day.date, day.count]));
+	const levelByDate = new Map(contributions.map((day) => [day.date, day.level]));
+	const maxCount = Math.max(1, ...contributions.map((day) => day.count));
+	const weeks: GithubHeatmapCell[][] = [];
+	const current = getAlignedYearStart(currentYear);
+
+	while (current <= now || current.getDay() !== 1) {
+		const week: GithubHeatmapCell[] = [];
+		for (let day = 0; day < 7; day += 1) {
+			const date = formatDateKey(current);
+			const visible = current.getFullYear() === currentYear && current <= now;
+			const count = visible ? (countByDate.get(date) ?? 0) : 0;
+			const level = visible
+				? (levelByDate.get(date) ?? getGithubFallbackLevel(count, maxCount))
+				: 0;
+			week.push({ date, count, level, visible });
+			current.setDate(current.getDate() + 1);
+		}
+		weeks.push(week);
+		if (weeks.length > 54) break;
+	}
+
+	return weeks;
+}
+
+async function loadGithubContributions(signal: AbortSignal) {
+	if (!githubUsername) return;
+	githubFetchState = "loading";
+	githubError = "";
+	githubWeeks = buildGithubWeeks([]);
+	githubMonthBoundaries = buildGithubMonthBoundaries();
+
+	try {
+		const response = await fetch(
+			"https://github-contributions-api.jogruber.de/v4/" + encodeURIComponent(githubUsername) + "?y=last",
+			{ signal },
+		);
+		if (!response.ok) throw new Error("GitHub contributions API " + response.status);
+		const data = await response.json();
+		const contributions = (data.contributions ?? []).map(
+			(day: { date: string; count: number; level?: number }): GithubContributionDay => ({
+				date: day.date,
+				count: day.count,
+				level: day.level ?? 0,
+			}),
+		);
+
+		githubTotalContributions = contributions.reduce((total, day) => total + day.count, 0);
+		githubActiveDays = contributions.filter((day) => day.count > 0).length;
+		githubWeeks = buildGithubWeeks(contributions);
+		githubFetchState = "ready";
+	} catch (error) {
+		if (error instanceof DOMException && error.name === "AbortError") return;
+		githubFetchState = "error";
+		githubError = "GitHub 贡献数据暂时无法加载，点击可直接查看主页。";
+	}
 }
 
 function getPrimaryTag(post: ArchivePost) {
@@ -228,10 +368,15 @@ function handleResize() {
 
 onMount(() => {
 	readFiltersFromUrl();
+	githubWeeks = buildGithubWeeks([]);
+	githubMonthBoundaries = buildGithubMonthBoundaries();
+	const controller = new AbortController();
+	void loadGithubContributions(controller.signal);
 	window.addEventListener("popstate", readFiltersFromUrl);
 	window.addEventListener("resize", handleResize);
 
 	return () => {
+		controller.abort();
 		window.removeEventListener("popstate", readFiltersFromUrl);
 		window.removeEventListener("resize", handleResize);
 	};
@@ -291,11 +436,78 @@ onMount(() => {
 		</div>
 	</div>
 
-	<section class="archive-heatmap" data-archive-heatmap aria-label="文章活动热力图">
+	<div class="archive-heatmap-layout" data-archive-heatmap>
+		<section class="archive-heatmap archive-heatmap--github" data-github-heatmap aria-label="GitHub 贡献热力图">
+			<header class="archive-heatmap-header">
+				<div>
+					<p class="archive-section-eyebrow archive-section-eyebrow--github">GITHUB CONTRIBUTIONS</p>
+					<h2>GitHub 贡献</h2>
+				</div>
+				{#if githubUsername}
+					<a class="github-heatmap-profile" href={githubLink} target="_blank" rel="noopener noreferrer" aria-label={"打开 " + githubUsername + " 的 GitHub 主页"}>
+						@{githubUsername}
+					</a>
+				{/if}
+			</header>
+
+			{#if githubUsername}
+				<a class="github-heatmap-link" href={githubLink} target="_blank" rel="noopener noreferrer">
+					<div class="github-heatmap-stats" aria-live="polite">
+						{#if githubFetchState === "ready"}
+							<span>{githubActiveDays}d · {githubTotalContributions} contributions</span>
+						{:else if githubFetchState === "error"}
+							<span>{githubError}</span>
+						{:else}
+							<span>正在连接 GitHub 贡献数据…</span>
+						{/if}
+					</div>
+					<div class="github-heatmap-scroll">
+						<div class="github-heatmap-body">
+							<div class="github-heatmap-months">
+								{#each githubMonthBoundaries as month}
+									<span style={"grid-column: " + (month.weekIndex + 1) + " / span " + month.span}>{month.label}</span>
+								{/each}
+							</div>
+							<div class="github-heatmap-grid-wrap">
+								<div class="github-heatmap-days">
+									{#each githubDayLabels as label}<span>{label}</span>{/each}
+								</div>
+								<div class="github-heatmap-grid">
+									{#each githubWeeks as week}
+										<div class="github-heatmap-week">
+											{#each week as cell}
+												<span
+													class={"github-heatmap-cell level-" + cell.level}
+													role="img"
+													aria-label={cell.visible ? cell.date + "：" + cell.count + " 次贡献" : ""}
+													title={cell.visible ? cell.date + "：" + cell.count + " 次贡献" : ""}
+													style={cell.visible ? "" : "visibility: hidden"}
+												></span>
+											{/each}
+										</div>
+									{/each}
+								</div>
+							</div>
+						</div>
+					</div>
+				</a>
+				<footer class="archive-heatmap-legend github-heatmap-legend" aria-label="GitHub 贡献色阶">
+					<span>少</span>
+					{#each levels as level}
+						<span class={"github-heatmap-cell level-" + level} aria-hidden="true"></span>
+					{/each}
+					<span>多</span>
+				</footer>
+			{:else}
+				<p class="archive-empty-heatmap">还没有配置 GitHub 用户名。</p>
+			{/if}
+		</section>
+
+		<section class="archive-heatmap archive-heatmap--posts" data-weekly-post-heatmap aria-label="周度文章分布热力图">
 		<header class="archive-heatmap-header">
 			<div>
 				<p class="archive-section-eyebrow">POST ACTIVITY</p>
-				<h2>文章活动</h2>
+				<h2>文章分布</h2>
 			</div>
 			{#if heatmaps.length > 0}
 				<div class="archive-heatmap-years">
@@ -349,6 +561,7 @@ onMount(() => {
 			<p class="archive-empty-heatmap">当前筛选还没有可统计的文章活动。</p>
 		{/if}
 	</section>
+	</div>
 
 	<div class="archive-summary">
 		<div>
@@ -529,14 +742,29 @@ onMount(() => {
 	font-size: 0.72rem;
 }
 
+.archive-heatmap-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1.28fr) minmax(18rem, 0.92fr);
+	gap: 1rem;
+	margin-bottom: 1.6rem;
+}
+
 .archive-heatmap {
 	position: relative;
 	z-index: 1;
-	margin-bottom: 1.6rem;
+	min-width: 0;
 	padding: 1rem 1rem 0.85rem;
 	border: 1px solid var(--line-divider);
 	border-radius: 1rem;
 	background: color-mix(in srgb, var(--card-bg) 72%, transparent);
+}
+
+.archive-heatmap--github {
+	background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 80%, transparent), color-mix(in srgb, #0a8f55 5%, var(--card-bg)));
+}
+
+.archive-heatmap--posts {
+	background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 82%, transparent), color-mix(in srgb, #3d6fd7 6%, var(--card-bg)));
 }
 
 .archive-heatmap-header {
@@ -553,6 +781,14 @@ onMount(() => {
 	font-size: 0.64rem;
 	font-weight: 800;
 	letter-spacing: 0.12em;
+}
+
+.archive-section-eyebrow--github {
+	color: #0b8f56;
+}
+
+:root.dark .archive-section-eyebrow--github {
+	color: #22c77d;
 }
 
 .archive-heatmap h2 {
@@ -595,6 +831,99 @@ onMount(() => {
 	font-variant-numeric: tabular-nums;
 }
 
+.github-heatmap-profile {
+	flex: 0 0 auto;
+	border-radius: 999px;
+	padding: 0.3rem 0.55rem;
+	color: #0b8f56;
+	background: color-mix(in srgb, #0b8f56 9%, transparent);
+	font-size: 0.72rem;
+	font-weight: 800;
+	text-decoration: none;
+}
+
+.github-heatmap-link {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+}
+
+.github-heatmap-stats {
+	min-height: 1rem;
+	margin: -0.25rem 0 0.45rem 2.4rem;
+	color: var(--content-meta);
+	font-size: 0.66rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.github-heatmap-scroll {
+	overflow-x: auto;
+	padding-bottom: 0.28rem;
+}
+
+.github-heatmap-body {
+	min-width: 30rem;
+}
+
+.github-heatmap-months {
+	display: grid;
+	grid-template-columns: repeat(53, 0.72rem);
+	gap: 0.22rem;
+	margin-left: 2.4rem;
+	margin-bottom: 0.28rem;
+	color: var(--content-meta);
+	font-size: 0.64rem;
+}
+
+.github-heatmap-grid-wrap {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.45rem;
+}
+
+.github-heatmap-days {
+	display: grid;
+	grid-template-rows: repeat(7, 0.72rem);
+	gap: 0.22rem;
+	width: 1.95rem;
+	color: var(--content-meta);
+	font-size: 0.64rem;
+	line-height: 0.72rem;
+	text-align: right;
+}
+
+.github-heatmap-grid {
+	display: flex;
+	gap: 0.22rem;
+}
+
+.github-heatmap-week {
+	display: grid;
+	grid-template-rows: repeat(7, 0.72rem);
+	gap: 0.22rem;
+}
+
+.github-heatmap-cell {
+	display: block;
+	width: 0.72rem;
+	height: 0.72rem;
+	border-radius: 0.18rem;
+	background: color-mix(in srgb, var(--line-divider) 70%, transparent);
+	transition: transform 150ms ease, outline-color 150ms ease;
+}
+
+.github-heatmap-cell[role="img"]:hover {
+	position: relative;
+	z-index: 2;
+	transform: scale(1.35);
+	outline: 2px solid color-mix(in srgb, #0b8f56 65%, transparent);
+}
+
+.github-heatmap-cell.level-1 { background: color-mix(in srgb, #0b8f56 28%, var(--card-bg)); }
+.github-heatmap-cell.level-2 { background: color-mix(in srgb, #0b8f56 50%, var(--card-bg)); }
+.github-heatmap-cell.level-3 { background: color-mix(in srgb, #0b8f56 72%, var(--card-bg)); }
+.github-heatmap-cell.level-4 { background: #09935a; }
+
 .archive-heatmap-scroll {
 	overflow-x: auto;
 	padding-bottom: 0.3rem;
@@ -602,14 +931,14 @@ onMount(() => {
 
 .archive-heatmap-grid {
 	display: grid;
-	min-width: 42rem;
+	min-width: 26rem;
 	gap: 0.3rem;
 }
 
 .archive-heatmap-months,
 .archive-heatmap-row {
 	display: grid;
-	grid-template-columns: 2.4rem repeat(12, minmax(1.7rem, 1fr));
+	grid-template-columns: 2.2rem repeat(12, minmax(1.35rem, 1fr));
 	gap: 0.3rem;
 }
 
@@ -629,7 +958,7 @@ onMount(() => {
 .archive-heatmap-cell {
 	display: block;
 	min-width: 0.8rem;
-	height: 1.55rem;
+	height: 1.45rem;
 	border-radius: 0.36rem;
 	background: color-mix(in srgb, var(--line-divider) 68%, transparent);
 	transition: transform 150ms ease, outline-color 150ms ease;
@@ -655,6 +984,11 @@ onMount(() => {
 	margin-top: 0.55rem;
 	color: var(--content-meta);
 	font-size: 0.62rem;
+}
+
+.github-heatmap-legend .github-heatmap-cell {
+	width: 0.7rem;
+	height: 0.7rem;
 }
 
 .archive-heatmap-legend .archive-heatmap-cell {
@@ -925,6 +1259,11 @@ onMount(() => {
 		--tree-step: 1.35rem;
 	}
 
+	.archive-heatmap-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.9rem;
+	}
+
 	.archive-filter-wrap,
 	.archive-filter-trigger {
 		width: 100%;
@@ -940,13 +1279,17 @@ onMount(() => {
 		padding-inline: 0.75rem;
 	}
 
+	.github-heatmap-body {
+		min-width: 28rem;
+	}
+
 	.archive-heatmap-grid {
-		min-width: 36rem;
+		min-width: 25rem;
 	}
 
 	.archive-heatmap-months,
 	.archive-heatmap-row {
-		grid-template-columns: 2rem repeat(12, minmax(1.5rem, 1fr));
+		grid-template-columns: 2rem repeat(12, minmax(1.32rem, 1fr));
 		gap: 0.22rem;
 	}
 

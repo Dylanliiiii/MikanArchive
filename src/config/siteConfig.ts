@@ -46,6 +46,13 @@ export const siteConfig: SiteConfig = {
 		anime: false,
 	},
 	categoryBar: true,
+	heatmap: {
+		github: {
+			enabled: true,
+			username: "Dylanliiiii",
+			profileUrl: "https://github.com/Dylanliiiii",
+		},
+	},
 	foldArticle: true,
 	postListLayout: {
 		defaultMode: "grid",

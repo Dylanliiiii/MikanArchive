@@ -1,6 +1,7 @@
 ---
 import type { MarkdownHeading } from "astro";
 import FloatingControls from "@/components/controls/FloatingControls.astro";
+import FocusedBreadcrumb from "@/components/layout/FocusedBreadcrumb.astro";
 import Footer from "@/components/layout/Footer.astro";
 import Navbar from "@/components/layout/Navbar.astro";
 import SidebarTOC from "@/components/widget/SidebarTOC.astro";
@@ -88,6 +89,7 @@ const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 					<h1 class="sr-only">{title}</h1>
 					<div id="grid-class-carrier" data-grid-class="grid-cols-1" class="hidden"></div>
 					<div id="content-wrapper" class="onload-animation transition-leaving">
+						<FocusedBreadcrumb title={title} />
 						<slot />
 					</div>
 				</main>

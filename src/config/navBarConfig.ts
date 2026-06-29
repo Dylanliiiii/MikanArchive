@@ -31,7 +31,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		url: "#",
 		icon: "material-symbols:bookmark-heart",
 		children: [
-			LinkPresets.Resources,
 			LinkPresets.ResourceTools,
 			LinkPresets.ResourceClips,
 		],
@@ -116,11 +115,6 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		url: "https://qm.qq.com/",
 		external: true,
 		icon: "material-symbols:groups-rounded",
-	},
-	Resources: {
-		name: "收藏总览",
-		url: "/resources/",
-		icon: "material-symbols:bookmark-heart",
 	},
 	ResourceTools: {
 		name: "工具导航",

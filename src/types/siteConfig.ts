@@ -90,6 +90,15 @@ export type SiteConfig = {
 	// 分类导航栏开关
 	categoryBar?: boolean;
 
+	// 归档页热力图配置
+	heatmap?: {
+		github?: {
+			enabled: boolean;
+			username: string;
+			profileUrl?: string;
+		};
+	};
+
 	// 归档页是否折叠非最新年份文章
 	foldArticle?: boolean;
 

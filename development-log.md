@@ -1,5 +1,62 @@
 ﻿# Development Log
 
+## 2026-06-29 12:08:52 +08:00
+
+### 修改范围
+
+- 归档页 GitHub 贡献热力图与周度文章分布双面板
+- 周度文章热力图固定色阶阈值
+- 聚焦页面面包屑与功能页直达路径
+- 收藏总览移除与收藏导航精简
+- README、AGENTS、项目专属 Skill、设计规格、CHANGELOG 与交接文档同步
+
+### 涉及文件
+
+- `src/utils/archive-utils.ts`
+- `src/components/controls/ArchivePanel.svelte`
+- `src/pages/archive.astro`
+- `src/pages/index.astro`
+- `src/pages/resources/index.astro`
+- `src/config/navBarConfig.ts`
+- `src/config/siteConfig.ts`
+- `src/types/siteConfig.ts`
+- `src/layouts/ContentGridLayout.astro`
+- `src/components/layout/FocusedBreadcrumb.astro`
+- `src/utils/focused-breadcrumb.ts`
+- `tests/archive-utils.test.ts`
+- `tests/mikan-pages.test.ts`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `CHANGELOG.md`
+- `docs/superpowers/specs/2026-06-29-mikan-article-archive-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将 `/archive/` 活动区从单个周度文章热力图改为左右双面板：左侧展示配置用户 `Dylanliiiii` 的 GitHub 贡献热力图并链接到 GitHub 主页，右侧展示当前标签/分类筛选下的周度文章分布。
+- GitHub 贡献数据使用公开贡献接口在客户端加载，失败时保留卡片提示与 GitHub 主页链接，不需要 token，也不影响文章归档时间线。
+- 将周度文章热力图色阶改为固定阈值：0 篇为空，1–2 篇浅色，3–4 篇中浅色，5 篇较深色，6 篇及以上才是最高色阶，避免示例 1 篇文章显示成最深色。
+- 新增 `FocusedBreadcrumb` 与 `focused-breadcrumb.ts`，在聚焦布局中显示“主页 › 当前功能页”；友链、留言、工具导航、摘录收藏等下拉子功能直接从主页指向自身，不经过“联系我”或“收藏”空父级。
+- 从顶部“收藏”下拉中移除“收藏总览”，只保留“工具导航”和“摘录收藏”；`/resources/` 保留为兼容跳转到 `/resources/tools/`，首页精选收藏“全部”也改为直达工具导航。
+- 同步更新 README、AGENTS、项目专属 Skill、归档规格、聚焦布局规格、Firefly 重构规格和 CHANGELOG，使当前信息架构不再描述收藏总览功能页。
+
+### 验证情况
+
+- TDD 红灯：新增归档工具测试后，`test:archive` 首次因缺少 `getArchiveActivityLevel` 导出失败；新增页面契约后，`test:pages` 按预期暴露收藏总览仍存在、面包屑组件缺失、归档未连接 GitHub 的失败。
+- 绿灯验证已运行 `npm.cmd run test:archive`，6/6 通过。
+- 绿灯验证已运行 `npm.cmd run test:pages`，32/32 通过。
+- 完整自动验证已运行 `npm.cmd run sync:content`、`validate:content`、`test:archive`、`test:content-model`、`test:pages`、`check` 和 `build`，最终全部退出码为 0。
+- `test:archive` 为 6/6 通过；`test:content-model` 为 6/6 通过；`test:pages` 为 33/33 通过。
+- `astro check` 结果为 166 个文件、0 errors、0 warnings，仅保留既有 `Calendar.astro` 未读参数 hint。
+- 生产构建生成 16 个页面，Pagefind 索引完成；仍保留既有 Vite 动态导入、大 chunk、路由优先级、Markdown deprecation 和中文 stemming 提示，本次没有新增构建失败。
+- Playwright CLI 使用项目内 `.npm-cache` 生成桌面和 390px 移动端截图；桌面确认 `/archive/` 左 GitHub 贡献热力图、右文章分布热力图并排显示，移动端确认双面板上下堆叠且内容可横向滚动。
+- Playwright 截图确认 `/resources/tools/` 面包屑为“主页 › 工具导航”，没有经过“收藏”父级；HTTP 检查确认 `/archive/`、`/resources/tools/`、`/resources/clips/`、`/guestbook/`、`/friends/`、`/resources/` 均返回 200 且包含聚焦面包屑。
+- 浏览器检查期间首次 `npm exec --package playwright` 因系统 npm cache 权限失败；改用项目内 `.npm-cache` 后成功完成截图。`/resources/` 初版 Astro redirect 曾导致 Pagefind 无 `<html>` 提示，已改为极薄兼容跳转页并重新构建通过。
+
 ## 2026-06-29 11:01:00 +08:00
 
 ### 修改范围

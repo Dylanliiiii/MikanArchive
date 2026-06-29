@@ -130,6 +130,14 @@ export function getArchiveActivityDate(post: ArchivePost): Date {
 	return post.data.updated ?? post.data.published;
 }
 
+export function getArchiveActivityLevel(count: number): number {
+	if (count <= 0) return 0;
+	if (count <= 2) return 1;
+	if (count <= 4) return 2;
+	if (count <= 5) return 3;
+	return 4;
+}
+
 export function buildArchiveHeatmaps(
 	posts: ArchivePost[],
 ): ArchiveHeatmapYear[] {
@@ -153,16 +161,12 @@ export function buildArchiveHeatmaps(
 	return [...countsByYear.entries()]
 		.sort(([left], [right]) => right - left)
 		.map(([year, counts]): ArchiveHeatmapYear => {
-			const maxCount = Math.max(1, ...counts.flat());
 			const grid = counts.map((row, period) =>
 				row.map((count, month): ArchiveHeatmapCell => ({
 					month,
 					period,
 					count,
-					level:
-						count === 0
-							? 0
-							: Math.max(1, Math.ceil((count / maxCount) * 4)),
+					level: getArchiveActivityLevel(count),
 				})),
 			);
 
