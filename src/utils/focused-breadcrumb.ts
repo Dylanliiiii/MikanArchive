@@ -7,7 +7,7 @@ export type FocusedBreadcrumbItem = {
 
 const pageMap: Record<string, Omit<FocusedBreadcrumbItem, "href" | "isCurrent">> = {
 	"/posts/": {
-		label: "文库",
+		label: "文章",
 		icon: "material-symbols:article-rounded",
 	},
 	"/archive/": {
@@ -15,12 +15,8 @@ const pageMap: Record<string, Omit<FocusedBreadcrumbItem, "href" | "isCurrent">>
 		icon: "material-symbols:archive-rounded",
 	},
 	"/categories/": {
-		label: "分类",
-		icon: "material-symbols:folder-open-rounded",
-	},
-	"/tags/": {
-		label: "标签",
-		icon: "material-symbols:tag-rounded",
+		label: "分类标签",
+		icon: "material-symbols:category-rounded",
 	},
 	"/resources/tools/": {
 		label: "工具导航",

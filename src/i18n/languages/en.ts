@@ -16,8 +16,8 @@ export const en: Translation = {
 	[Key.all]: "All",
 
 	[Key.tags]: "Tags",
-	[Key.categories]: "Categories",
-	[Key.allCategories]: "All Categories",
+	[Key.categories]: "Category Tags",
+	[Key.allCategories]: "All Category Tags",
 	[Key.allTags]: "All Tags",
 	[Key.recentPosts]: "Recent Posts",
 	[Key.postList]: "Post List",
@@ -311,7 +311,7 @@ export const en: Translation = {
 	// Site Statistics
 	[Key.siteStats]: "Site Statistics",
 	[Key.siteStatsPostCount]: "Posts",
-	[Key.siteStatsCategoryCount]: "Categories",
+	[Key.siteStatsCategoryCount]: "Category Tags",
 	[Key.siteStatsTagCount]: "Tags",
 	[Key.siteStatsTotalWords]: "Total Words",
 	[Key.siteStatsRunningDays]: "Running Days",

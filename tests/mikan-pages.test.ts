@@ -26,7 +26,6 @@ const focusedPages = [
 	"src/pages/resources/clips/index.astro",
 	"src/pages/rss.astro",
 	"src/pages/search.astro",
-	"src/pages/tags/index.astro",
 ];
 
 test("首页继续使用带横幅和双侧栏的 MainGridLayout", () => {
@@ -242,7 +241,6 @@ test("主要非主页可见大标题统一使用工具导航同款标题系统",
 		"src/pages/categories/index.astro",
 		"src/pages/archive.astro",
 		"src/pages/posts/index.astro",
-		"src/pages/tags/index.astro",
 		"src/pages/rss.astro",
 		"src/pages/records/index.astro",
 		"src/components/pages/AdvancedSearch.svelte",
@@ -310,6 +308,64 @@ test("收藏导航保留主入口并提供两个子入口", () => {
 	assert.doesNotMatch(source, /LinkPresets\.Resources/);
 	assert.match(source, /\/resources\/tools\//);
 	assert.match(source, /\/resources\/clips\//);
+});
+
+test("文库下拉只保留文章、归档和分类标签", () => {
+	const source = readSource("src/config/navBarConfig.ts");
+
+	assert.match(source, /LinkPresets\.Posts/);
+	assert.match(source, /LinkPresets\.Archive/);
+	assert.match(source, /LinkPresets\.CategoryTags/);
+	assert.match(source, /name:\s*"分类标签"/);
+	assert.match(source, /url:\s*"\/categories\/"/);
+	assert.doesNotMatch(source, /LinkPresets\.Tags/);
+	assert.doesNotMatch(source, /url:\s*"\/tags\/"/);
+});
+
+test("独立标签页面已删除，文章标签只作为分类标签使用", () => {
+	assert.equal(existsSync(path.join(root, "src/pages/tags/index.astro")), false);
+});
+
+test("文章列表页标题改为文章，并提供分类标签筛选和分组", () => {
+	const source = readSource("src/pages/posts/index.astro");
+
+	assert.match(source, /ContentGridLayout title="文章"/);
+	assert.match(source, /MIKAN ARTICLES/);
+	assert.match(source, /<h1 class="tools-page-title">文章<\/h1>/);
+	assert.doesNotMatch(source, /<h1 class="tools-page-title">文库<\/h1>/);
+	assert.match(source, /data-post-tag-nav/);
+	assert.match(source, /data-post-tag-indicator/);
+	assert.match(source, /data-post-tag="all"/);
+	assert.match(source, /data-post-tag-section="all"/);
+	assert.match(source, /data-post-tag-section=\{group\.tag\}/);
+	assert.match(source, /groupPostsByTag/);
+	assert.match(source, /tools-category-header/);
+	assert.match(source, /PostCard/);
+});
+
+test("分类标签页使用扇形统计图和标签篇数清单", () => {
+	const source = readSource("src/pages/categories/index.astro");
+
+	assert.match(source, /MIKAN TAXONOMY/);
+	assert.match(source, /<h1 class="tools-page-title">分类标签<\/h1>/);
+	assert.match(source, /taxonomy-chart/);
+	assert.match(source, /taxonomy-sector/);
+	assert.match(source, /data-taxonomy-sector/);
+	assert.match(source, /stroke-dasharray/);
+	assert.match(source, /stroke-dashoffset/);
+	assert.match(source, /taxonomy-leader-line/);
+	assert.match(source, /taxonomy-list/);
+	assert.match(source, /共 \{totalPosts\} 篇文章/);
+	assert.doesNotMatch(source, /categories\.map\(\(category, index\)/);
+});
+
+test("首页侧栏分类组件也使用文章标签作为分类标签来源", () => {
+	const source = readSource("src/components/widget/Categories.astro");
+
+	assert.match(source, /getTagList/);
+	assert.match(source, /getTagUrl/);
+	assert.match(source, /categoryTags/);
+	assert.doesNotMatch(source, /getCategoryList/);
 });
 
 test("聚焦布局提供从主页直达当前功能页的面包屑", () => {

@@ -16,8 +16,8 @@ export const ja: Translation = {
 	[Key.all]: "すべて",
 
 	[Key.tags]: "タグ",
-	[Key.categories]: "カテゴリ",
-	[Key.allCategories]: "すべてのカテゴリ",
+	[Key.categories]: "分類タグ",
+	[Key.allCategories]: "すべての分類タグ",
 	[Key.allTags]: "すべてのタグ",
 	[Key.recentPosts]: "最近の投稿",
 	[Key.postList]: "投稿リスト",
@@ -310,7 +310,7 @@ export const ja: Translation = {
 	// サイト統計
 	[Key.siteStats]: "サイト統計",
 	[Key.siteStatsPostCount]: "記事",
-	[Key.siteStatsCategoryCount]: "カテゴリー",
+	[Key.siteStatsCategoryCount]: "分類タグ",
 	[Key.siteStatsTagCount]: "タグ",
 	[Key.siteStatsTotalWords]: "総文字数",
 	[Key.siteStatsRunningDays]: "運用日数",

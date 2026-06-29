@@ -16,8 +16,8 @@ export const ru: Translation = {
 	[Key.all]: "Все",
 
 	[Key.tags]: "Теги",
-	[Key.categories]: "Категории",
-	[Key.allCategories]: "Все категории",
+	[Key.categories]: "Категории и теги",
+	[Key.allCategories]: "Все категории и теги",
 	[Key.allTags]: "Все теги",
 	[Key.recentPosts]: "Последние посты",
 	[Key.postList]: "Список постов",
@@ -313,7 +313,7 @@ export const ru: Translation = {
 	// Статистика сайта
 	[Key.siteStats]: "Статистика сайта",
 	[Key.siteStatsPostCount]: "Статьи",
-	[Key.siteStatsCategoryCount]: "Категории",
+	[Key.siteStatsCategoryCount]: "Категории и теги",
 	[Key.siteStatsTagCount]: "Теги",
 	[Key.siteStatsTotalWords]: "Всего слов",
 	[Key.siteStatsRunningDays]: "Дней работы",

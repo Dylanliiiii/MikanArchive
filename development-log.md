@@ -1,5 +1,55 @@
 ﻿# Development Log
 
+## 2026-06-29 16:11:09 +08:00
+
+### 修改范围
+
+- 文库文章页标题与分组展示调整
+- 独立标签页删除与文库下拉精简
+- 分类页改为分类标签扇形统计图
+- 分类标签语义、文档和项目规则同步
+
+### 涉及文件
+
+- `src/pages/posts/index.astro`
+- `src/pages/categories/index.astro`
+- `src/pages/tags/index.astro`
+- `src/styles/resources.css`
+- `src/config/navBarConfig.ts`
+- `src/utils/focused-breadcrumb.ts`
+- `src/components/widget/Categories.astro`
+- `src/components/widget/Tags.astro`
+- `src/i18n/languages/*.ts`
+- `tests/mikan-pages.test.ts`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `docs/content-repository.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将文库下拉从“文章 / 归档 / 分类 / 标签”调整为“文章 / 归档 / 分类标签”，移除独立标签入口和 `/tags/` 页面。
+- 将 `/posts/` 页面首屏标题改为“文章”，新增工具导航同款分类标签筛选条，并按文章标签分组展示文章卡片。
+- 将 `/categories/` 改为“分类标签”统计页，使用基于文章标签的扇形图、标签引导线、右侧篇数清单和 hover/focus 联动动效替换旧分类卡片。
+- 让首页侧栏分类组件改用文章标签统计，保持“分类标签”口径一致；文章旧 `category` 字段和归档分类查询继续作为兼容能力保留。
+- 同步 README、AGENTS、项目专属 Skill、内容仓库说明、正式设计规格、CHANGELOG 与多语言基础文案。
+
+### 验证情况
+
+- TDD 红灯：新增页面契约后首次运行 `npm.cmd run test:pages` 按预期失败，覆盖旧导航仍含标签入口、`/tags/` 仍存在、文章页仍显示“文库”、分类页仍为旧卡片布局。
+- 已运行 `npm.cmd run test:pages`，40/40 通过。
+- 已运行 `npm.cmd run test:content-model`，6/6 通过。
+- 已运行 `npm.cmd run test:archive`，6/6 通过。
+- 已运行 `npm.cmd run check`，0 errors、0 warnings，仅保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
+- 已按顺序运行 `npm.cmd run sync:content`、`npm.cmd run validate:content`、`npm.cmd run test:archive`、`npm.cmd run test:content-model`、`npm.cmd run test:pages`、`npm.cmd run check`、`npm.cmd run build`，全部退出码为 0；构建生成 15 个页面，`/tags/` 不再生成。
+- Playwright CLI 检查 `http://127.0.0.1:4321/posts/` 和 `http://127.0.0.1:4321/categories/` 的桌面与 390×844 移动端；确认文库下拉为“文章 / 归档 / 分类标签”，文章页标题为“文章”，分类标签页扇形图和篇数清单可见，两个页面移动端均无横向溢出，控制台无新增 error。
+- 已保存视觉验收截图到已忽略目录 `output/playwright/posts-desktop.png`、`output/playwright/categories-desktop.png`、`output/playwright/posts-mobile.png`、`output/playwright/categories-mobile.png`。
+
 ## 2026-06-29 15:28:43 +08:00
 
 ### 修改范围

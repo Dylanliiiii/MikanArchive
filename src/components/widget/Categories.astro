@@ -4,9 +4,10 @@ import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
-import { getCategoryList } from "@/utils/content-utils";
+import { getTagList } from "@/utils/content-utils";
+import { getTagUrl } from "@/utils/url-utils";
 
-const categories = await getCategoryList();
+const categoryTags = await getTagList();
 
 const COLLAPSED_HEIGHT = "7.5rem";
 
@@ -20,18 +21,18 @@ const { class: className, style, widgetConfig } = Astro.props;
 const collapseThreshold = widgetConfig?.specificConfig?.collapseThreshold;
 const showTitle = widgetConfig?.showTitle !== false;
 const isCollapsed = collapseThreshold
-	? categories.length > collapseThreshold
+	? categoryTags.length > collapseThreshold
 	: false;
 ---
 
 <WidgetLayout name={i18n(I18nKey.categories)} showTitle={showTitle} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
                 class={className} style={style}
 >
-    {categories.map((c) =>
+    {categoryTags.map((c) =>
         <ButtonLink
-            url={c.url}
+            url={getTagUrl(c.name)}
             badge={String(c.count)}
-            label={`View all posts in the ${c.name.trim()} category`}
+            label={`View all posts with the ${c.name.trim()} category tag`}
         >
             {c.name.trim()}
         </ButtonLink>

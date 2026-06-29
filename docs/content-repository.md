@@ -110,7 +110,6 @@ title: "Windows 下某个问题的解决记录"
 description: "记录一次搜索资料并解决问题的过程"
 published: "2026-06-26"
 updated: "2026-06-26"
-category: "教程"
 tags: ["Windows", "工具", "问题解决"]
 image: "/assets/images/example-cover.png"
 draft: false
@@ -124,13 +123,13 @@ draft: false
 - `title`：文章标题。
 - `description`：文章摘要。
 - `published`：发布日期，建议使用 `YYYY-MM-DD`。
-- `category`：分类，例如 `教程`、`笔记`、`资料`。
-- `tags`：标签数组。
+- `tags`：分类标签数组，例如 `教程`、`笔记`、`资料`。文章的标签同时承担分类用途。
 - `draft`：是否为草稿，必须是布尔值。
 
 可选字段：
 
 - `updated`：更新日期。
+- `category`：兼容旧内容的分类字段。新文章建议主要使用 `tags` 做分类标签。
 - `image`：封面图路径。旧内容如果仍使用 `cover`，建议在接入私有内容仓库前迁移为 `image`。
 - `type`：文章类型。
 - `featured`：是否精选。

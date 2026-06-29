@@ -42,7 +42,7 @@ docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md
 第一版包含以下页面方向：
 
 - 主页：最近文章、精选收藏、足迹小组件、友链预览、简介卡片、可配置背景。
-- 文库：文章/教程列表、分类、标签、搜索、归档、草稿过滤。
+- 文库：文章/教程列表、按分类标签分组、搜索、归档、草稿过滤；文章的标签同时承担分类用途，不再单独区分“分类页”和“标签页”。
 - 文章详情：MDX 正文、代码高亮、目录、阅读进度、上一篇/下一篇。
 - 工具导航：按分类整理长期使用的网站、平台、文档和效率工具，提供分类数量、图标、域名和响应式三/二/一列卡片。
 - 摘录收藏：记录网页标题、说明、来源、适用场景、标签和收藏日期。
@@ -156,7 +156,6 @@ title: "Windows 下某个问题的解决记录"
 description: "记录一次搜索资料并解决问题的过程"
 published: "2026-06-26"
 updated: "2026-06-26"
-category: "教程"
 tags: ["Windows", "工具", "问题解决"]
 image: "/assets/images/example-cover.png"
 draft: false
@@ -170,13 +169,13 @@ draft: false
 - `title`
 - `description`
 - `published`
-- `category`
 - `tags`
 - `draft`
 
 常用可选字段：
 
 - `updated`
+- `category`（兼容旧内容，可继续填写；新文章建议主要使用 `tags` 做分类标签）
 - `image`
 - `type`
 - `featured`

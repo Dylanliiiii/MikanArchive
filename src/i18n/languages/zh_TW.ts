@@ -16,8 +16,8 @@ export const zh_TW: Translation = {
 	[Key.all]: "全部",
 
 	[Key.tags]: "標籤",
-	[Key.categories]: "分類",
-	[Key.allCategories]: "全部分類",
+	[Key.categories]: "分類標籤",
+	[Key.allCategories]: "全部分類標籤",
 	[Key.allTags]: "全部標籤",
 	[Key.recentPosts]: "最新文章",
 	[Key.postList]: "文章列表",
@@ -304,7 +304,7 @@ export const zh_TW: Translation = {
 	// 站點統計
 	[Key.siteStats]: "站點統計",
 	[Key.siteStatsPostCount]: "文章",
-	[Key.siteStatsCategoryCount]: "分類",
+	[Key.siteStatsCategoryCount]: "分類標籤",
 	[Key.siteStatsTagCount]: "標籤",
 	[Key.siteStatsTotalWords]: "總字數",
 	[Key.siteStatsRunningDays]: "運行時長",
