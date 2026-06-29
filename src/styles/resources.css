@@ -1249,6 +1249,10 @@
 	color: var(--deep-text);
 }
 
+:root.dark .calendar-toolbar h2 {
+	color: rgba(255, 255, 255, 0.9);
+}
+
 .calendar-view-switch {
 	display: inline-flex;
 	gap: 0.25rem;
@@ -1338,12 +1342,20 @@
 	color: var(--deep-text);
 }
 
+:root.dark .calendar-cell-day {
+	color: rgba(255, 255, 255, 0.84);
+}
+
 .calendar-cell-lunar {
 	display: block;
 	margin-top: 0.05rem;
 	color: var(--content-meta);
 	font-size: 0.64rem;
 	font-weight: 700;
+}
+
+:root.dark .calendar-cell-lunar {
+	color: rgba(255, 255, 255, 0.62);
 }
 
 .calendar-cell-events {
@@ -1397,6 +1409,11 @@
 .calendar-empty-text {
 	color: var(--content-meta);
 	font-size: 0.78rem;
+}
+
+:root.dark .calendar-mini-item small,
+:root.dark .calendar-detail-item span {
+	color: rgba(255, 255, 255, 0.74);
 }
 
 .calendar-year-grid {
@@ -1509,6 +1526,31 @@
 .calendar-event--neutral {
 	background: color-mix(in oklab, #e2e8f0, white 18%);
 	color: #334155;
+}
+
+:root.dark .calendar-event--pink {
+	background: color-mix(in oklab, #f472b6 28%, transparent);
+	color: #f9a8d4;
+}
+
+:root.dark .calendar-event--blue {
+	background: color-mix(in oklab, #60a5fa 26%, transparent);
+	color: #bfdbfe;
+}
+
+:root.dark .calendar-event--mint {
+	background: color-mix(in oklab, #34d399 24%, transparent);
+	color: #a7f3d0;
+}
+
+:root.dark .calendar-event--yellow {
+	background: color-mix(in oklab, #fbbf24 24%, transparent);
+	color: #fde68a;
+}
+
+:root.dark .calendar-event--neutral {
+	background: color-mix(in oklab, #94a3b8 22%, transparent);
+	color: #e2e8f0;
 }
 
 @media (max-width: 1100px) {

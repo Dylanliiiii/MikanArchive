@@ -427,6 +427,17 @@ test("公开日历样式包含多视图、时间轴和移动端防溢出规则",
 	assert.doesNotMatch(source, /letter-spacing:\s*-/);
 });
 
+test("公开日历暗色模式保留标题和事件卡片可读性", () => {
+	const source = readSource("src/styles/resources.css");
+
+	assert.match(source, /:root\.dark \.calendar-toolbar h2/);
+	assert.match(source, /:root\.dark \.calendar-cell-day/);
+	assert.match(source, /:root\.dark \.calendar-mini-item small,\s*:root\.dark \.calendar-detail-item span/);
+	assert.match(source, /:root\.dark \.calendar-event--blue/);
+	assert.match(source, /:root\.dark \.calendar-event--blue[\s\S]*background:\s*color-mix\(in oklab, #60a5fa/);
+	assert.doesNotMatch(source, /:root\.dark \.calendar-event--blue[\s\S]{0,120}white\s+35%/);
+});
+
 test("站点概览页展示站点统计、构建信息和相关入口", () => {
 	const source = readSource("src/pages/site.astro");
 	const breadcrumbSource = readSource("src/utils/focused-breadcrumb.ts");
