@@ -323,3 +323,28 @@ test("足迹页使用三层归档分支结构", () => {
 	assert.match(source, /archive-month-branch/);
 	assert.match(source, /archive-record-branch/);
 });
+
+test("文章归档提供标签筛选、活动热力图和三级数量", () => {
+	const page = readSource("src/pages/archive.astro");
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+
+	assert.match(page, /<ArchivePanel/);
+	assert.doesNotMatch(page, /banner-page-title-text/);
+	assert.match(panel, /summarizeArchiveTags/);
+	assert.match(panel, /data-archive-filter/);
+	assert.match(panel, /data-archive-heatmap/);
+	assert.match(panel, /archive-summary-count/);
+	assert.match(panel, /yearGroup\.totalCount/);
+	assert.match(panel, /monthGroup\.count/);
+});
+
+test("文章归档使用年、月、文章连续路径并支持键盘聚焦", () => {
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+
+	assert.match(panel, /ap-year-block/);
+	assert.match(panel, /ap-month-block/);
+	assert.match(panel, /ap-highlight-svg/);
+	assert.match(panel, /computeHighlight/);
+	assert.match(panel, /on:focus=/);
+	assert.match(panel, /on:blur=/);
+});

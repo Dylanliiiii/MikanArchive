@@ -11,21 +11,6 @@ const sortedPostsList = await getSortedPostsList();
 ---
 
 <ContentGridLayout title={i18n(I18nKey.archive)} description="按时间归档文章和教程记录">
-  <script is:inline>
-    (function() {
-      var p = new URLSearchParams(location.search);
-      var cat = p.get("category") || "";
-      var tag = p.get("tag") || "";
-      var unc = p.get("uncategorized");
-      var t = cat || (unc ? "未分类" : "") || (tag ? "#" + tag : "");
-      if (t) {
-        requestAnimationFrame(function() {
-          var el = document.querySelector(".banner-page-title-text");
-          if (el) el.textContent = t;
-        });
-      }
-    })();
-  </script>
   <section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
     <header class="tools-page-header relative z-10 mb-7">
       <div class="tools-eyebrow-row">
@@ -33,7 +18,7 @@ const sortedPostsList = await getSortedPostsList();
         <p class="tools-eyebrow">MIKAN ARCHIVE</p>
       </div>
       <h1 class="tools-page-title">{i18n(I18nKey.archive)}</h1>
-      <p class="tools-page-description">按发布时间整理文章和教程记录，适合从时间线回看内容。</p>
+      <p class="tools-page-description">用文章活动热力图回看更新节奏，并按标签浏览不同主题的归档时间线。</p>
     </header>
     <div class="relative z-10">
       <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte" />
