@@ -17,4 +17,5 @@
 - 已新增设计规格 `docs/superpowers/specs/2026-06-29-mikan-public-calendar-design.md`。
 - 已新增实现计划 `docs/superpowers/plans/2026-06-29-mikan-public-calendar.md`。
 - 已实现公开日历内容模型、农历标签、页面路由、年 / 月 / 周 / 日视图、样式和文档同步。
-- 待收尾：运行全量自动验证、进行桌面 / 移动端浏览器视觉验收，确认无问题后提交文档收尾并 push。
+- 已完成全量自动验证与桌面 / 移动端浏览器视觉验收。
+- 待收尾：提交验证日志更新并 push；push 完成后清空本目标，仅保留文档使用规则。

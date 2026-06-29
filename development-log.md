@@ -74,7 +74,10 @@
 - 已运行 `npm.cmd run test:content-model`，内容模型测试通过。
 - 已运行 `npm.cmd run test:calendar`，日历工具测试通过。
 - 已运行 `npm.cmd run test:pages`，页面契约测试通过。
-- 全量 `check`、`build` 和浏览器视觉验收待后续收尾执行。
+- 已运行 `npm.cmd run check`，Astro 检查通过；仍保留既有 `src/components/widget/Calendar.astro` 未使用参数 hint。
+- 已运行 `npm.cmd run build`，构建通过并生成 `/calendar/index.html`；输出仍包含既有动态导入、chunk size、Pagefind 中文分词和 Markdown 配置弃用提示。
+- 已使用系统 Chrome + Playwright 检查 `http://127.0.0.1:4321/calendar/` 的桌面 `1440×900` 与移动端 `390×844` 视口：月视图、日视图、农历标签和 24 小时时间轴可渲染，年 / 月 / 周 / 日按钮可切换，页面级横向溢出为 0。
+- 已检查首页“我的”下拉，确认包含“日历”入口；浏览器控制台仅出现 Vite dev 连接日志。
 
 ## 2026-06-29 20:39:48 +08:00
 
