@@ -13,6 +13,7 @@
     "preview": "astro preview",
     "sync:content": "node scripts/sync-content.mjs",
     "validate:content": "node scripts/validate-content.mjs",
+    "test:archive": "tsx tests/archive-utils.test.ts",
     "test:content-model": "tsx tests/mikan-data.test.ts",
     "test:pages": "tsx tests/mikan-pages.test.ts",
     "check": "npm run sync:content && astro check"
