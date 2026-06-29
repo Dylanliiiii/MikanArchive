@@ -67,9 +67,16 @@ export function summarizeArchiveTags(
 export function filterArchivePosts(
 	posts: ArchivePost[],
 	tag: string | null,
+	category: string | null = null,
+	uncategorized = false,
 ): ArchivePost[] {
 	return posts
-		.filter((post) => !tag || post.data.tags.includes(tag))
+		.filter(
+			(post) =>
+				(!tag || post.data.tags.includes(tag)) &&
+				(!category || post.data.category === category) &&
+				(!uncategorized || !post.data.category),
+		)
 		.slice()
 		.sort(
 			(left, right) =>

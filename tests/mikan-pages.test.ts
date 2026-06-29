@@ -348,3 +348,30 @@ test("文章归档使用年、月、文章连续路径并支持键盘聚焦", ()
 	assert.match(panel, /on:focus=/);
 	assert.match(panel, /on:blur=/);
 });
+
+test("文章归档保留既有分类与未分类查询兼容", () => {
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+
+	assert.match(panel, /searchParams\.get\("category"\)/);
+	assert.match(panel, /searchParams\.has\("uncategorized"\)/);
+	assert.match(panel, /activeCategory/);
+});
+
+test("文章归档筛选菜单不在非交互容器上拦截点击", () => {
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+	const menuElement = /<div[\s\S]{0,240}?role="menu"[\s\S]{0,120}?>/.exec(
+		panel,
+	)?.[0];
+
+	assert.ok(menuElement, "归档筛选菜单应存在");
+	assert.doesNotMatch(menuElement, /on:click/);
+});
+
+test("文章归档筛选标题使用可追踪的 Svelte 派生状态", () => {
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+
+	assert.match(panel, /\$: activeFilterLabel =/);
+	assert.match(panel, /\$: activeFilterValue =/);
+	assert.doesNotMatch(panel, /function getActiveFilterLabel/);
+	assert.doesNotMatch(panel, /function getActiveFilterValue/);
+});

@@ -17,6 +17,8 @@ const levels = [0, 1, 2, 3, 4];
 const tagColors = ["#d69b42", "#4eb69b", "#6f9ee8", "#d97fa8", "#8d83dc"];
 
 let activeTag: string | null = null;
+let activeCategory: string | null = null;
+let showUncategorized = false;
 let filterOpen = false;
 let selectedHeatmapYear = 0;
 let filterButtonEl: HTMLButtonElement;
@@ -32,7 +34,12 @@ const monthNodeRefs = new Map<string, HTMLElement>();
 const postNodeRefs = new Map<string, HTMLElement>();
 
 $: tagOptions = summarizeArchiveTags(sortedPosts);
-$: filteredPosts = filterArchivePosts(sortedPosts, activeTag);
+$: filteredPosts = filterArchivePosts(
+	sortedPosts,
+	activeTag,
+	activeCategory,
+	showUncategorized,
+);
 $: timeline = groupArchivePosts(filteredPosts);
 $: heatmaps = buildArchiveHeatmaps(filteredPosts);
 $: heatmapYearIndex = heatmaps.findIndex(
@@ -41,6 +48,14 @@ $: heatmapYearIndex = heatmaps.findIndex(
 $: activeHeatmap = heatmaps.find(
 	(item) => item.year === selectedHeatmapYear,
 );
+$: activeFilterLabel = activeTag
+	? "标签"
+	: activeCategory || showUncategorized
+		? "分类"
+		: "归档";
+$: activeFilterValue = activeTag
+	? `#${activeTag}`
+	: activeCategory || (showUncategorized ? "未分类" : "全部");
 $: if (
 	heatmaps.length > 0 &&
 	!heatmaps.some((item) => item.year === selectedHeatmapYear)
@@ -68,17 +83,28 @@ function getTagStyle(tag: string) {
 	return `--archive-tag-color: ${tagColors[hash % tagColors.length]}`;
 }
 
-function readTagFromUrl() {
-	const tag = new URL(window.location.href).searchParams.get("tag");
+function readFiltersFromUrl() {
+	const { searchParams } = new URL(window.location.href);
+	const tag = searchParams.get("tag");
+	const category = searchParams.get("category");
 	activeTag = tag?.trim() || null;
+	activeCategory = category?.trim() || null;
+	showUncategorized = searchParams.has("uncategorized");
 	selectedHeatmapYear = buildArchiveHeatmaps(
-		filterArchivePosts(sortedPosts, activeTag),
+		filterArchivePosts(
+			sortedPosts,
+			activeTag,
+			activeCategory,
+			showUncategorized,
+		),
 	)[0]?.year ?? 0;
 	clearHighlight();
 }
 
 function selectTag(tag: string | null) {
 	activeTag = tag;
+	activeCategory = null;
+	showUncategorized = false;
 	filterOpen = false;
 	selectedHeatmapYear = buildArchiveHeatmaps(
 		filterArchivePosts(sortedPosts, activeTag),
@@ -88,6 +114,8 @@ function selectTag(tag: string | null) {
 	const nextUrl = new URL(window.location.href);
 	if (tag) nextUrl.searchParams.set("tag", tag);
 	else nextUrl.searchParams.delete("tag");
+	nextUrl.searchParams.delete("category");
+	nextUrl.searchParams.delete("uncategorized");
 	window.history.pushState({}, "", nextUrl);
 	void tick().then(() => filterButtonEl?.focus());
 }
@@ -199,12 +227,12 @@ function handleResize() {
 }
 
 onMount(() => {
-	readTagFromUrl();
-	window.addEventListener("popstate", readTagFromUrl);
+	readFiltersFromUrl();
+	window.addEventListener("popstate", readFiltersFromUrl);
 	window.addEventListener("resize", handleResize);
 
 	return () => {
-		window.removeEventListener("popstate", readTagFromUrl);
+		window.removeEventListener("popstate", readFiltersFromUrl);
 		window.removeEventListener("resize", handleResize);
 	};
 });
@@ -224,7 +252,7 @@ onMount(() => {
 				aria-expanded={filterOpen}
 				on:click|stopPropagation={() => (filterOpen = !filterOpen)}
 			>
-				<span>归档 · {activeTag ?? "全部"}</span>
+				<span>归档 · {activeFilterValue.replace(/^#/, "")}</span>
 				<svg viewBox="0 0 24 24" aria-hidden="true" class:open={filterOpen}>
 					<path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
 				</svg>
@@ -235,13 +263,12 @@ onMount(() => {
 					id="archive-filter-menu"
 					class="archive-filter-menu"
 					role="menu"
-					on:click|stopPropagation
 				>
 					<button
 						type="button"
 						role="menuitem"
-						class:active={!activeTag}
-						aria-current={!activeTag ? "true" : undefined}
+						class:active={!activeTag && !activeCategory && !showUncategorized}
+						aria-current={!activeTag && !activeCategory && !showUncategorized ? "true" : undefined}
 						on:click={() => selectTag(null)}
 					>
 						<span>归档 · 全部</span>
@@ -319,15 +346,15 @@ onMount(() => {
 				<span>多</span>
 			</footer>
 		{:else}
-			<p class="archive-empty-heatmap">当前标签还没有可统计的文章活动。</p>
+			<p class="archive-empty-heatmap">当前筛选还没有可统计的文章活动。</p>
 		{/if}
 	</section>
 
 	<div class="archive-summary">
 		<div>
-			<span class="archive-summary-label">{activeTag ? "标签" : "归档"}</span>
+			<span class="archive-summary-label">{activeFilterLabel}</span>
 			<span class="archive-summary-divider">/</span>
-			<strong>{activeTag ? `#${activeTag}` : "全部"}</strong>
+			<strong>{activeFilterValue}</strong>
 		</div>
 		<span class="archive-summary-count">{timeline.postCount} 篇文章 · {timeline.yearCount} 年</span>
 	</div>
@@ -394,8 +421,8 @@ onMount(() => {
 		</div>
 	{:else}
 		<div class="archive-empty-state">
-			<strong>没有找到这个标签下的文章</strong>
-			<p>标签可能已经调整，或者公开示例内容尚未包含该类型。</p>
+			<strong>没有找到当前筛选下的文章</strong>
+			<p>筛选条件可能已经调整，或者公开示例内容尚未包含该类型。</p>
 			<button type="button" on:click={() => selectTag(null)}>查看全部文章</button>
 		</div>
 	{/if}

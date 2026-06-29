@@ -55,6 +55,32 @@ test("单标签筛选保持发布时间倒序且未知标签为空", () => {
 	assert.deepEqual(filterArchivePosts(posts, "missing"), []);
 });
 
+test("既有分类和未分类归档查询继续过滤同一份文章数据", () => {
+	const uncategorizedPost = {
+		id: "uncategorized",
+		data: {
+			title: "未分类文章",
+			tags: ["随笔"],
+			category: null,
+			published: new Date("2026-04-08"),
+		},
+	};
+	const compatiblePosts = [...posts, uncategorizedPost];
+
+	assert.deepEqual(
+		filterArchivePosts(compatiblePosts, null, "教程").map(
+			(post) => post.id,
+		),
+		["new"],
+	);
+	assert.deepEqual(
+		filterArchivePosts(compatiblePosts, null, null, true).map(
+			(post) => post.id,
+		),
+		["uncategorized"],
+	);
+});
+
 test("年月分组提供总数、年份数和月份数", () => {
 	const result = groupArchivePosts(posts);
 
