@@ -349,9 +349,10 @@ const siteLang = lang.replace("_", "-");
       const WALLPAPER_FULLSCREEN = "fullscreen";
       const WALLPAPER_OVERLAY = "overlay";
       const WALLPAPER_NONE = "none";
-      const wallpaperMode = isWallpaperSwitchable
+      const storedWallpaperMode = isWallpaperSwitchable
         ? localStorage.getItem("wallpaperMode") || defaultWallpaperMode
         : defaultWallpaperMode;
+      const wallpaperMode = contentOnly ? WALLPAPER_NONE : storedWallpaperMode;
 
       // 设置data-wallpaper-mode属性
       document.documentElement.setAttribute(

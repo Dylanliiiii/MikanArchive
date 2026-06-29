@@ -277,10 +277,15 @@ export function initThemeListener() {
 }
 
 // Wallpaper mode functions
+function isContentOnlyPage() {
+	return document.body?.dataset.contentOnly === "true";
+}
+
 export function applyWallpaperModeToDocument(
 	mode: WALLPAPER_MODE,
 	animate = true,
 ) {
+	const resolvedMode = isContentOnlyPage() ? WALLPAPER_NONE : mode;
 	// 获取当前的壁纸模式
 	const currentMode =
 		(document.documentElement.getAttribute(
@@ -291,17 +296,17 @@ export function applyWallpaperModeToDocument(
 	const isSwitchable = backgroundWallpaper.switchable ?? true;
 	if (!isSwitchable) {
 		// 不允许切换时，仍需初始化当前模式的UI状态（添加 wallpaper-initialized 等）
-		if (currentMode === mode) {
-			adjustMainContentPosition(mode, false);
-			ensureWallpaperState(mode);
+		if (currentMode === resolvedMode) {
+			adjustMainContentPosition(resolvedMode, false);
+			ensureWallpaperState(resolvedMode);
 		}
 		return;
 	}
 
 	// 如果模式没有变化，直接返回
-	if (currentMode === mode) {
+	if (currentMode === resolvedMode) {
 		// 即使是相同模式，也要确保UI状态正确
-		ensureWallpaperState(mode);
+		ensureWallpaperState(resolvedMode);
 		return;
 	}
 
@@ -309,7 +314,7 @@ export function applyWallpaperModeToDocument(
 	document.documentElement.classList.add("is-wallpaper-transitioning");
 
 	// 更新数据属性
-	document.documentElement.setAttribute("data-wallpaper-mode", mode);
+	document.documentElement.setAttribute("data-wallpaper-mode", resolvedMode);
 
 	// 使用 requestAnimationFrame 确保在下一帧执行，避免闪屏
 	requestAnimationFrame(() => {
@@ -323,7 +328,7 @@ export function applyWallpaperModeToDocument(
 		);
 
 		// 根据模式添加相应的CSS类
-		switch (mode) {
+		switch (resolvedMode) {
 			case WALLPAPER_BANNER:
 				body.classList.add("enable-banner");
 				showBannerMode(true);
@@ -348,7 +353,7 @@ export function applyWallpaperModeToDocument(
 		}
 
 		// 更新导航栏透明模式
-		updateNavbarTransparency(mode);
+		updateNavbarTransparency(resolvedMode);
 
 		// 在下一帧移除过渡保护类
 		requestAnimationFrame(() => {
@@ -861,7 +866,7 @@ export function setWallpaperMode(mode: WALLPAPER_MODE): void {
 export function initWallpaperMode(): void {
 	// 初始化透明模式参数（透明度/模糊度/卡片透明度）
 	applyStoredOverlaySettingsToDocument();
-	const storedMode = getStoredWallpaperMode();
+	const storedMode = isContentOnlyPage() ? WALLPAPER_NONE : getStoredWallpaperMode();
 	applyWallpaperModeToDocument(storedMode, false);
 }
 

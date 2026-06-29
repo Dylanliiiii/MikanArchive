@@ -1274,8 +1274,15 @@
 }
 
 .calendar-view-button.is-active {
-	background: var(--deep-text);
-	color: var(--page-bg);
+	background: color-mix(in oklab, var(--primary) 22%, white 68%);
+	color: color-mix(in oklab, var(--primary) 58%, #10212a);
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 28%, transparent);
+}
+
+:root.dark .calendar-view-button.is-active {
+	background: color-mix(in oklab, var(--primary) 34%, #17343a 66%);
+	color: rgba(255, 255, 255, 0.93);
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 42%, transparent);
 }
 
 .calendar-view {
@@ -1326,8 +1333,26 @@
 }
 
 .calendar-month-cell:hover,
-.calendar-month-cell.is-today {
+.calendar-month-cell.is-today,
+.calendar-month-cell.is-selected {
 	background: var(--btn-plain-bg-hover);
+}
+
+.calendar-month-cell.is-selected {
+	box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--primary) 48%, transparent);
+}
+
+:root.dark .calendar-month-cell:hover {
+	background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+:root.dark .calendar-month-cell.is-today {
+	background: color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+:root.dark .calendar-month-cell.is-selected {
+	background: color-mix(in oklab, var(--primary) 22%, transparent);
+	box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--primary) 58%, rgba(255, 255, 255, 0.18));
 }
 
 .calendar-month-cell.is-muted {
@@ -1384,7 +1409,7 @@
 }
 
 .calendar-mini-list,
-.calendar-detail-panel [data-calendar-detail] {
+.calendar-detail-panel [data-calendar-detail-list] {
 	display: grid;
 	gap: 0.55rem;
 	margin-top: 0.85rem;

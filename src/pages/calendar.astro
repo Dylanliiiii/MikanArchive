@@ -55,6 +55,20 @@ function eventTimeLabel(event: { startDate?: Date; endDate?: Date; allDay?: bool
 	const end = `${String(event.endDate.getHours()).padStart(2, "0")}:${String(event.endDate.getMinutes()).padStart(2, "0")}`;
 	return `${start} - ${end}`;
 }
+
+const calendarDateDetails = Object.fromEntries(monthCells.map((cell) => [
+	cell.dateKey,
+	{
+		dateLabel: `${cell.dateKey} · 农历${getLunarDayLabel(cell.dateKey)}`,
+		events: (bucket[cell.dateKey] ?? []).map((event) => ({
+			title: event.title,
+			meta: `${eventTimeLabel(event)} · ${event.note || event.kind}`,
+			url: event.url || `#date-${event.dateKey}`,
+			className: eventClass(event),
+		})),
+	},
+]));
+const calendarDateDetailsJson = JSON.stringify(calendarDateDetails).replace(/</g, "\\u003c");
 ---
 
 <ContentGridLayout title={title} description={description}>
@@ -107,9 +121,10 @@ function eventTimeLabel(event: { startDate?: Date; endDate?: Date; allDay?: bool
 						{monthCells.map((cell) => (
 							<button
 								type="button"
-								class:list={["calendar-month-cell", { "is-muted": !cell.isCurrentMonth, "is-today": cell.dateKey === todayKey }]}
+								class:list={["calendar-month-cell", { "is-muted": !cell.isCurrentMonth, "is-today": cell.dateKey === todayKey, "is-selected": cell.dateKey === todayKey }]}
 								data-calendar-date={cell.dateKey}
 								id={`date-${cell.dateKey}`}
+								aria-pressed={cell.dateKey === todayKey ? "true" : "false"}
 							>
 								<span class="calendar-cell-day">{cell.day}</span>
 								<span class="calendar-cell-lunar">{getLunarDayLabel(cell.dateKey)}</span>
@@ -174,26 +189,84 @@ function eventTimeLabel(event: { startDate?: Date; endDate?: Date; allDay?: bool
 					<Icon is:inline name="material-symbols:event-note-rounded" />
 					<h2>日期详情</h2>
 				</div>
-				<div data-calendar-detail>
+				<p class="calendar-date-label" data-calendar-detail-date>{todayKey} · 农历{getLunarDayLabel(todayKey)}</p>
+				<div data-calendar-detail-list>
 					{todayEvents.length > 0 ? todayEvents.map((event) => (
 						<a href={event.url || `#date-${event.dateKey}`} class={`calendar-detail-item ${eventClass(event)}`}>
 							<strong>{event.title}</strong>
 							<span>{eventTimeLabel(event)} · {event.note || event.kind}</span>
 						</a>
-					)) : <p class="calendar-empty-text">选择有事件的日期查看详情。</p>}
+					)) : <p class="calendar-empty-text">选择的日期没有公开日程。</p>}
 				</div>
 			</aside>
 		</div>
+		<script type="application/json" data-calendar-events-json set:html={calendarDateDetailsJson} />
 	</section>
 
 	<script is:inline>
 		(function () {
+			function escapeHtml(value) {
+				return String(value || "").replace(/[&<>"']/g, function (char) {
+					return {
+						"&": "&amp;",
+						"<": "&lt;",
+						">": "&gt;",
+						'"': "&quot;",
+						"'": "&#039;",
+					}[char];
+				});
+			}
+
+			function safeEventClass(value) {
+				return /^calendar-event--[a-z]+$/.test(String(value || "")) ? value : "calendar-event--neutral";
+			}
+
 			function initCalendarPage() {
 				var root = document.querySelector("[data-calendar-page]");
 				if (!root || root.dataset.calendarReady === "true") return;
 				root.dataset.calendarReady = "true";
 				var buttons = root.querySelectorAll("[data-calendar-view-button]");
 				var views = root.querySelectorAll("[data-calendar-view]");
+				var dateButtons = root.querySelectorAll("[data-calendar-date]");
+				var detailDate = root.querySelector("[data-calendar-detail-date]");
+				var detailList = root.querySelector("[data-calendar-detail-list]");
+				var eventsJson = root.querySelector("[data-calendar-events-json]");
+				var calendarEvents = {};
+				try {
+					calendarEvents = JSON.parse(eventsJson ? eventsJson.textContent || "{}" : "{}");
+				} catch (error) {
+					calendarEvents = {};
+				}
+
+				function selectCalendarDate(dateKey, updateHash) {
+					var detail = calendarEvents[dateKey] || { dateLabel: dateKey, events: [] };
+					root.dataset.selectedDate = dateKey;
+					dateButtons.forEach(function (button) {
+						var isSelected = button.getAttribute("data-calendar-date") === dateKey;
+						button.classList.toggle("is-selected", isSelected);
+						button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+					});
+
+					if (detailDate) {
+						detailDate.textContent = detail.dateLabel || dateKey;
+					}
+
+					if (detailList) {
+						if (detail.events && detail.events.length > 0) {
+							detailList.innerHTML = detail.events.map(function (event) {
+								var href = event.url || "#date-" + dateKey;
+								return '<a href="' + escapeHtml(href) + '" class="calendar-detail-item ' + safeEventClass(event.className) + '"><strong>' + escapeHtml(event.title) + '</strong><span>' + escapeHtml(event.meta) + '</span></a>';
+							}).join("");
+						} else {
+							detailList.innerHTML = '<p class="calendar-empty-text">选择的日期没有公开日程。</p>';
+						}
+					}
+
+					if (updateHash && window.history && window.history.replaceState) {
+						history.replaceState(null, "", `#date-${dateKey}`);
+					}
+				}
+
 				buttons.forEach(function (button) {
 					button.addEventListener("click", function () {
 						var target = button.getAttribute("data-calendar-view-button");
@@ -203,6 +276,17 @@ function eventTimeLabel(event: { startDate?: Date; endDate?: Date; allDay?: bool
 						});
 					});
 				});
+				dateButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var dateKey = button.getAttribute("data-calendar-date");
+						if (dateKey) selectCalendarDate(dateKey, true);
+					});
+				});
+
+				var hashDate = /^#date-(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash);
+				if (hashDate) {
+					selectCalendarDate(hashDate[1], false);
+				}
 			}
 			document.addEventListener("astro:page-load", initCalendarPage);
 			document.addEventListener("swup:contentReplaced", initCalendarPage);

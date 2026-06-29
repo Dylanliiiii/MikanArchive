@@ -75,6 +75,10 @@ const items = getFocusedBreadcrumb(Astro.url.pathname, title);
 		transition: color 160ms ease, background 160ms ease;
 	}
 
+	:root.dark .focused-breadcrumb__link {
+		color: rgba(255, 255, 255, 0.68);
+	}
+
 	.focused-breadcrumb__link:hover,
 	.focused-breadcrumb__link:focus-visible {
 		color: var(--primary);
@@ -85,6 +89,10 @@ const items = getFocusedBreadcrumb(Astro.url.pathname, title);
 		max-width: min(34rem, 70vw);
 		color: var(--deep-text);
 		font-weight: 760;
+	}
+
+	:root.dark .focused-breadcrumb__current {
+		color: rgba(255, 255, 255, 0.86);
 	}
 
 	.focused-breadcrumb__current span:last-child {
@@ -101,6 +109,10 @@ const items = getFocusedBreadcrumb(Astro.url.pathname, title);
 
 	.focused-breadcrumb__sep {
 		color: color-mix(in srgb, var(--content-meta) 58%, transparent);
+	}
+
+	:root.dark .focused-breadcrumb__sep {
+		color: rgba(255, 255, 255, 0.42);
 	}
 
 	@media (max-width: 640px) {

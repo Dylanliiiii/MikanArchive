@@ -51,10 +51,7 @@ const isHomePageCheck = isHomePage(Astro.url.pathname);
 
 // 检查是否有任何显示设置可用
 const showThemeColor = !siteConfig.themeColor.fixed;
-const isWallpaperSwitchable = backgroundWallpaper.switchable ?? true;
-const allowLayoutSwitch = siteConfig.postListLayout.allowSwitch;
-const hasDisplaySettings =
-	showThemeColor || isWallpaperSwitchable || allowLayoutSwitch;
+const hasDisplaySettings = showThemeColor;
 
 // 根据 siteConfig.pages 过滤导航栏链接
 const pages = siteConfig.pages;

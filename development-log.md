@@ -1,5 +1,46 @@
 ﻿# Development Log
 
+## 2026-06-29 22:48:49 +08:00
+
+### 修改范围
+
+- 公开日历日期详情联动
+- 暗色模式可读性修复
+- 显示设置面板精简
+- 旧壁纸模式残留防护
+
+### 涉及文件
+
+- `src/pages/calendar.astro`
+- `src/styles/resources.css`
+- `src/components/controls/DisplaySettingsIntegrated.svelte`
+- `src/components/layout/FocusedBreadcrumb.astro`
+- `src/components/layout/Navbar.astro`
+- `src/layouts/Layout.astro`
+- `src/utils/setting-utils.ts`
+- `tests/mikan-pages.test.ts`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 公开日历新增日期详情数据 JSON、日期按钮 `aria-pressed` 状态和点击处理逻辑；点击月视图日期后会更新右侧日期详情、选中样式和 URL hash。
+- 右侧“日期详情”补充当前选择日期标签，并在无公开事件时显示“选择的日期没有公开日程。”。
+- 暗色模式下重新调整日历视图切换选中态、日期 hover / 今日 / 选中态和聚焦面包屑文字颜色，避免出现纯黑块或低对比文字。
+- 显示设置面板精简为只保留主题色相控制，移除旧壁纸模式、全屏透明设置、水波纹、渐变、樱花特效和文章布局开关。
+- 导航栏调色盘按钮改为仅在主题色可调时显示。
+- 聚焦布局页面在初始化壁纸模式时强制使用 `none`，并让 `setting-utils` 在 `data-content-only="true"` 时忽略本地残留的旧壁纸模式。
+- 页面契约测试新增日历日期联动、暗色选中态、显示设置精简和聚焦布局忽略旧壁纸模式的断言。
+
+### 验证情况
+
+- 已运行 `npm.cmd run test:pages`，52 项页面契约测试通过。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；仅保留既有的 Vite 动态导入、chunk 体积、Astro markdown 弃用和 Pagefind 中文 stemming 提示。
+- 已使用系统 Chrome + Playwright 打开 `http://127.0.0.1:4321/calendar/` 强制暗色验证：点击 `2026-06-23` 后右侧显示“每周公开复盘”，点击 `2026-06-26` 后右侧显示“建站纪念日”和文章发布记录，URL hash 与 `aria-pressed` 同步更新。
+- 浏览器验收中预置 `localStorage.wallpaperMode = "fullscreen"` 后，聚焦页面最终 `data-wallpaper-mode` 为 `none`，body 保持 `no-banner-layout`。
+- 调色盘面板浏览器验收只显示“主题色相”和色相值；截图已保存到 `output/playwright/calendar-dark-date-selection.png`，`output/` 已被 `.gitignore` 忽略。
+
 ## 2026-06-29 21:42:20 +08:00
 
 ### 修改范围
