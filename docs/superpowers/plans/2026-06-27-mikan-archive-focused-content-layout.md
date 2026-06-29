@@ -4,6 +4,8 @@
 
 **Goal:** 保留首页现有 Firefly 横幅与双侧栏，把所有非主页改成无大横幅、无通用人物/统计侧栏的聚焦内容布局，并把工具导航重做为接近 `fqzlr/my-blog` 开源实现的紧凑分类导航。
 
+> 2026-06-29 更新：当前公开站点已删除独立 `/records/` 足迹功能页，顶部导航调整为 `主页 / 文库 / 收藏 / 联系我 / 我的`，`/about/` 入口显示为“个人介绍”。本计划中涉及 `src/pages/records/index.astro` 和 `/records/` 验证的条目仅作为历史实施记录保留，不再作为后续验收目标。
+
 **Architecture:** 保留 `src/layouts/MainGridLayout.astro` 只供首页使用；新增 `src/layouts/ContentGridLayout.astro` 承载非主页的 Navbar、CategoryBar、单列内容、Footer、浮动控件和文章桌面目录。通过 `Layout.astro` 的显式 `contentOnly` 属性关闭非主页壁纸定位逻辑，避免 Swup 与本地壁纸模式把横幅样式重新加回。工具导航继续从公开/私有内容同步后的 `src/data/content/resources/resources.json` 读取数据，只扩展可选 `icon` 字段，不复制参考博主的真实内容。
 
 **Tech Stack:** Astro 7、TypeScript、Tailwind CSS 4、Astro Icon / Iconify、Node.js 内置测试、现有内容同步与校验脚本、应用内浏览器视觉对比。
@@ -228,4 +230,3 @@ npm.cmd run build
 - [ ] 运行 `git status --short` 与 `git diff --check`，审阅关键 diff，确保未引入私有内容、token、cookie 或参考博主资料。
 - [ ] 更新 development-log 的最终验证结果，并按项目维护流程提交：`git add -A && git commit -m "feat: focus content pages and tools navigation"`。
 - [ ] push 当前分支：`git push origin codex/firefly-rebuild`。确认远端成功后清理 `docs/next-tasks.md` 当前目标并补一次收尾提交/push；不合并 `main`，除非用户明确要求。
-

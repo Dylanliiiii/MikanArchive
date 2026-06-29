@@ -44,7 +44,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			LinkPresets.QQGroup,
 		],
 	});
-	links.push(LinkPresets.Records);
 	links.push({
 		name: "我的",
 		url: "#",
@@ -120,11 +119,6 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		url: "/resources/clips/",
 		icon: "material-symbols:bookmarks-rounded",
 	},
-	Records: {
-		name: "足迹",
-		url: "/records/",
-		icon: "material-symbols:timeline",
-	},
 	Sponsor: {
 		name: "打赏",
 		url: "/sponsor/",
@@ -138,7 +132,7 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		pageKey: "guestbook",
 	},
 	About: {
-		name: "我的",
+		name: "个人介绍",
 		url: "/about/",
 		icon: "material-symbols:person",
 	},

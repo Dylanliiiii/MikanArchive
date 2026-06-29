@@ -6,7 +6,7 @@ export const siteConfig: SiteConfig = {
 	title: "MikanArchive",
 	subtitle: "知识收藏馆",
 	site_url: "https://dylanliiiii.github.io/MikanArchive/",
-	description: "一个记录教程、收藏资源和整理足迹的个人知识收藏博客。",
+	description: "一个记录教程、收藏资源和整理个人资料的知识收藏博客。",
 	keywords: ["MikanArchive", "Astro", "Firefly", "知识收藏", "技术博客", "教程", "资源收藏"],
 	themeColor: {
 		hue: 205,

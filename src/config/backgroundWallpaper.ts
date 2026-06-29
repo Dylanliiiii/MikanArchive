@@ -17,7 +17,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			title: "MikanArchive",
 			titleSize: "3.8rem",
 			subtitle: [
-				"把教程、资源和足迹放回能被再次找到的地方。",
+				"把教程、资源和个人资料放回能被再次找到的地方。",
 				"收藏不是堆积，是给未来的自己留下坐标。",
 				"一个轻二次元气质的个人知识收藏馆。",
 			],

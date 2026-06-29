@@ -34,12 +34,8 @@ const pageMap: Record<string, Omit<FocusedBreadcrumbItem, "href" | "isCurrent">>
 		label: "留言",
 		icon: "material-symbols:mode-comment-rounded",
 	},
-	"/records/": {
-		label: "足迹",
-		icon: "material-symbols:timeline",
-	},
 	"/about/": {
-		label: "我的",
+		label: "个人介绍",
 		icon: "material-symbols:person-rounded",
 	},
 	"/rss.xml": {

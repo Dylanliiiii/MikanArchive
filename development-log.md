@@ -1,5 +1,67 @@
 ﻿# Development Log
 
+## 2026-06-29 18:10:23 +08:00
+
+### 修改范围
+
+- 删除独立足迹功能页
+- 顶部导航与首页入口调整
+- `/about/` 展示名称改为“个人介绍”
+- 项目规则、设计说明、README、CHANGELOG 和交接文档同步
+
+### 涉及文件
+
+- `src/config/navBarConfig.ts`
+- `src/pages/index.astro`
+- `src/pages/about.astro`
+- `src/pages/records/index.astro`
+- `src/utils/focused-breadcrumb.ts`
+- `src/config/siteConfig.ts`
+- `src/config/profileConfig.ts`
+- `src/config/backgroundWallpaper.ts`
+- `content.example/profile/about.md`
+- `content.example/posts/2026-06-26-welcome-to-mikan-archive.md`
+- `content.example/assets/images/welcome-cover.svg`
+- `content.example/records/timeline.json`
+- `content.example/records/updates.json`
+- `tests/mikan-pages.test.ts`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `docs/content-repository.md`
+- `docs/next-tasks.md`
+- `docs/superpowers/plans/2026-06-26-mikan-archive-implementation.md`
+- `docs/superpowers/plans/2026-06-27-mikan-archive-firefly-rebuild.md`
+- `docs/superpowers/plans/2026-06-27-mikan-archive-focused-content-layout.md`
+- `docs/superpowers/specs/2026-06-26-mikan-archive-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 先为“足迹功能页和入口已删除”与“我的下拉和关于页标题改为个人介绍”新增页面契约测试，确认当前代码仍保留 `/records/` 页面、`足迹` 导航和旧“我的/关于我”文案时测试失败。
+- 删除 `src/pages/records/index.astro`，移除导航中的 `LinkPresets.Records` 和面包屑 `/records/` 映射。
+- 将 `/about/` 页面标题、导航下拉子项、面包屑和公开示例 `profile/about.md` 标题统一改为“个人介绍”。
+- 将首页原“足迹”卡片改为“个人介绍”预览，并移除首页对 `getMikanTimeline` 和 `getMikanUpdates` 的读取。
+- 同步站点描述、首页打字机文案、示例文章和封面 SVG 中仍会暴露给访客的“足迹”措辞。
+- 同步 README、AGENTS、项目专属 Skill、内容仓库说明、正式设计规格、历史实现计划、CHANGELOG 与交接文档，明确当前第一版不再提供独立足迹功能页；`records/` 数据仅作为可选历史记录数据源保留。
+
+### 验证情况
+
+- TDD 红灯：运行 `npm.cmd run test:pages`，42 个页面契约中 3 个失败，失败点为 `/records/` 页面仍存在、导航仍有“足迹”、`/about/` 仍未显示为“个人介绍”。
+- TDD 红灯补充：为 `Key.about` 的中文翻译新增“个人介绍 / 個人介紹”契约后运行 `npm.cmd run test:pages`，42 个页面契约中 1 个失败，失败点为简体中文仍显示“关于我”。
+- 已运行 `npm.cmd run sync:content`，内容同步成功。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:content-model`，6/6 通过。
+- 已运行 `npm.cmd run test:archive`，6/6 通过。
+- 已运行 `npm.cmd run test:pages`，42/42 通过。
+- 已运行 `npm.cmd run check`，结果为 164 个文件、0 errors、0 warnings，仅保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
+- 已运行 `npm.cmd run build`，构建成功并生成 14 个页面；保留既有 Vite dynamic import、chunk size、路由优先级、Markdown deprecation、Pagefind 中文 stemming 和 npm 新版本提示。
+- 使用系统 Chrome DevTools Protocol 检查 `http://127.0.0.1:4321/` 与 `/about/` 的 1440×900 桌面端和 390×844 移动端：导航和页面中均无 `/records/` 链接或“足迹”入口，`/about/` H1 和面包屑均为“个人介绍”，所有检查视口均无横向溢出。
+- 浏览器检查确认 `/records/` 返回 404 页面；控制台仅记录既有 favicon 404 和主动访问 `/records/` 的预期 404。截图已保存到已忽略目录 `output/playwright/home-no-records-desktop.png`、`output/playwright/home-my-menu-desktop.png`、`output/playwright/about-profile-desktop.png`、`output/playwright/home-no-records-mobile.png`、`output/playwright/about-profile-mobile.png`。
+
 ## 2026-06-29 17:29:25 +08:00
 
 ### 修改范围

@@ -21,7 +21,6 @@ const focusedPages = [
 	"src/pages/guestbook.astro",
 	"src/pages/posts/[...slug].astro",
 	"src/pages/posts/index.astro",
-	"src/pages/records/index.astro",
 	"src/pages/resources/tools.astro",
 	"src/pages/resources/clips/index.astro",
 	"src/pages/rss.astro",
@@ -242,7 +241,6 @@ test("主要非主页可见大标题统一使用工具导航同款标题系统",
 		"src/pages/archive.astro",
 		"src/pages/posts/index.astro",
 		"src/pages/rss.astro",
-		"src/pages/records/index.astro",
 		"src/components/pages/AdvancedSearch.svelte",
 	]) {
 		const source = readSource(page);
@@ -320,6 +318,38 @@ test("文库下拉只保留文章、归档和分类标签", () => {
 	assert.match(source, /url:\s*"\/categories\/"/);
 	assert.doesNotMatch(source, /LinkPresets\.Tags/);
 	assert.doesNotMatch(source, /url:\s*"\/tags\/"/);
+});
+
+test("足迹功能页和入口已删除", () => {
+	const navSource = readSource("src/config/navBarConfig.ts");
+	const homeSource = readSource("src/pages/index.astro");
+	const breadcrumbSource = readSource("src/utils/focused-breadcrumb.ts");
+
+	assert.equal(existsSync(path.join(root, "src/pages/records/index.astro")), false);
+	assert.doesNotMatch(navSource, /LinkPresets\.Records/);
+	assert.doesNotMatch(navSource, /name:\s*"足迹"/);
+	assert.doesNotMatch(navSource, /url:\s*"\/records\/"/);
+	assert.doesNotMatch(homeSource, /href="\/records\/"/);
+	assert.doesNotMatch(homeSource, /<h2 class="text-xl font-bold text-90">足迹<\/h2>/);
+	assert.doesNotMatch(breadcrumbSource, /"\/records\/"/);
+});
+
+test("我的下拉和关于页标题改为个人介绍", () => {
+	const navSource = readSource("src/config/navBarConfig.ts");
+	const aboutSource = readSource("src/pages/about.astro");
+	const breadcrumbSource = readSource("src/utils/focused-breadcrumb.ts");
+	const aboutContent = readSource("content.example/profile/about.md");
+	const zhCnSource = readSource("src/i18n/languages/zh_CN.ts");
+	const zhTwSource = readSource("src/i18n/languages/zh_TW.ts");
+
+	assert.match(navSource, /name:\s*"个人介绍"[\s\S]{0,120}url:\s*"\/about\/"/);
+	assert.doesNotMatch(navSource, /About:\s*\{[\s\S]{0,160}name:\s*"我的"/);
+	assert.match(aboutSource, /const title = "个人介绍"/);
+	assert.doesNotMatch(aboutSource, /i18n\(I18nKey\.about\)/);
+	assert.match(breadcrumbSource, /\/about\/[\s\S]*label:\s*"个人介绍"/);
+	assert.match(aboutContent, /title:\s*"个人介绍"/);
+	assert.match(zhCnSource, /\[Key\.about\]:\s*"个人介绍"/);
+	assert.match(zhTwSource, /\[Key\.about\]:\s*"個人介紹"/);
 });
 
 test("独立标签页面已删除，文章标签只作为分类标签使用", () => {
@@ -415,16 +445,7 @@ test("面包屑只使用已安装的可构建图标", () => {
 	const source = readSource("src/utils/focused-breadcrumb.ts");
 
 	assert.doesNotMatch(source, /material-symbols:timeline-rounded/);
-	assert.match(source, /material-symbols:timeline/);
-});
-
-test("足迹页使用三层归档分支结构", () => {
-	const source = readSource("src/pages/records/index.astro");
-
-	assert.match(source, /getMikanArchiveGroups\(\)/);
-	assert.match(source, /archive-trunk/);
-	assert.match(source, /archive-month-branch/);
-	assert.match(source, /archive-record-branch/);
+	assert.doesNotMatch(source, /material-symbols:timeline/);
 });
 
 test("文章归档提供标签筛选、活动热力图和三级数量", () => {

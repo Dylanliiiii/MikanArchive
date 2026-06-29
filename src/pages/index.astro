@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getMikanFriends, getMikanResources, getMikanTimeline, getMikanUpdates } from "@/data/mikan";
+import { getMikanFriends, getMikanResources } from "@/data/mikan";
 import { getSortedPostsList } from "@/utils/content-utils";
 import { getPostUrlBySlug } from "@/utils/url-utils";
 
@@ -12,8 +12,11 @@ const featuredResources = [
 	...resources.filter((item) => !item.featured),
 ].slice(0, 4);
 const friends = getMikanFriends().slice(0, 4);
-const timeline = getMikanTimeline().slice(0, 4);
-const updates = getMikanUpdates().slice(0, 4);
+const profileStats = [
+	{ label: "文章", value: posts.length },
+	{ label: "收藏", value: resources.length },
+	{ label: "友链", value: friends.length },
+];
 ---
 
 <MainGridLayout title="主页" description="MikanArchive 知识收藏馆">
@@ -63,16 +66,23 @@ const updates = getMikanUpdates().slice(0, 4);
 
 		<section class="card-base p-6">
 			<div class="mb-4 flex items-center justify-between gap-3">
-				<h2 class="text-xl font-bold text-90">足迹</h2>
-				<a class="text-sm text-(--primary) font-medium" href="/records/">查看</a>
+				<h2 class="text-xl font-bold text-90">个人介绍</h2>
+				<a class="text-sm text-(--primary) font-medium" href="/about/">查看</a>
 			</div>
 			<div class="space-y-3">
-				{[...updates, ...timeline].slice(0, 4).map((item) => (
-					<div class="rounded-xl bg-black/5 dark:bg-white/8 px-4 py-3">
-						<div class="text-xs text-30">{item.date}</div>
-						<div class="mt-1 font-semibold text-90">{item.title}</div>
-					</div>
-				))}
+				<div class="rounded-xl bg-black/5 dark:bg-white/8 px-4 py-3">
+					<div class="text-xs text-30">MIKAN PROFILE</div>
+					<div class="mt-1 font-semibold text-90">公开示例个人介绍</div>
+					<p class="mt-1 text-sm text-50">展示简介、技能栈和项目入口，真实站点可替换为自己的资料。</p>
+				</div>
+				<div class="grid grid-cols-3 gap-2">
+					{profileStats.map((item) => (
+						<div class="rounded-xl border border-(--line-divider) px-3 py-2 text-center">
+							<div class="text-lg font-bold text-90">{item.value}</div>
+							<div class="mt-0.5 text-xs text-30">{item.label}</div>
+						</div>
+					))}
+				</div>
 			</div>
 		</section>
 	</div>

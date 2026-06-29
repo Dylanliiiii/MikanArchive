@@ -2,6 +2,8 @@
 
 Date: 2026-06-26
 
+Note: Later implementation decisions removed the standalone `/records/` footprint feature page from the first public navigation. The current navigation is `主页 / 文库 / 收藏 / 联系我 / 我的`, and the about entry is shown as `个人介绍`.
+
 ## Summary
 
 MikanArchive is a personal knowledge-collection blog: a readable tutorial blog with a light anime-inspired archive aesthetic. It should feel like a personal library for tutorials, resources, links, notes, and update traces, while staying professional enough to include on a resume.

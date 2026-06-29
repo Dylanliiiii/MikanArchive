@@ -4,6 +4,8 @@
 
 **Goal:** Rebuild MikanArchive on a Firefly-style Astro blog foundation while preserving public/private content separation and example-content fallback.
 
+> 2026-06-29 更新：当前公开站点已删除独立 `/records/` 足迹功能页，顶部导航调整为 `主页 / 文库 / 收藏 / 联系我 / 我的`，`/about/` 入口显示为“个人介绍”。本计划中涉及 records 页面和旧导航的条目仅作为历史实施记录保留，不再作为后续验收目标。
+
 **Architecture:** Keep the existing content sync and validation scripts as the boundary between public framework and future private content. Replace the current lightweight `src/` theme layer with a Firefly-derived layout, configuration, navigation, sidebar, article, friends, resources, records, and about experience. Do not ship fqzlr.com private content or Firefly third-party character assets as default MikanArchive assets.
 
 **Tech Stack:** Astro 7, MD/MDX content collections, Tailwind CSS, Svelte islands where Firefly components require them, Pagefind-ready search, TypeScript, existing Node.js 22+ scripts.
