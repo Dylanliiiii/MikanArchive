@@ -389,6 +389,34 @@ test("文章归档活动区左侧连接 GitHub 贡献，右侧展示周度文章
 	assert.match(typeSource, /heatmap\?:/);
 });
 
+test("GitHub 贡献热力图使用年度 12 月网格并在卡片内居中铺开", () => {
+	const panel = readSource("src/components/controls/ArchivePanel.svelte");
+
+	assert.match(panel, /const githubMonths = Array\.from\(\{ length: 12 \}/);
+	assert.match(panel, /data-github-heatmap-frame/);
+	assert.match(panel, /\.github-heatmap-frame\s*\{[\s\S]*justify-content:\s*center/);
+	assert.match(panel, /\.github-heatmap-months\s*\{[\s\S]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/);
+	assert.match(panel, /\.github-heatmap-body\s*\{[\s\S]*width:\s*100%/);
+	assert.match(panel, /\.github-heatmap-body\s*\{[\s\S]*min-width:\s*42rem/);
+	assert.match(panel, /@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.github-heatmap-frame\s*\{[\s\S]*justify-content:\s*flex-start/);
+	assert.doesNotMatch(panel, /buildGithubMonthBoundaries/);
+	assert.doesNotMatch(panel, /githubMonthBoundaries/);
+	assert.doesNotMatch(panel, /\.github-heatmap-months\s*\{[\s\S]*grid-template-columns:\s*repeat\(53,\s*0\.72rem\)/);
+});
+
+test("主导航和下拉菜单图标固定占位且不会在桌面宽度被隐藏", () => {
+	const menu = readSource("src/components/layout/DropdownMenu.astro");
+	const mobileMenu = readSource("src/components/layout/NavMenuPanel.astro");
+	const styles = readSource("src/styles/navbar.css");
+
+	assert.match(menu, /navbar-menu-icon/);
+	assert.match(menu, /navbar-submenu-icon/);
+	assert.match(mobileMenu, /navbar-mobile-icon/);
+	assert.match(styles, /\.navbar-menu-icon,\s*\.navbar-submenu-icon,\s*\.navbar-mobile-icon\s*\{/);
+	assert.match(styles, /flex:\s*0\s*0\s*auto/);
+	assert.doesNotMatch(styles, /\.navbar-icon\s*\{\s*display:\s*none\s*!important;\s*\}/);
+});
+
 test("文章归档使用年、月、文章连续路径并支持键盘聚焦", () => {
 	const panel = readSource("src/components/controls/ArchivePanel.svelte");
 

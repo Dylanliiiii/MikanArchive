@@ -1,5 +1,41 @@
 ﻿# Development Log
 
+## 2026-06-29 15:28:43 +08:00
+
+### 修改范围
+
+- 归档页 GitHub 贡献热力图布局微调
+- 顶部导航与下拉菜单图标显示修复
+- 页面契约测试与浏览器视觉验收
+
+### 涉及文件
+
+- `src/components/controls/ArchivePanel.svelte`
+- `src/components/layout/DropdownMenu.astro`
+- `src/components/layout/NavMenuPanel.astro`
+- `src/styles/navbar.css`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 将 GitHub 贡献热力图从“只按当前已发生月份计算边界”调整为完整年度网格，始终展示 1–12 月，让桌面端在卡片内居中铺开，减少右侧空白。
+- 保留移动端横向滚动，并在小屏下从左侧 1 月开始显示，避免首屏只露出中间月份。
+- 移除旧的 `githubMonthBoundaries` 与 `buildGithubMonthBoundaries` 逻辑，修复浏览器运行时残留调用导致的 Svelte 错误。
+- 为桌面主导航、下拉菜单项和移动菜单项增加固定尺寸图标类，移除 1280px 以下隐藏 `.navbar-icon` 的规则，使“主页 / 文库 / 收藏 / 联系我 / 足迹 / 我的”和下拉项前均稳定显示对应小图标。
+- 新增页面契约测试，覆盖年度 12 月 GitHub 热力图布局、移动端左起滚动、旧边界函数不再残留，以及导航图标不再被隐藏。
+
+### 验证情况
+
+- TDD 红灯：新增 `test:pages` 页面契约后，首次运行按预期失败，暴露 GitHub 热力图仍使用旧月份边界、导航图标仍可被隐藏。
+- 绿灯验证已运行 `npm.cmd run test:pages`，35/35 通过。
+- 已运行 `npm.cmd run test:archive`，6/6 通过。
+- 已运行 `npm.cmd run check`，结果为 166 个文件、0 errors、0 warnings，仅保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
+- 已运行 `npm.cmd run build`，构建成功并生成 16 个页面；仍保留既有 Vite 动态导入、大 chunk、路由优先级、Markdown deprecation 和 Pagefind 中文 stemming 提示，本次没有新增构建失败。
+- Playwright CLI 使用项目内 `.npm-cache` 打开 `http://127.0.0.1:4321/archive/`，确认桌面端导航图标可见，GitHub 贡献热力图在卡片内铺开且不再挤在左侧；生成截图 `output/playwright/archive-desktop.png`。
+- Playwright CLI 以 390×844 视口检查移动端，生成 `output/playwright/archive-mobile.png`，并确认 `innerWidth=390`、`scrollWidth=390`、`overflow=false`。
+- 浏览器控制台中本次引入的 `buildGithubMonthBoundaries is not defined` 运行时错误已修复；当前仅剩既有 `/favicon/favicon.ico` 404 与开发模式 Pagefind mock 日志。
+
 ## 2026-06-29 12:08:52 +08:00
 
 ### 修改范围

@@ -15,6 +15,7 @@ export let githubUsername = "";
 export let githubProfile = "";
 
 const months = Array.from({ length: 12 }, (_, index) => index + 1);
+const githubMonths = Array.from({ length: 12 }, (_, index) => index + 1);
 const levels = [0, 1, 2, 3, 4];
 const tagColors = ["#d69b42", "#4eb69b", "#6f9ee8", "#d97fa8", "#8d83dc"];
 const githubDayLabels = ["", "一", "", "三", "", "五", ""];
@@ -32,12 +33,6 @@ type GithubHeatmapCell = {
 	visible: boolean;
 };
 
-type GithubMonthBoundary = {
-	label: string;
-	weekIndex: number;
-	span: number;
-};
-
 let activeTag: string | null = null;
 let activeCategory: string | null = null;
 let showUncategorized = false;
@@ -51,7 +46,6 @@ let highlightedYear: number | null = null;
 let highlightedMonth: string | null = null;
 let highlightPathD = "";
 let githubWeeks: GithubHeatmapCell[][] = [];
-let githubMonthBoundaries: GithubMonthBoundary[] = [];
 let githubFetchState: "idle" | "loading" | "ready" | "error" = "idle";
 let githubError = "";
 let githubTotalContributions = 0;
@@ -125,48 +119,23 @@ function getAlignedYearStart(year: number) {
 	return start;
 }
 
-function buildGithubMonthBoundaries() {
-	const now = new Date();
-	const currentYear = now.getFullYear();
-	const yearStart = getAlignedYearStart(currentYear);
-	const rawBoundaries: Array<Omit<GithubMonthBoundary, "span">> = [];
-
-	for (let month = 0; month < 12; month += 1) {
-		const firstDay = new Date(currentYear, month, 1);
-		if (firstDay > now) break;
-		const monthStart = new Date(firstDay);
-		const firstDayOfWeek = firstDay.getDay();
-		const monthOffset = firstDayOfWeek === 0 ? -6 : 1 - firstDayOfWeek;
-		monthStart.setDate(firstDay.getDate() + monthOffset);
-		const diff = monthStart.getTime() - yearStart.getTime();
-		rawBoundaries.push({
-			label: String(month + 1),
-			weekIndex: Math.max(0, Math.round(diff / (7 * 24 * 60 * 60 * 1000))),
-		});
-	}
-
-	return rawBoundaries.map((boundary, index): GithubMonthBoundary => ({
-		...boundary,
-		span: Math.max(2, (rawBoundaries[index + 1]?.weekIndex ?? boundary.weekIndex + 4) - boundary.weekIndex),
-	}));
-}
-
 function buildGithubWeeks(contributions: GithubContributionDay[]) {
 	const now = new Date();
 	const currentYear = now.getFullYear();
+	const yearEnd = new Date(currentYear, 11, 31);
 	const countByDate = new Map(contributions.map((day) => [day.date, day.count]));
 	const levelByDate = new Map(contributions.map((day) => [day.date, day.level]));
 	const maxCount = Math.max(1, ...contributions.map((day) => day.count));
 	const weeks: GithubHeatmapCell[][] = [];
 	const current = getAlignedYearStart(currentYear);
 
-	while (current <= now || current.getDay() !== 1) {
+	while (current <= yearEnd || current.getDay() !== 1) {
 		const week: GithubHeatmapCell[] = [];
 		for (let day = 0; day < 7; day += 1) {
 			const date = formatDateKey(current);
-			const visible = current.getFullYear() === currentYear && current <= now;
-			const count = visible ? (countByDate.get(date) ?? 0) : 0;
-			const level = visible
+			const visible = current.getFullYear() === currentYear;
+			const count = visible && current <= now ? (countByDate.get(date) ?? 0) : 0;
+			const level = visible && current <= now
 				? (levelByDate.get(date) ?? getGithubFallbackLevel(count, maxCount))
 				: 0;
 			week.push({ date, count, level, visible });
@@ -184,7 +153,6 @@ async function loadGithubContributions(signal: AbortSignal) {
 	githubFetchState = "loading";
 	githubError = "";
 	githubWeeks = buildGithubWeeks([]);
-	githubMonthBoundaries = buildGithubMonthBoundaries();
 
 	try {
 		const response = await fetch(
@@ -369,7 +337,6 @@ function handleResize() {
 onMount(() => {
 	readFiltersFromUrl();
 	githubWeeks = buildGithubWeeks([]);
-	githubMonthBoundaries = buildGithubMonthBoundaries();
 	const controller = new AbortController();
 	void loadGithubContributions(controller.signal);
 	window.addEventListener("popstate", readFiltersFromUrl);
@@ -461,11 +428,11 @@ onMount(() => {
 							<span>正在连接 GitHub 贡献数据…</span>
 						{/if}
 					</div>
-					<div class="github-heatmap-scroll">
+					<div class="github-heatmap-frame" data-github-heatmap-frame>
 						<div class="github-heatmap-body">
 							<div class="github-heatmap-months">
-								{#each githubMonthBoundaries as month}
-									<span style={"grid-column: " + (month.weekIndex + 1) + " / span " + month.span}>{month.label}</span>
+								{#each githubMonths as month}
+									<span>{month}</span>
 								{/each}
 							</div>
 							<div class="github-heatmap-grid-wrap">
@@ -856,58 +823,72 @@ onMount(() => {
 	font-variant-numeric: tabular-nums;
 }
 
-.github-heatmap-scroll {
+.github-heatmap-frame {
+	display: flex;
+	justify-content: center;
 	overflow-x: auto;
-	padding-bottom: 0.28rem;
+	padding: 0 0.05rem 0.28rem;
 }
 
 .github-heatmap-body {
-	min-width: 30rem;
+	width: 100%;
+	min-width: 42rem;
+	max-width: 48rem;
 }
 
 .github-heatmap-months {
 	display: grid;
-	grid-template-columns: repeat(53, 0.72rem);
-	gap: 0.22rem;
-	margin-left: 2.4rem;
-	margin-bottom: 0.28rem;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: 0.36rem;
+	margin: 0 0 0.3rem 2.35rem;
 	color: var(--content-meta);
 	font-size: 0.64rem;
 }
 
+.github-heatmap-months span {
+	text-align: center;
+}
+
 .github-heatmap-grid-wrap {
-	display: flex;
+	display: grid;
+	grid-template-columns: 1.95rem minmax(0, 1fr);
 	align-items: flex-start;
-	gap: 0.45rem;
+	gap: 0.4rem;
 }
 
 .github-heatmap-days {
 	display: grid;
-	grid-template-rows: repeat(7, 0.72rem);
-	gap: 0.22rem;
-	width: 1.95rem;
+	grid-template-rows: repeat(7, minmax(0.72rem, 1fr));
+	gap: 0.18rem;
 	color: var(--content-meta);
 	font-size: 0.64rem;
-	line-height: 0.72rem;
+	line-height: 1;
 	text-align: right;
 }
 
+.github-heatmap-days span {
+	display: grid;
+	place-items: center end;
+}
+
 .github-heatmap-grid {
-	display: flex;
-	gap: 0.22rem;
+	display: grid;
+	grid-template-columns: repeat(53, minmax(0.56rem, 1fr));
+	gap: 0.18rem;
 }
 
 .github-heatmap-week {
 	display: grid;
-	grid-template-rows: repeat(7, 0.72rem);
-	gap: 0.22rem;
+	grid-template-rows: repeat(7, minmax(0.72rem, 1fr));
+	gap: 0.18rem;
 }
 
 .github-heatmap-cell {
 	display: block;
-	width: 0.72rem;
-	height: 0.72rem;
-	border-radius: 0.18rem;
+	width: 100%;
+	aspect-ratio: 1;
+	min-width: 0.56rem;
+	border-radius: 0.2rem;
 	background: color-mix(in srgb, var(--line-divider) 70%, transparent);
 	transition: transform 150ms ease, outline-color 150ms ease;
 }
@@ -1280,7 +1261,11 @@ onMount(() => {
 	}
 
 	.github-heatmap-body {
-		min-width: 28rem;
+		min-width: 38rem;
+	}
+
+	.github-heatmap-frame {
+		justify-content: flex-start;
 	}
 
 	.archive-heatmap-grid {
