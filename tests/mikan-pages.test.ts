@@ -17,6 +17,7 @@ const focusedPages = [
 	"src/pages/about.astro",
 	"src/pages/archive.astro",
 	"src/pages/categories/index.astro",
+	"src/pages/calendar.astro",
 	"src/pages/friends.astro",
 	"src/pages/guestbook.astro",
 	"src/pages/posts/[...slug].astro",
@@ -375,6 +376,37 @@ test("我的下拉包含个人介绍和站点概览，外部入口移动到页�
 	assert.match(profileSource, /https:\/\/github\.com\/Dylanliiiii/);
 	assert.match(profileSource, /https:\/\/space\.bilibili\.com\/37007345/);
 	assert.match(profileSource, /name:\s*"B站"/);
+});
+
+test("我的下拉包含日历入口，公开日历页面使用聚焦布局", () => {
+	const navSource = readSource("src/config/navBarConfig.ts");
+	const pageSource = readSource("src/pages/calendar.astro");
+	const breadcrumbSource = readSource("src/utils/focused-breadcrumb.ts");
+	const myChildren = /name:\s*"我的"[\s\S]*?children:\s*\[([\s\S]*?)\]\s*,\s*\}/.exec(
+		navSource,
+	)?.[1] ?? "";
+
+	assert.match(myChildren, /LinkPresets\.Calendar/);
+	assert.match(navSource, /Calendar:\s*\{[\s\S]*name:\s*"日历"/);
+	assert.match(navSource, /url:\s*"\/calendar\/"/);
+	assert.match(pageSource, /import ContentGridLayout/);
+	assert.match(pageSource, /<ContentGridLayout title=\{title\}/);
+	assert.match(pageSource, /MIKAN CALENDAR/);
+	assert.match(pageSource, /data-calendar-page/);
+	for (const view of ["year", "month", "week", "day"]) {
+		assert.match(pageSource, new RegExp(`data-calendar-view-button="${view}"`));
+		assert.match(pageSource, new RegExp(`data-calendar-view="${view}"`));
+	}
+	assert.match(breadcrumbSource, /\/calendar\/[\s\S]*label:\s*"日历"/);
+});
+
+test("公开日历页面不提供前台创建或后台编辑入口", () => {
+	const source = readSource("src/pages/calendar.astro");
+
+	assert.doesNotMatch(source, /新建日程|创建日程|编辑日程|删除日程/);
+	assert.doesNotMatch(source, /<form/);
+	assert.doesNotMatch(source, /contenteditable/);
+	assert.doesNotMatch(source, /fetch\(["']\/api\/calendar/);
 });
 
 test("站点概览页展示站点统计、构建信息和相关入口", () => {

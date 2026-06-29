@@ -38,6 +38,10 @@ const pageMap: Record<string, Omit<FocusedBreadcrumbItem, "href" | "isCurrent">>
 		label: "个人介绍",
 		icon: "material-symbols:person-rounded",
 	},
+	"/calendar/": {
+		label: "日历",
+		icon: "material-symbols:calendar-month-rounded",
+	},
 	"/site/": {
 		label: "站点概览",
 		icon: "material-symbols:monitor-heart-rounded",

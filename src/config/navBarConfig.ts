@@ -50,6 +50,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		icon: "material-symbols:person",
 		children: [
 			LinkPresets.About,
+			LinkPresets.Calendar,
 			LinkPresets.SiteOverview,
 		],
 	});
@@ -125,6 +126,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "个人介绍",
 		url: "/about/",
 		icon: "material-symbols:person",
+	},
+	Calendar: {
+		name: "日历",
+		url: "/calendar/",
+		icon: "material-symbols:calendar-month-rounded",
 	},
 	SiteOverview: {
 		name: "站点概览",
