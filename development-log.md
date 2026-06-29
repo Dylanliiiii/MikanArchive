@@ -1,5 +1,37 @@
 ﻿# Development Log
 
+## 2026-06-30 00:39:43 +08:00
+
+### 修改范围
+
+- 文章详情页右侧目录滚动粘滞范围修复
+- 页面契约测试与维护记录
+
+### 涉及文件
+
+- `src/layouts/ContentGridLayout.astro`
+- `tests/mikan-pages.test.ts`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 复现长正文滚动时右侧目录随父级离开视口的问题，确认根因是目录外层 `aside` 在 grid 中被 `align-items: start` 压缩为目录自身高度，导致内部 `position: sticky` 没有足够滚动边界。
+- 将文章目录粘滞容器改为 `focused-article-toc__sticky`，保留 `top: 6rem` 的固定视口偏移。
+- 为 `focused-article-toc` 增加 `align-self: stretch`，让目录外层拥有与正文同高的 sticky 滚动范围。
+- 新增页面契约测试，约束文章右侧目录必须具备独立 sticky 容器、外层拉伸和固定偏移，防止后续回退为普通随文档流滚动。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增“文章右侧目录拥有整段正文的 sticky 滚动范围”测试按预期失败，失败点为缺少 `focused-article-toc__sticky` 容器和 `align-self: stretch`。
+- 已运行 `npm.cmd run sync:content`，内容同步通过。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:pages`，55 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过；仍保留既有日历页面 hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已使用系统 Chrome + Playwright 检查 `http://localhost:4321/posts/2026-06-26-welcome-to-mikan-archive/`：在临时长正文场景下，修复前目录外层高度为 `244px` 且滚动后 `stickyTop` 离开视口；修复后目录外层高度与正文同高约 `5134px`，多段滚动时目录 `stickyTop` 稳定保持在 `96px`。
+
 ## 2026-06-30 00:08:44 +08:00
 
 ### 修改范围

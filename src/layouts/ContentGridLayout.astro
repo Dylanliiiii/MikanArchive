@@ -97,7 +97,7 @@ const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 
 			{showArticleTOC && (
 				<aside id="article-toc-wrapper" class="focused-article-toc hidden xl:block">
-					<div class="sticky top-24">
+					<div class="focused-article-toc__sticky">
 						<SidebarTOC headings={headings} />
 					</div>
 				</aside>
@@ -127,6 +127,12 @@ const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 
 	.focused-article-toc {
 		min-width: 0;
+		align-self: stretch;
+	}
+
+	.focused-article-toc__sticky {
+		position: sticky;
+		top: 6rem;
 	}
 
 	@media (min-width: 1280px) {

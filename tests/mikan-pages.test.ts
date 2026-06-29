@@ -107,6 +107,16 @@ test("文章目录使用带活动范围的小框高亮当前阅读位置", () =>
 	assert.match(tocUtilsSource, /--toc-indicator-height/);
 });
 
+test("文章右侧目录拥有整段正文的 sticky 滚动范围", () => {
+	const source = readSource("src/layouts/ContentGridLayout.astro");
+
+	assert.match(source, /class="focused-article-toc__sticky"/);
+	assert.match(source, /\.focused-article-toc\s*\{[\s\S]*align-self:\s*stretch/);
+	assert.match(source, /\.focused-article-toc__sticky\s*\{[\s\S]*position:\s*sticky/);
+	assert.match(source, /\.focused-article-toc__sticky\s*\{[\s\S]*top:\s*6rem/);
+	assert.doesNotMatch(source, /<div class="sticky top-24">/);
+});
+
 test("聚焦布局会忽略本地残留的旧壁纸模式", () => {
 	const layoutSource = readSource("src/layouts/Layout.astro");
 	const settingSource = readSource("src/utils/setting-utils.ts");
