@@ -26,6 +26,26 @@ function isResourceKind(value) {
   return value === "tool" || value === "clip";
 }
 
+function isCalendarEventKind(value) {
+  return ["holiday", "anniversary", "schedule", "site", "post"].includes(value);
+}
+
+function isCalendarColor(value) {
+  return ["pink", "blue", "mint", "yellow", "neutral"].includes(value);
+}
+
+function isIsoDate(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function isIsoDateTime(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+}
+
+function isCalendarVisibility(value) {
+  return value === "public";
+}
+
 function parseScalar(raw) {
   const value = raw.trim();
 
@@ -166,6 +186,91 @@ function validateObjectArray(file, field, value, rules) {
   }
 }
 
+function validateCalendarEvents(relativePath, data) {
+  if (!Array.isArray(data)) {
+    addError(relativePath, "file must contain an array");
+    return;
+  }
+
+  const ids = new Set();
+  for (const [index, event] of data.entries()) {
+    const file = `${relativePath}[${index}]`;
+    requireFields(file, event, {
+      id: isNonEmptyString,
+      title: isNonEmptyString,
+      kind: isCalendarEventKind,
+      visibility: isCalendarVisibility
+    });
+
+    if (!isPlainObject(event)) continue;
+
+    if (ids.has(event.id)) {
+      addError(file, `duplicate id "${event.id}"`);
+    }
+    ids.add(event.id);
+
+    const hasDate = "date" in event;
+    const hasStart = "start" in event;
+    const hasEnd = "end" in event;
+    if (!hasDate && !hasStart) {
+      addError(file, 'missing "date" or "start"');
+    }
+    if (hasDate && !isIsoDate(event.date)) {
+      addError(file, 'invalid optional field "date"');
+    }
+    if (hasStart && !isIsoDateTime(event.start)) {
+      addError(file, 'invalid optional field "start"');
+    }
+    if (hasEnd && !isIsoDateTime(event.end)) {
+      addError(file, 'invalid optional field "end"');
+    }
+    if (hasStart && hasEnd && event.end <= event.start) {
+      addError(file, '"end" must be later than "start"');
+    }
+    if ("allDay" in event && typeof event.allDay !== "boolean") {
+      addError(file, 'invalid optional field "allDay"');
+    }
+    if ("note" in event && !isNonEmptyString(event.note)) {
+      addError(file, 'invalid optional field "note"');
+    }
+    if ("color" in event && !isCalendarColor(event.color)) {
+      addError(file, 'invalid optional field "color"');
+    }
+    if ("icon" in event && !isNonEmptyString(event.icon)) {
+      addError(file, 'invalid optional field "icon"');
+    }
+    if ("url" in event && !isNonEmptyString(event.url)) {
+      addError(file, 'invalid optional field "url"');
+    }
+    if ("recurring" in event) {
+      const recurring = event.recurring;
+      if (!isPlainObject(recurring)) {
+        addError(file, 'invalid optional field "recurring"');
+      } else if (!["weekly", "monthly", "yearly"].includes(recurring.freq)) {
+        addError(file, 'invalid recurring field "freq"');
+      } else {
+        if (recurring.freq === "weekly" && ![0, 1, 2, 3, 4, 5, 6].includes(recurring.weekday)) {
+          addError(file, 'weekly recurring requires "weekday" 0-6');
+        }
+        if (recurring.freq === "monthly" && (!Number.isInteger(recurring.day) || recurring.day < 1 || recurring.day > 31)) {
+          addError(file, 'monthly recurring requires "day" 1-31');
+        }
+        if (recurring.freq === "yearly") {
+          if (!Number.isInteger(recurring.month) || recurring.month < 1 || recurring.month > 12) {
+            addError(file, 'yearly recurring requires "month" 1-12');
+          }
+          if (!Number.isInteger(recurring.day) || recurring.day < 1 || recurring.day > 31) {
+            addError(file, 'yearly recurring requires "day" 1-31');
+          }
+          if ("lunar" in recurring && typeof recurring.lunar !== "boolean") {
+            addError(file, 'invalid recurring field "lunar"');
+          }
+        }
+      }
+    }
+  }
+}
+
 async function validatePosts() {
   const postsDir = path.join(root, "src/content/posts");
   if (!existsSync(postsDir)) {
@@ -301,6 +406,11 @@ async function validateDataContent() {
       date: isNonEmptyString,
       type: isNonEmptyString
     }
+  );
+
+  validateCalendarEvents(
+    "src/data/content/calendar/events.json",
+    await readJson("src/data/content/calendar/events.json", [])
   );
 }
 

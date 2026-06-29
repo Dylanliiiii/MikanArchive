@@ -84,3 +84,27 @@ test("getMikanArchiveGroups 能生成年份和月份分组", () => {
 	assert.match(groups[0].months[0].month, /^\d{2}$/);
 	assert.ok(groups[0].months[0].items.length > 0);
 });
+
+test("公开日历示例数据可读取且只包含公开事件", () => {
+	assert.equal(typeof mikanData.getMikanCalendarEvents, "function");
+	const events = mikanData.getMikanCalendarEvents();
+
+	assert.ok(events.length >= 6, "公开日历示例应提供足够事件验证视图");
+	assert.ok(events.every((event) => event.visibility === "public"));
+	assert.ok(events.some((event) => event.kind === "holiday" && event.recurring?.freq === "yearly"));
+	assert.ok(events.some((event) => event.kind === "schedule" && event.start && event.end));
+	assert.ok(events.some((event) => event.kind === "anniversary" && event.recurring?.freq === "yearly"));
+	assert.ok(events.every((event) => !/身份证|住址|手机号|token|cookie/i.test(JSON.stringify(event))));
+});
+
+test("公开日历事件 id 唯一且时间范围有效", () => {
+	const events = mikanData.getMikanCalendarEvents();
+	const ids = new Set(events.map((event) => event.id));
+
+	assert.equal(ids.size, events.length, "公开日历事件 id 不应重复");
+	for (const event of events) {
+		if (event.start && event.end) {
+			assert.ok(event.end > event.start, `${event.id} 的结束时间应晚于开始时间`);
+		}
+	}
+});

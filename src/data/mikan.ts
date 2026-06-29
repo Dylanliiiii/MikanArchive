@@ -70,6 +70,31 @@ export type MikanUpdateItem = {
 	description?: string;
 };
 
+export type MikanCalendarEventKind = "holiday" | "anniversary" | "schedule" | "site" | "post";
+export type MikanCalendarEventColor = "pink" | "blue" | "mint" | "yellow" | "neutral";
+
+export type MikanCalendarEvent = {
+	id: string;
+	title: string;
+	kind: MikanCalendarEventKind;
+	date?: string;
+	start?: string;
+	end?: string;
+	allDay?: boolean;
+	note?: string;
+	color?: MikanCalendarEventColor;
+	icon?: string;
+	url?: string;
+	recurring?: {
+		freq: "weekly" | "monthly" | "yearly";
+		weekday?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+		month?: number;
+		day?: number;
+		lunar?: boolean;
+	};
+	visibility: "public";
+};
+
 export type MikanResume = {
 	name: string;
 	headline: string;
@@ -151,6 +176,10 @@ export function getMikanArchiveGroups() {
 
 export function getMikanUpdates() {
 	return readJson<MikanUpdateItem[]>("records/updates.json", []);
+}
+
+export function getMikanCalendarEvents() {
+	return readJson<MikanCalendarEvent[]>("calendar/events.json", []);
 }
 
 export function getMikanResume() {

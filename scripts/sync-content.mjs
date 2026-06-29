@@ -22,6 +22,7 @@ const mappings = [
   { source: "resources", target: "src/data/content/resources", kind: "directory" },
   { source: "links", target: "src/data/content/links", kind: "directory" },
   { source: "records", target: "src/data/content/records", kind: "directory" },
+  { source: "calendar", target: "src/data/content/calendar", kind: "directory" },
   { source: "profile/resume.json", target: "src/data/content/profile/resume.json", kind: "file" },
   { source: "assets", target: "public/assets", kind: "directory" }
 ];
@@ -66,7 +67,7 @@ async function resetGeneratedContent() {
 }
 
 function hasSupportedContent(sourceRoot) {
-  return ["posts", "resources", "links", "profile", "records", "assets"].some((name) =>
+  return ["posts", "resources", "links", "profile", "records", "calendar", "assets"].some((name) =>
     existsSync(path.join(sourceRoot, name))
   );
 }
