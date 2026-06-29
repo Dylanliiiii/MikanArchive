@@ -63,6 +63,50 @@ test("聚焦布局不渲染横幅和通用侧栏，但保留文章目录与浮�
 	assert.doesNotMatch(source, /SpineModel/);
 });
 
+test("文章元信息区提供浏览量状态和分享入口", () => {
+	const pageSource = readSource("src/pages/posts/[...slug].astro");
+	const metaSource = readSource("src/components/layout/PostMeta.astro");
+
+	assert.match(pageSource, /shareTitle=\{entry\.data\.title\}/);
+	assert.match(pageSource, /shareDescription=\{entry\.data\.description/);
+
+	assert.match(metaSource, /const shouldShowPostActions =/);
+	assert.match(metaSource, /post-meta-pageviews/);
+	assert.match(metaSource, /post-meta-pageviews--unavailable/);
+	assert.match(metaSource, /twikoo_visitors/);
+	assert.match(metaSource, /waline-pageview-count/);
+	assert.match(metaSource, /artalk-pv-count/);
+	assert.match(metaSource, /data-post-share-button/);
+	assert.match(metaSource, /data-post-share-url/);
+	assert.match(metaSource, /data-post-share-title/);
+	assert.match(metaSource, /data-post-share-description/);
+	assert.match(metaSource, /data-post-share-feedback/);
+	assert.match(metaSource, /navigator\.share/);
+	assert.match(metaSource, /navigator\.clipboard\.writeText/);
+	assert.match(metaSource, /shareFeedbackTimer/);
+});
+
+test("文章目录使用带活动范围的小框高亮当前阅读位置", () => {
+	const sidebarSource = readSource("src/components/widget/SidebarTOC.astro");
+	const floatingSource = readSource("src/components/controls/FloatingTOC.astro");
+	const tocStyleSource = readSource("src/styles/toc.css");
+	const tocUtilsSource = readSource("src/utils/toc-utils.ts");
+
+	assert.match(sidebarSource, /toc-frame/);
+	assert.match(sidebarSource, /data-toc-kind="sidebar"/);
+	assert.match(floatingSource, /toc-frame/);
+	assert.match(floatingSource, /data-toc-kind="floating"/);
+	assert.match(tocStyleSource, /\.toc-frame/);
+	assert.match(tocStyleSource, /\.toc-content\[data-active-range="true"\]/);
+	assert.match(tocStyleSource, /\.toc-active-indicator/);
+	assert.match(tocStyleSource, /border:\s*1px solid/);
+	assert.match(tocStyleSource, /transform:\s*translateY\(var\(--toc-indicator-top/);
+	assert.match(tocUtilsSource, /data-active-range/);
+	assert.match(tocUtilsSource, /data-active-heading-ids/);
+	assert.match(tocUtilsSource, /--toc-indicator-top/);
+	assert.match(tocUtilsSource, /--toc-indicator-height/);
+});
+
 test("聚焦布局会忽略本地残留的旧壁纸模式", () => {
 	const layoutSource = readSource("src/layouts/Layout.astro");
 	const settingSource = readSource("src/utils/setting-utils.ts");

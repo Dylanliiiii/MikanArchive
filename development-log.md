@@ -1,5 +1,47 @@
 ﻿# Development Log
 
+## 2026-06-30 00:08:44 +08:00
+
+### 修改范围
+
+- 文章详情页目录当前范围高亮
+- 文章元信息区浏览量状态与分享入口
+- 文章页增强设计规格、实施计划和页面契约测试
+
+### 涉及文件
+
+- `src/pages/posts/[...slug].astro`
+- `src/components/layout/PostMeta.astro`
+- `src/components/widget/SidebarTOC.astro`
+- `src/components/controls/FloatingTOC.astro`
+- `src/utils/toc-utils.ts`
+- `src/styles/toc.css`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/specs/2026-06-29-mikan-post-reading-actions-design.md`
+- `docs/superpowers/plans/2026-06-29-mikan-post-reading-actions.md`
+- `docs/next-tasks.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增文章页增强设计规格和实施计划，明确浏览量不伪造静态计数，只复用 Twikoo / Waline / Artalk 真实统计；未配置时显示“统计不可用”。
+- 文章详情页 `PostMetadata` 传入分享标题、描述和 URL，在标题元信息区新增浏览量状态和分享按钮。
+- 分享按钮优先调用 `navigator.share`，不可用时复制当前文章链接并显示“已复制”反馈；原底部分享海报能力保持可选。
+- 修正 Artalk 浏览量判断使用错误配置项的问题，改为读取 `commentConfig.artalk?.visitorCount`。
+- 右侧文章目录和浮动目录统一增加 `toc-frame` 内层小框，`TOCManager` 在滚动时写入当前活动标题范围和 CSS 变量，活动高亮框随当前标题组移动。
+- 页面契约测试新增文章元信息区和目录活动范围高亮断言，覆盖浏览量兜底、分享交互钩子、目录小框和活动范围数据属性。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增 2 项页面契约测试按预期失败，失败点为文章元信息缺少分享 / 浏览量增强、目录缺少 `toc-frame` 活动范围标记。
+- 已运行 `npm.cmd run sync:content`，内容同步通过。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:pages`，54 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过；仍保留既有日历页面 hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已使用系统 Chrome + Playwright 检查 `http://127.0.0.1:4321/posts/2026-06-26-welcome-to-mikan-archive/`：桌面 `1440×900` 下右侧目录显示 `toc-frame`，活动范围为 `true`，高亮框可见且无横向溢出；移动端 `390×844` 下右侧目录隐藏、浮动目录按钮显示、分享按钮可见且无横向溢出。
+
 ## 2026-06-29 22:59:03 +08:00
 
 ### 修改范围

@@ -1,6 +1,22 @@
 /* TOC 共享样式 */
 
 /* TOC 滚动容器 */
+.toc-frame {
+	position: relative;
+	margin: 0.25rem 0;
+	border: 1px solid color-mix(in oklab, var(--line-color) 74%, transparent);
+	border-radius: 1rem;
+	background: color-mix(in oklab, var(--card-bg) 72%, transparent);
+	box-shadow: inset 0 1px 0 color-mix(in oklab, white 48%, transparent);
+	overflow: hidden;
+}
+
+:root.dark .toc-frame {
+	background: color-mix(in oklab, var(--card-bg) 82%, black 8%);
+	border-color: color-mix(in oklab, var(--line-color) 70%, white 4%);
+	box-shadow: inset 0 1px 0 color-mix(in oklab, white 8%, transparent);
+}
+
 .toc-scroll-container {
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -21,7 +37,13 @@
 	box-sizing: border-box;
 	contain: layout;
 	align-items: stretch;
-	padding: 0.125rem 0;
+	padding: 0.45rem;
+	--toc-indicator-top: 0px;
+	--toc-indicator-height: 0px;
+}
+
+.toc-content[data-active-range="true"] .toc-active-indicator {
+	opacity: 1;
 }
 
 /* TOC 链接样式 */
@@ -130,11 +152,19 @@
 	position: absolute;
 	left: 0;
 	right: 0;
+	top: 0;
+	height: var(--toc-indicator-height, 0px);
 	background: color-mix(in oklab, var(--toc-indicator-bg), transparent);
 	border-radius: 0.875rem;
-	transition: top 0.18s ease, height 0.18s ease, opacity 0.14s ease;
+	border: 1px solid color-mix(in oklab, var(--primary) 38%, transparent);
+	transform: translateY(var(--toc-indicator-top, 0px));
+	transition:
+		transform 0.18s ease,
+		height 0.18s ease,
+		opacity 0.14s ease;
 	box-shadow: 0 6px 18px -14px color-mix(in oklab, var(--primary) 55%, transparent);
 	z-index: -1;
+	pointer-events: none;
 }
 
 @media (max-width: 768px) {

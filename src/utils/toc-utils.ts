@@ -208,6 +208,10 @@ export class TOCManager {
 		if (!tocContent) return;
 
 		tocContent.innerHTML = this.generateTOCHTML();
+		tocContent.setAttribute("data-active-range", "false");
+		tocContent.setAttribute("data-active-heading-ids", "");
+		tocContent.style.setProperty("--toc-indicator-top", "0px");
+		tocContent.style.setProperty("--toc-indicator-height", "0px");
 		this.tocItems = Array.from(
 			document.querySelectorAll(`#${this.contentId} a`),
 		);
@@ -291,13 +295,17 @@ export class TOCManager {
 		const indicator = document.getElementById(this.indicatorId);
 		if (!indicator || !this.tocItems.length) return;
 
+		const tocContent = document.getElementById(this.contentId);
+		if (!tocContent) return;
+
 		if (activeItems.length === 0) {
+			tocContent.setAttribute("data-active-range", "false");
+			tocContent.setAttribute("data-active-heading-ids", "");
+			tocContent.style.setProperty("--toc-indicator-top", "0px");
+			tocContent.style.setProperty("--toc-indicator-height", "0px");
 			indicator.style.opacity = "0";
 			return;
 		}
-
-		const tocContent = document.getElementById(this.contentId);
-		if (!tocContent) return;
 
 		const contentRect = tocContent.getBoundingClientRect();
 		const firstActive = activeItems[0];
@@ -308,9 +316,15 @@ export class TOCManager {
 
 		const top = firstRect.top - contentRect.top;
 		const height = lastRect.bottom - firstRect.top;
+		const activeHeadingIds = activeItems
+			.map((item) => item.dataset.headingId)
+			.filter(Boolean)
+			.join(" ");
 
-		indicator.style.top = `${top}px`;
-		indicator.style.height = `${height}px`;
+		tocContent.setAttribute("data-active-range", "true");
+		tocContent.setAttribute("data-active-heading-ids", activeHeadingIds);
+		tocContent.style.setProperty("--toc-indicator-top", `${top}px`);
+		tocContent.style.setProperty("--toc-indicator-height", `${height}px`);
 		indicator.style.opacity = "1";
 
 		// 自动滚动到活动项

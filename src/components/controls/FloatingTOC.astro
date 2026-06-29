@@ -57,14 +57,18 @@ const sidebarPosition = sidebarLayoutConfig.position;
         </div>
     </div>
 
-    <div class="toc-scroll-container p-4">
+    <div class="toc-frame" data-toc-kind="floating">
+      <div class="toc-scroll-container p-4">
         <div
         class="toc-content"
         id="floating-toc-content"
+        data-active-range="false"
+        data-active-heading-ids=""
         style="width: 100%; max-width: 100%;"
         >
         <!-- TOC内容将由JavaScript动态生成 -->
         </div>
+      </div>
     </div>
   </div>
 </div>

@@ -22,6 +22,9 @@ export interface Props {
 	customPath?: string;
 	pinned?: boolean;
 	password?: boolean;
+	shareTitle?: string;
+	shareDescription?: string;
+	shareUrl?: string;
 }
 
 const {
@@ -37,9 +40,33 @@ const {
 	showTags = true,
 	customPath,
 	pinned,
+	shareTitle,
+	shareDescription = "",
+	shareUrl,
 } = Astro.props;
 
 const path = customPath || (id ? `/posts/${id}` : "");
+const hasTwikooPageViews =
+	!isHome &&
+	commentConfig.type === "twikoo" &&
+	commentConfig.twikoo?.visitorCount &&
+	id;
+const hasWalinePageViews =
+	!isHome &&
+	commentConfig.type === "waline" &&
+	commentConfig.waline?.visitorCount &&
+	id;
+const hasArtalkPageViews =
+	!isHome &&
+	commentConfig.type === "artalk" &&
+	commentConfig.artalk?.visitorCount &&
+	id;
+const hasProviderPageViews =
+	hasTwikooPageViews || hasWalinePageViews || hasArtalkPageViews;
+const shouldShowPostActions = Boolean(!isHome && id && shareTitle);
+const normalizedShareTitle = shareTitle || "";
+const normalizedShareDescription = shareDescription || normalizedShareTitle;
+const normalizedShareUrl = shareUrl || Astro.url.href;
 ---
 
 <div
@@ -127,60 +154,136 @@ const path = customPath || (id ? `/posts/${id}` : "");
      )
    }
 
-  <!-- Twikoo访问量统计（首页不显示，且文章访问量统计启用时显示） -->
+  <!-- 文章详情页浏览量：只展示真实统计服务，未配置时显示不可用 -->
   {
-    !isHome &&
-      commentConfig.type === 'twikoo' &&
-      commentConfig.twikoo?.visitorCount &&
-      id && (
-        <div class="flex items-center">
-          <div class="meta-icon">
-            <Icon is:inline
-              name="material-symbols:visibility-outline-rounded"
-              class="text-xl"
-            />
-          </div>
-          <span class="text-50 text-sm font-medium mr-1">
-            {i18n(I18nKey.pageViews)}
-          </span>
+    shouldShowPostActions && (
+      <div class:list={["post-meta-pageviews flex items-center", { "post-meta-pageviews--unavailable": !hasProviderPageViews }]}>
+        <div class="meta-icon">
+          <Icon is:inline
+            name="material-symbols:visibility-outline-rounded"
+            class="text-xl"
+          />
+        </div>
+        <span class="text-50 text-sm font-medium mr-1">
+          {i18n(I18nKey.pageViews)}
+        </span>
+        {hasTwikooPageViews && (
           <span class="text-50 text-sm font-medium" id="twikoo_visitors">
             {i18n(I18nKey.pageViewsLoading)}
           </span>
-        </div>
-      )
-  }
-  <!-- Waline访问量统计（首页不显示、仅type为waline时显示） -->
-  {
-    !isHome &&
-      commentConfig.type === 'waline' &&
-      commentConfig.waline?.visitorCount &&
-      id && (
-        <div class="flex items-center">
-          <div class="meta-icon">
-            <Icon is:inline name="material-symbols:visibility-outline-rounded" class="text-xl" />
-          </div>
-          <span class="text-50 text-sm font-medium mr-1">
-            {i18n(I18nKey.pageViews)}
+        )}
+        {hasWalinePageViews && (
+          <span class="text-50 text-sm font-medium waline-pageview-count" data-path={path}>
+            {i18n(I18nKey.pageViewsLoading)}
           </span>
-          <span class="text-50 text-sm font-medium waline-pageview-count" data-path={path}>{i18n(I18nKey.pageViewsLoading)}</span>
-        </div>
-      )
+        )}
+        {hasArtalkPageViews && (
+          <span class="text-50 text-sm font-medium artalk-pv-count" data-path={path}>
+            {i18n(I18nKey.pageViewsLoading)}
+          </span>
+        )}
+        {!hasProviderPageViews && (
+          <span class="text-50 text-sm font-medium">
+            {i18n(I18nKey.pageViewsError)}
+          </span>
+        )}
+      </div>
+    )
   }
-    <!-- artalk访问量统计（首页不显示、仅type为artalk时显示） -->
-    {
-        !isHome &&
-        commentConfig.type === 'artalk' &&
-        commentConfig.waline?.visitorCount &&
-        id && (
-                    <div class="flex items-center">
-                        <div class="meta-icon">
-                            <Icon is:inline name="material-symbols:visibility-outline-rounded" class="text-xl" />
-                        </div>
-                        <span class="text-50 text-sm font-medium mr-1">
-                            {i18n(I18nKey.pageViews)}
-                        </span>
-                        <span class="text-50 text-sm font-medium artalk-pv-count" data-path={path}>{i18n(I18nKey.pageViewsLoading)}</span>
-                    </div>
-        )
-    }
+
+  {
+    shouldShowPostActions && (
+      <button
+        type="button"
+        class="post-meta-share-btn flex items-center text-50 text-sm font-medium transition hover:text-(--primary) active:scale-95"
+        data-post-share-button
+        data-post-share-url={normalizedShareUrl}
+        data-post-share-title={normalizedShareTitle}
+        data-post-share-description={normalizedShareDescription}
+        aria-label={i18n(I18nKey.shareArticle)}
+      >
+        <div class="meta-icon">
+          <Icon is:inline name="material-symbols:share" class="text-xl" />
+        </div>
+        <span>{i18n(I18nKey.shareArticle)}</span>
+        <span
+          class="ml-2 hidden rounded-md bg-(--btn-regular-bg) px-2 py-0.5 text-xs text-(--btn-content)"
+          data-post-share-feedback
+        >
+          {i18n(I18nKey.copied)}
+        </span>
+      </button>
+    )
+  }
 </div>
+
+{
+  shouldShowPostActions && (
+    <script>
+      let shareFeedbackTimer: ReturnType<typeof setTimeout> | undefined;
+
+      function setShareFeedback(button: HTMLButtonElement, visible: boolean) {
+        const feedback = button.querySelector("[data-post-share-feedback]");
+        if (!feedback) return;
+
+        feedback.classList.toggle("hidden", !visible);
+      }
+
+      async function copyPostShareUrl(button: HTMLButtonElement) {
+        const shareUrl = button.dataset.postShareUrl || window.location.href;
+
+        await navigator.clipboard.writeText(shareUrl);
+        setShareFeedback(button, true);
+
+        if (shareFeedbackTimer) {
+          clearTimeout(shareFeedbackTimer);
+        }
+        shareFeedbackTimer = setTimeout(() => {
+          setShareFeedback(button, false);
+        }, 1800);
+      }
+
+      async function handlePostShareClick(event: Event) {
+        const button = event.currentTarget as HTMLButtonElement;
+        const shareUrl = button.dataset.postShareUrl || window.location.href;
+        const shareTitle = button.dataset.postShareTitle || document.title;
+        const shareDescription = button.dataset.postShareDescription || shareTitle;
+
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: shareTitle,
+              text: shareDescription,
+              url: shareUrl,
+            });
+            return;
+          } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          await copyPostShareUrl(button);
+        }
+      }
+
+      function initPostShareButtons() {
+        const buttons = document.querySelectorAll<HTMLButtonElement>("[data-post-share-button]");
+
+        buttons.forEach((button) => {
+          if (button.dataset.postShareBound === "true") return;
+
+          button.dataset.postShareBound = "true";
+          button.addEventListener("click", handlePostShareClick);
+        });
+      }
+
+      initPostShareButtons();
+      document.addEventListener("DOMContentLoaded", initPostShareButtons);
+      document.addEventListener("astro:page-load", initPostShareButtons);
+      document.addEventListener("swup:contentReplaced", initPostShareButtons);
+    </script>
+  )
+}
