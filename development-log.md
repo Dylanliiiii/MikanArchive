@@ -1,5 +1,29 @@
 ﻿# Development Log
 
+## 2026-06-29 22:59:03 +08:00
+
+### 修改范围
+
+- 公开日历年视图暗色可读性修复
+
+### 涉及文件
+
+- `src/styles/resources.css`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 为公开日历年视图卡片补充暗色模式年份和事件数量文字颜色覆盖，避免年份文字在深色背景中不可读。
+- 页面契约测试新增年视图暗色文字覆盖规则断言，防止同类对比问题回退。
+
+### 验证情况
+
+- 已运行 `npm.cmd run test:pages`，52 项页面契约测试通过。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；仅保留既有的 Vite 动态导入、chunk 体积、Astro markdown 弃用和 Pagefind 中文 stemming 提示。
+- 已使用系统 Chrome + Playwright 打开 `http://127.0.0.1:4321/calendar/` 暗色年视图验证：年份文字为 `rgba(255, 255, 255, 0.9)`，事件数量文字为 `rgba(255, 255, 255, 0.72)`。
+- 已生成本地验收截图 `output/playwright/calendar-dark-year-view.png`，`output/` 已被 `.gitignore` 忽略。
+
 ## 2026-06-29 22:48:49 +08:00
 
 ### 修改范围

@@ -457,6 +457,8 @@ test("公开日历暗色模式保留标题和事件卡片可读性", () => {
 	assert.match(source, /:root\.dark \.calendar-toolbar h2/);
 	assert.match(source, /:root\.dark \.calendar-view-button\.is-active/);
 	assert.match(source, /:root\.dark \.calendar-month-cell\.is-selected/);
+	assert.match(source, /:root\.dark \.calendar-year-card strong/);
+	assert.match(source, /:root\.dark \.calendar-year-card span/);
 	assert.match(source, /:root\.dark \.calendar-cell-day/);
 	assert.match(source, /:root\.dark \.calendar-mini-item small,\s*:root\.dark \.calendar-detail-item span/);
 	assert.match(source, /:root\.dark \.calendar-event--blue/);
