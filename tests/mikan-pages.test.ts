@@ -25,6 +25,7 @@ const focusedPages = [
 	"src/pages/resources/clips/index.astro",
 	"src/pages/rss.astro",
 	"src/pages/search.astro",
+	"src/pages/site.astro",
 ];
 
 test("首页继续使用带横幅和双侧栏的 MainGridLayout", () => {
@@ -350,6 +351,59 @@ test("我的下拉和关于页标题改为个人介绍", () => {
 	assert.match(aboutContent, /title:\s*"个人介绍"/);
 	assert.match(zhCnSource, /\[Key\.about\]:\s*"个人介绍"/);
 	assert.match(zhTwSource, /\[Key\.about\]:\s*"個人介紹"/);
+});
+
+test("我的下拉包含个人介绍和站点概览，外部入口移动到页脚", () => {
+	const navSource = readSource("src/config/navBarConfig.ts");
+	const footerSource = readSource("src/components/layout/Footer.astro");
+	const profileSource = readSource("src/config/profileConfig.ts");
+	const myChildren = /name:\s*"我的"[\s\S]*?children:\s*\[([\s\S]*?)\]\s*,\s*\}/.exec(
+		navSource,
+	)?.[1] ?? "";
+
+	assert.match(myChildren, /LinkPresets\.About/);
+	assert.match(myChildren, /LinkPresets\.SiteOverview/);
+	assert.doesNotMatch(myChildren, /GitHub/);
+	assert.doesNotMatch(myChildren, /RSS/);
+	assert.match(navSource, /SiteOverview:\s*\{[\s\S]*name:\s*"站点概览"/);
+	assert.match(navSource, /url:\s*"\/site\/"/);
+
+	assert.match(footerSource, /footer-social-links/);
+	assert.match(footerSource, /footer-runtime-status/);
+	assert.match(footerSource, /data-footer-stat-id="running-days"/);
+	assert.match(footerSource, /data-footer-stat-id="last-update"/);
+	assert.match(profileSource, /https:\/\/github\.com\/Dylanliiiii/);
+	assert.match(profileSource, /https:\/\/space\.bilibili\.com\/37007345/);
+	assert.match(profileSource, /name:\s*"B站"/);
+});
+
+test("站点概览页展示站点统计、构建信息和相关入口", () => {
+	const source = readSource("src/pages/site.astro");
+	const breadcrumbSource = readSource("src/utils/focused-breadcrumb.ts");
+	const styleSource = readSource("src/styles/resources.css");
+
+	assert.match(source, /const title = "站点概览"/);
+	assert.match(source, /MIKAN SITE/);
+	assert.match(source, /getSortedPosts/);
+	assert.match(source, /getTagList/);
+	assert.match(source, /site-overview-stat-grid/);
+	assert.match(source, /data-site-stat-id="running-days"/);
+	assert.match(source, /data-site-stat-id="last-update"/);
+	assert.match(source, /站点信息/);
+	assert.match(source, /构建信息/);
+	assert.match(source, /相关入口/);
+	assert.match(source, /profileConfig\.links/);
+	assert.match(breadcrumbSource, /\/site\/[\s\S]*label:\s*"站点概览"/);
+	assert.match(styleSource, /\.site-overview-stat-grid/);
+});
+
+test("站点统计只保留分类标签统计并使用文章标签口径", () => {
+	const source = readSource("src/components/widget/SiteStats.astro");
+
+	assert.match(source, /getTagList/);
+	assert.doesNotMatch(source, /getCategoryList/);
+	assert.match(source, /siteStatsCategoryCount/);
+	assert.doesNotMatch(source, /siteStatsTagCount/);
 });
 
 test("独立标签页面已删除，文章标签只作为分类标签使用", () => {

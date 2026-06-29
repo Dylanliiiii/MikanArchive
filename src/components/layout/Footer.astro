@@ -1,10 +1,45 @@
 ---
 import fs from "node:fs";
 import path from "node:path";
-import { footerConfig, profileConfig } from "@/config";
+import { Icon } from "astro-icon/components";
+import { footerConfig, profileConfig, siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import { getSortedPosts } from "@/utils/content-utils";
 import { url } from "@/utils/url-utils";
 
 const currentYear = new Date().getFullYear();
+const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
+
+const posts = await getSortedPosts();
+const getActivityDate = (post: (typeof posts)[number]): Date => {
+	const { published, updated } = post.data;
+	if (updated && updated > published) return updated;
+	return published;
+};
+const lastActivityDate = posts.reduce<Date | null>((latest, post) => {
+	const current = getActivityDate(post);
+	if (!latest || current > latest) return current;
+	return latest;
+}, null);
+const lastPostDate = lastActivityDate ? lastActivityDate.toISOString() : null;
+const todayText = i18n(I18nKey.today);
+
+const footerLinks = [
+	...profileConfig.links
+		.filter((item) => !item.url.startsWith("mailto:"))
+		.map((item) => ({
+			...item,
+			url: url(item.url),
+			external: true,
+		})),
+	{
+		name: "RSS",
+		icon: "fa7-solid:rss",
+		url: url("rss.xml"),
+		external: false,
+	},
+];
 
 // 读取FooterConfig.html文件内容
 let customFooterHtml = "";
@@ -38,15 +73,40 @@ if (footerConfig.enable) {
     <div class="mb-2">
       {customFooterHtml && <div set:html={customFooterHtml} />}
     </div>
+    <div class="footer-social-links m-0.5 flex gap-2 justify-center flex-wrap">
+      {footerLinks.map((item, index) => (
+        <>
+          {index > 0 && <span aria-hidden="true">|</span>}
+          <a
+            class="transition link inline-flex items-center gap-1.5 text-(--primary) font-bold"
+            target={item.external ? "_blank" : "_self"}
+            rel={item.external ? "noopener noreferrer" : undefined}
+            href={item.url}
+          >
+            <Icon is:inline name={item.icon} class="text-[1em]" />
+            <span>{item.name}</span>
+          </a>
+        </>
+      ))}
+    </div>
+    <div class="footer-runtime-status m-0.5 flex gap-2 justify-center flex-wrap">
+      <span class="inline-flex items-center gap-1.5">
+        <Icon is:inline name="material-symbols:calendar-clock-outline" class="text-[1em]" />
+        <span>已运行</span>
+        <strong data-footer-stat-id="running-days">0</strong>
+        <span>天</span>
+      </span>
+      <span aria-hidden="true">|</span>
+      <span class="inline-flex items-center gap-1.5">
+        <Icon is:inline name="mingcute:heartbeat-line" class="text-[1em]" />
+        <span>最后更新于</span>
+        <strong data-footer-stat-id="last-update">0</strong>
+        <span data-footer-stat-suffix="last-update">天前</span>
+      </span>
+    </div>
     <div class="m-0.5 flex gap-2 justify-center flex-wrap">
       &copy; <span id="copyright-year">{currentYear}</span>
       {profileConfig.name}. All Rights Reserved.
-      <span aria-hidden="true">/</span>
-      <a
-        class="transition link text-(--primary) font-medium"
-        target="_blank"
-        href={url("rss.xml")}>RSS</a
-      >
       <span aria-hidden="true">/</span>
       <a
         class="transition link text-(--primary) font-medium"
@@ -75,3 +135,44 @@ if (footerConfig.enable) {
     -->
   </div>
 </div>
+
+<script is:inline define:vars={{ siteStartDate, lastPostDate, todayText }}>
+  function updateFooterRuntimeStats() {
+    const today = new Date();
+    const startDate = new Date(siteStartDate);
+    const runningDays = Math.max(
+      0,
+      Math.ceil(Math.abs(today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+    );
+
+    document.querySelectorAll('[data-footer-stat-id="running-days"]').forEach((element) => {
+      element.textContent = runningDays.toString();
+    });
+
+    if (!lastPostDate) return;
+
+    const lastPost = new Date(lastPostDate);
+    const daysSinceLastUpdate = Math.floor(
+      Math.abs(today.getTime() - lastPost.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    document.querySelectorAll('[data-footer-stat-id="last-update"]').forEach((element) => {
+      if (daysSinceLastUpdate === 0) {
+        element.textContent = todayText;
+        document.querySelectorAll('[data-footer-stat-suffix="last-update"]').forEach((suffix) => {
+          suffix.textContent = "";
+        });
+      } else {
+        element.textContent = daysSinceLastUpdate.toString();
+        document.querySelectorAll('[data-footer-stat-suffix="last-update"]').forEach((suffix) => {
+          suffix.textContent = "天前";
+        });
+      }
+    });
+  }
+
+  updateFooterRuntimeStats();
+  document.addEventListener("swup:contentReplaced", () => {
+    setTimeout(updateFooterRuntimeStats, 100);
+  });
+</script>

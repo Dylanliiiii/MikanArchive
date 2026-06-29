@@ -50,17 +50,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		icon: "material-symbols:person",
 		children: [
 			LinkPresets.About,
-			{
-				name: "GitHub",
-				url: "https://github.com/",
-				external: true,
-				icon: "fa7-brands:github",
-			},
-			{
-				name: "RSS",
-				url: "/rss.xml",
-				icon: "fa7-solid:rss",
-			},
+			LinkPresets.SiteOverview,
 		],
 	});
 
@@ -135,6 +125,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "个人介绍",
 		url: "/about/",
 		icon: "material-symbols:person",
+	},
+	SiteOverview: {
+		name: "站点概览",
+		url: "/site/",
+		icon: "material-symbols:monitor-heart-rounded",
 	},
 	Bangumi: {
 		name: "番组计划",

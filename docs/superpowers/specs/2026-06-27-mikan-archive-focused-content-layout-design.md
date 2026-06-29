@@ -59,6 +59,7 @@
 /friends/
 /guestbook/
 /about/
+/site/
 /search/
 /rss/
 /404/

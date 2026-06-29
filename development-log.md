@@ -1,5 +1,57 @@
 ﻿# Development Log
 
+## 2026-06-29 18:54:14 +08:00
+
+### 修改范围
+
+- 新增站点概览功能页
+- “我的”下拉与页脚公开入口调整
+- 站点统计口径统一
+- 项目规则、README、CHANGELOG、设计说明和交接文档同步
+
+### 涉及文件
+
+- `src/pages/site.astro`
+- `src/config/navBarConfig.ts`
+- `src/config/profileConfig.ts`
+- `src/components/layout/Footer.astro`
+- `src/components/widget/SiteStats.astro`
+- `src/styles/resources.css`
+- `src/utils/focused-breadcrumb.ts`
+- `tests/mikan-pages.test.ts`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/mikan-archive-project/SKILL.md`
+- `docs/next-tasks.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `docs/superpowers/specs/2026-06-29-mikan-site-overview-design.md`
+- `docs/superpowers/plans/2026-06-29-mikan-site-overview.md`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `/site/` 站点概览页，使用聚焦内容布局展示运行统计、站点信息、构建信息和相关入口。
+- 将“我的”下拉调整为“个人介绍 / 站点概览”，移除下拉中的 GitHub 和 RSS。
+- 将用户提供的 GitHub 与 B 站公开链接写入 `profileConfig`，并在页脚与站点概览页展示；页脚同时保留 RSS。
+- 页脚新增“已运行 X 天”和“最后更新于 X 天前”状态。
+- 站点统计组件移除重复的“标签”统计，只保留以文章标签为口径的“分类标签”统计。
+- 新增页面契约测试覆盖站点概览、导航、页脚状态和统计口径。
+- 同步 README、AGENTS、项目专属 Skill、正式设计规格、CHANGELOG 与本次实施计划。
+
+### 验证情况
+
+- TDD 红灯：运行 `npm.cmd run test:pages`，45 个页面契约中 5 个失败，失败点为 `/site/` 页面不存在、“我的”下拉仍有 GitHub/RSS、页脚缺少公开入口和运行状态、站点统计仍同时使用分类和标签。
+- 已运行 `npm.cmd run test:pages`，45/45 通过。
+- 已运行 `npm.cmd run test:content-model`，6/6 通过。
+- 已运行 `npm.cmd run test:archive`，6/6 通过。
+- 已运行 `npm.cmd run check`，结果为 165 个文件、0 errors、0 warnings，仅保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
+- 已运行完整验证链：`npm.cmd run sync:content`、`npm.cmd run validate:content`、`npm.cmd run test:content-model`、`npm.cmd run test:archive`、`npm.cmd run test:pages`、`npm.cmd run check`、`npm.cmd run build`，全部退出码为 0。
+- `npm.cmd run build` 构建成功并生成 15 个页面，包含 `/site/index.html`；保留既有 Vite dynamic import、chunk size、路由优先级、Markdown deprecation、Pagefind 中文 stemming 和 npm 新版本提示。
+- 使用系统 Chrome + Playwright 检查 `http://127.0.0.1:4321/site/` 的 1440×900 桌面端和 390×844 移动端，以及 `http://127.0.0.1:4321/` 的桌面端页脚与“我的”下拉：站点概览内容、页脚 GitHub/B站/RSS、已运行天数、最后更新时间均可见，“我的”下拉只包含个人介绍和站点概览，所有检查视口均无横向溢出。
+- 浏览器检查控制台仅记录开发环境 Vite/Pagefind 信息和既有 favicon 404；截图已保存到已忽略目录 `output/playwright/site-overview-desktop.png`、`output/playwright/site-overview-mobile.png`、`output/playwright/home-footer-menu-desktop.png`。
+
 ## 2026-06-29 18:10:23 +08:00
 
 ### 修改范围

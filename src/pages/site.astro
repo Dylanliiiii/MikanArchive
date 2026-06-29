@@ -1,0 +1,294 @@
+---
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { Icon } from "astro-icon/components";
+import ci from "ci-info";
+import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
+import { licenseConfig, profileConfig, siteConfig } from "@/config";
+import { getSortedPosts, getTagList } from "@/utils/content-utils";
+import { formatDateI18nWithTime } from "@/utils/date-utils";
+import { url } from "@/utils/url-utils";
+import "@/styles/resources.css";
+
+const title = "站点概览";
+const description = "集中查看 MikanArchive 的内容规模、运行状态、构建环境和公开入口。";
+
+const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
+const posts = await getSortedPosts();
+const categoryTags = await getTagList();
+
+let totalWords = 0;
+for (const post of posts) {
+	if (!post.body) continue;
+	const text = post.body
+		.replace(/```[\s\S]*?```/g, "")
+		.replace(/`[^`]*`/g, "")
+		.replace(/\s+/g, " ")
+		.trim();
+	const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || [];
+	const englishChars = text.match(/[a-zA-Z]/g) || [];
+	totalWords += chineseChars.length + englishChars.length;
+}
+
+function formatNumber(num: number): string {
+	return num.toLocaleString();
+}
+
+const getActivityDate = (post: (typeof posts)[number]): Date => {
+	const { published, updated } = post.data;
+	if (updated && updated > published) return updated;
+	return published;
+};
+
+const lastActivityDate = posts.reduce<Date | null>((latest, post) => {
+	const current = getActivityDate(post);
+	if (!latest || current > latest) return current;
+	return latest;
+}, null);
+const lastPostDate = lastActivityDate ? lastActivityDate.toISOString() : null;
+
+let blogVersion = "unknown";
+try {
+	const pkg = JSON.parse(
+		readFileSync(new URL("../../package.json", import.meta.url), "utf-8"),
+	);
+	blogVersion = pkg.version || "unknown";
+} catch {}
+
+let astroVersion = "unknown";
+try {
+	const require = createRequire(import.meta.url);
+	const astroPkg = require("astro/package.json");
+	astroVersion = astroPkg.version || "unknown";
+} catch {}
+
+const userAgent = process.env.npm_config_user_agent || "";
+const pnpmMatch = userAgent.match(/pnpm\/([\d.]+)/);
+const pnpmVersion = pnpmMatch ? `v${pnpmMatch[1]}` : "unknown";
+const buildPlatform = ci.isCI ? ci.name || "Unknown CI" : import.meta.env.DEV ? "Local Dev" : "Local";
+const platformMap: Record<string, string> = {
+	win32: "Windows",
+	darwin: "macOS",
+	linux: "Linux",
+	freebsd: "FreeBSD",
+};
+const archMap: Record<string, string> = {
+	x64: "x86_64",
+	arm64: "ARM64",
+	arm: "ARM",
+	ia32: "x86",
+};
+const systemInfo = `${platformMap[process.platform] || process.platform} / ${archMap[process.arch] || process.arch}`;
+const siteDomain = siteConfig.site_url
+	? siteConfig.site_url.replace(/^https?:\/\//, "").replace(/\/$/, "")
+	: "unknown";
+const licenseName = licenseConfig.enable ? licenseConfig.name : "未启用";
+const todayText = "今天";
+
+const stats = [
+	{
+		icon: "material-symbols:article-outline",
+		label: "文章",
+		value: posts.length,
+	},
+	{
+		icon: "material-symbols:folder-outline",
+		label: "分类标签",
+		value: categoryTags.length,
+	},
+	{
+		icon: "material-symbols:text-ad-outline-rounded",
+		label: "总字数",
+		value: formatNumber(totalWords),
+	},
+	{
+		icon: "material-symbols:calendar-clock-outline",
+		label: "运行时长",
+		value: "0",
+		suffix: "天",
+		id: "running-days",
+	},
+	{
+		icon: "mingcute:heartbeat-line",
+		label: "最后活动",
+		value: "0",
+		suffix: "天前",
+		id: "last-update",
+	},
+];
+
+const siteItems = [
+	{
+		icon: "material-symbols:language",
+		label: "站点域名",
+		value: siteDomain,
+		href: siteConfig.site_url,
+	},
+	{
+		icon: "material-symbols:copyright-outline",
+		label: "文章许可",
+		value: licenseName,
+		href: licenseConfig.enable ? licenseConfig.url : undefined,
+	},
+	{
+		icon: "material-symbols:cloud-outline",
+		label: "构建平台",
+		value: buildPlatform,
+	},
+	{
+		icon: "mdi:clover",
+		label: "博客版本",
+		value: `Firefly v${blogVersion}`,
+		href: "https://github.com/CuteLeaf/Firefly",
+	},
+];
+
+const buildItems = [
+	{ icon: "mdi:clover", label: "Firefly", value: `v${blogVersion}` },
+	{ icon: "material-symbols:rocket-launch-outline", label: "Astro", value: `v${astroVersion}` },
+	{ icon: "fa7-brands:node-js", label: "Node", value: process.version },
+	{ icon: "simple-icons:pnpm", label: "pnpm", value: pnpmVersion },
+	{ icon: "material-symbols:build-outline", label: "构建时间", value: formatDateI18nWithTime(new Date()) },
+	{ icon: "material-symbols:computer-outline", label: "系统信息", value: systemInfo },
+];
+
+const entryLinks = [
+	...profileConfig.links.filter((item) => !item.url.startsWith("mailto:")),
+	{
+		name: "RSS",
+		icon: "fa7-solid:rss",
+		url: "/rss.xml",
+	},
+];
+---
+
+<ContentGridLayout title={title} description={description}>
+	<section class="resources-page card-base relative overflow-hidden px-5 py-7 sm:px-8 sm:py-9">
+		<header class="tools-page-header relative z-10 mb-7">
+			<div class="tools-eyebrow-row">
+				<Icon is:inline name="material-symbols:monitor-heart-rounded" />
+				<p class="tools-eyebrow">MIKAN SITE</p>
+			</div>
+			<h1 class="tools-page-title">{title}</h1>
+			<p class="tools-page-description">{description}</p>
+		</header>
+
+		<div class="site-overview-layout relative z-10">
+			<section class="site-overview-panel site-overview-panel--wide" aria-labelledby="site-stats-title">
+				<div class="site-overview-section-heading">
+					<Icon is:inline name="material-symbols:query-stats-rounded" />
+					<h2 id="site-stats-title">运行统计</h2>
+				</div>
+				<div class="site-overview-stat-grid">
+					{stats.map((stat) => (
+						<div class="site-overview-stat-card">
+							<div class="site-overview-stat-icon">
+								<Icon is:inline name={stat.icon} />
+							</div>
+							<div>
+								<p>{stat.label}</p>
+								<strong data-site-stat-id={stat.id}>
+									{stat.value}
+								</strong>
+								{stat.suffix && <span data-site-stat-suffix={stat.id}>{stat.suffix}</span>}
+							</div>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<section class="site-overview-panel" aria-labelledby="site-info-title">
+				<div class="site-overview-section-heading">
+					<Icon is:inline name="material-symbols:info-outline-rounded" />
+					<h2 id="site-info-title">站点信息</h2>
+				</div>
+				<div class="site-overview-list">
+					{siteItems.map((item) => (
+						<a
+							class:list={["site-overview-list-item", { "site-overview-list-item--plain": !item.href }]}
+							href={item.href ? url(item.href) : undefined}
+							target={item.href ? "_blank" : undefined}
+							rel={item.href ? "noopener noreferrer" : undefined}
+						>
+							<span>
+								<Icon is:inline name={item.icon} />
+								{item.label}
+							</span>
+							<strong>{item.value}</strong>
+						</a>
+					))}
+				</div>
+			</section>
+
+			<section class="site-overview-panel" aria-labelledby="site-build-title">
+				<div class="site-overview-section-heading">
+					<Icon is:inline name="material-symbols:deployed-code-outline" />
+					<h2 id="site-build-title">构建信息</h2>
+				</div>
+				<div class="site-overview-build-grid">
+					{buildItems.map((item) => (
+						<div class="site-overview-build-card">
+							<Icon is:inline name={item.icon} />
+							<span>{item.label}</span>
+							<strong title={item.value}>{item.value}</strong>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<section class="site-overview-panel site-overview-panel--wide" aria-labelledby="site-links-title">
+				<div class="site-overview-section-heading">
+					<Icon is:inline name="material-symbols:hub-outline" />
+					<h2 id="site-links-title">相关入口</h2>
+				</div>
+				<div class="site-overview-link-grid">
+					{entryLinks.map((item) => (
+						<a class="site-overview-link-card" href={url(item.url)} target="_blank" rel="noopener noreferrer">
+							<Icon is:inline name={item.icon} />
+							<span>{item.name}</span>
+							<Icon is:inline name="material-symbols:open-in-new-rounded" />
+						</a>
+					))}
+				</div>
+			</section>
+		</div>
+	</section>
+</ContentGridLayout>
+
+<script is:inline define:vars={{ siteStartDate, lastPostDate, todayText }}>
+	function updateSiteOverviewStats() {
+		const today = new Date();
+		const startDate = new Date(siteStartDate);
+		const runningDays = Math.max(
+			0,
+			Math.ceil(Math.abs(today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+		);
+		document.querySelectorAll('[data-site-stat-id="running-days"]').forEach((element) => {
+			element.textContent = runningDays.toString();
+		});
+
+		if (!lastPostDate) return;
+		const lastPost = new Date(lastPostDate);
+		const daysSinceLastUpdate = Math.floor(
+			Math.abs(today.getTime() - lastPost.getTime()) / (1000 * 60 * 60 * 24),
+		);
+		document.querySelectorAll('[data-site-stat-id="last-update"]').forEach((element) => {
+			if (daysSinceLastUpdate === 0) {
+				element.textContent = todayText;
+				document.querySelectorAll('[data-site-stat-suffix="last-update"]').forEach((suffix) => {
+					suffix.textContent = "";
+				});
+			} else {
+				element.textContent = daysSinceLastUpdate.toString();
+				document.querySelectorAll('[data-site-stat-suffix="last-update"]').forEach((suffix) => {
+					suffix.textContent = "天前";
+				});
+			}
+		});
+	}
+
+	updateSiteOverviewStats();
+	document.addEventListener("swup:contentReplaced", () => {
+		setTimeout(updateSiteOverviewStats, 100);
+	});
+</script>

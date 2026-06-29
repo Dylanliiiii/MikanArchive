@@ -8,19 +8,19 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
-			url: "https://github.com/",
+			url: "https://github.com/Dylanliiiii",
+			showName: false,
+		},
+		{
+			name: "B站",
+			icon: "simple-icons:bilibili",
+			url: "https://space.bilibili.com/37007345?spm_id_from=333.1387.0.0",
 			showName: false,
 		},
 		{
 			name: "Email",
 			icon: "fa7-solid:envelope",
 			url: "mailto:hello@example.com",
-			showName: false,
-		},
-		{
-			name: "RSS",
-			icon: "fa7-solid:rss",
-			url: "/rss.xml",
 			showName: false,
 		},
 	],
