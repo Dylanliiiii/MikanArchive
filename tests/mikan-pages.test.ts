@@ -340,7 +340,24 @@ test("文章列表页标题改为文章，并提供分类标签筛选和分组",
 	assert.match(source, /data-post-tag-section=\{group\.tag\}/);
 	assert.match(source, /groupPostsByTag/);
 	assert.match(source, /tools-category-header/);
-	assert.match(source, /PostCard/);
+});
+
+test("文章总列表不展示封面图，并使用整条可点击长条卡片", () => {
+	const source = readSource("src/pages/posts/index.astro");
+	const styleSource = readSource("src/styles/resources.css");
+
+	assert.doesNotMatch(source, /PostCard/);
+	assert.doesNotMatch(source, /image=\{entry\.data\.image\}/);
+	assert.doesNotMatch(source, /post-card-image/);
+	assert.match(source, /<a[\s\S]*class="article-strip-card group/);
+	assert.match(source, /href=\{getPostUrlBySlug\(entry\.id\)\}/);
+	assert.match(source, /aria-label=\{`打开文章：\$\{entry\.data\.title\}`\}/);
+	assert.match(source, /article-strip-title/);
+	assert.match(source, /article-strip-meta/);
+	assert.match(source, /article-strip-tags/);
+	assert.match(styleSource, /\.article-strip-card/);
+	assert.match(styleSource, /\.article-strip-card:hover/);
+	assert.doesNotMatch(styleSource, /\.article-strip-card[\s\S]{0,260}background-image/);
 });
 
 test("分类标签页使用扇形统计图和标签篇数清单", () => {

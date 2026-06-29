@@ -1,9 +1,9 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import PostCard from "@/components/layout/PostCard.astro";
 import { Icon } from "astro-icon/components";
 import ContentGridLayout from "@/layouts/ContentGridLayout.astro";
 import { getSortedPosts } from "@/utils/content-utils";
+import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getPostUrlBySlug } from "@/utils/url-utils";
 import "@/styles/resources.css";
 
@@ -101,23 +101,61 @@ const groups = groupPostsByTag(posts);
               </header>
               <div class="article-card-list">
                 {group.posts.map((entry, index) => (
-                  <PostCard
-                    entry={entry}
-                    title={entry.data.title}
-                    tags={entry.data.tags}
-                    category={entry.data.category}
-                    published={entry.data.published}
-                    updated={entry.data.updated}
-                    url={getPostUrlBySlug(entry.id)}
-                    image={entry.data.image}
-                    description={entry.data.description}
-                    draft={entry.data.draft}
-                    pinned={entry.data.pinned}
-                    password={!!entry.data.password}
-                    loading={index < 2 ? "eager" : "lazy"}
-                    class:list="onload-animation post-card-item"
+                  <a
+                    href={getPostUrlBySlug(entry.id)}
+                    aria-label={`打开文章：${entry.data.title}`}
+                    class="article-strip-card group onload-animation"
                     style={`animation-delay: calc(var(--content-delay) + ${index * 50}ms);`}
-                  />
+                  >
+                    <div class="article-strip-main">
+                      <div class="article-strip-heading">
+                        <h3 class="article-strip-title">
+                          {entry.data.title}
+                          {entry.data.password && (
+                            <Icon is:inline name="material-symbols:lock-outline" />
+                          )}
+                        </h3>
+                        <div class="article-strip-badges">
+                          {entry.data.pinned && <span>置顶</span>}
+                          {entry.data.draft && <span>草稿</span>}
+                        </div>
+                      </div>
+
+                      <div class="article-strip-meta">
+                        <span>
+                          <Icon is:inline name="material-symbols:calendar-today-outline-rounded" />
+                          {formatDateToYYYYMMDD(entry.data.published)}
+                        </span>
+                        {entry.data.updated && entry.data.updated.getTime() !== entry.data.published.getTime() && (
+                          <span>
+                            <Icon is:inline name="material-symbols:edit-calendar-outline-rounded" />
+                            {formatDateToYYYYMMDD(entry.data.updated)}
+                          </span>
+                        )}
+                        {entry.data.category && (
+                          <span>
+                            <Icon is:inline name="material-symbols:book-2-outline-rounded" />
+                            {entry.data.category}
+                          </span>
+                        )}
+                      </div>
+
+                      {entry.data.description && (
+                        <p class="article-strip-description">{entry.data.description}</p>
+                      )}
+
+                      <div class="article-strip-tags" aria-label="文章标签">
+                        {entry.data.tags.length > 0 ? (
+                          entry.data.tags.map((tag) => <span>#{tag.trim()}</span>)
+                        ) : (
+                          <span>#未标签</span>
+                        )}
+                      </div>
+                    </div>
+                    <span class="article-strip-enter" aria-hidden="true">
+                      <Icon is:inline name="material-symbols:arrow-forward-rounded" />
+                    </span>
+                  </a>
                 ))}
               </div>
             </section>
@@ -137,23 +175,61 @@ const groups = groupPostsByTag(posts);
               </header>
               <div class="article-card-list">
                 {group.posts.map((entry, index) => (
-                  <PostCard
-                    entry={entry}
-                    title={entry.data.title}
-                    tags={entry.data.tags}
-                    category={entry.data.category}
-                    published={entry.data.published}
-                    updated={entry.data.updated}
-                    url={getPostUrlBySlug(entry.id)}
-                    image={entry.data.image}
-                    description={entry.data.description}
-                    draft={entry.data.draft}
-                    pinned={entry.data.pinned}
-                    password={!!entry.data.password}
-                    loading={index < 2 ? "eager" : "lazy"}
-                    class:list="onload-animation post-card-item"
+                  <a
+                    href={getPostUrlBySlug(entry.id)}
+                    aria-label={`打开文章：${entry.data.title}`}
+                    class="article-strip-card group onload-animation"
                     style={`animation-delay: calc(var(--content-delay) + ${index * 50}ms);`}
-                  />
+                  >
+                    <div class="article-strip-main">
+                      <div class="article-strip-heading">
+                        <h3 class="article-strip-title">
+                          {entry.data.title}
+                          {entry.data.password && (
+                            <Icon is:inline name="material-symbols:lock-outline" />
+                          )}
+                        </h3>
+                        <div class="article-strip-badges">
+                          {entry.data.pinned && <span>置顶</span>}
+                          {entry.data.draft && <span>草稿</span>}
+                        </div>
+                      </div>
+
+                      <div class="article-strip-meta">
+                        <span>
+                          <Icon is:inline name="material-symbols:calendar-today-outline-rounded" />
+                          {formatDateToYYYYMMDD(entry.data.published)}
+                        </span>
+                        {entry.data.updated && entry.data.updated.getTime() !== entry.data.published.getTime() && (
+                          <span>
+                            <Icon is:inline name="material-symbols:edit-calendar-outline-rounded" />
+                            {formatDateToYYYYMMDD(entry.data.updated)}
+                          </span>
+                        )}
+                        {entry.data.category && (
+                          <span>
+                            <Icon is:inline name="material-symbols:book-2-outline-rounded" />
+                            {entry.data.category}
+                          </span>
+                        )}
+                      </div>
+
+                      {entry.data.description && (
+                        <p class="article-strip-description">{entry.data.description}</p>
+                      )}
+
+                      <div class="article-strip-tags" aria-label="文章标签">
+                        {entry.data.tags.length > 0 ? (
+                          entry.data.tags.map((tag) => <span>#{tag.trim()}</span>)
+                        ) : (
+                          <span>#未标签</span>
+                        )}
+                      </div>
+                    </div>
+                    <span class="article-strip-enter" aria-hidden="true">
+                      <Icon is:inline name="material-symbols:arrow-forward-rounded" />
+                    </span>
+                  </a>
                 ))}
               </div>
             </section>

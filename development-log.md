@@ -1,5 +1,44 @@
 ﻿# Development Log
 
+## 2026-06-29 17:29:25 +08:00
+
+### 修改范围
+
+- 文章总列表无封面长条卡片
+- `/posts/` 整条文章卡片可点击
+- 页面契约测试、设计说明、README、CHANGELOG 和交接文档同步
+
+### 涉及文件
+
+- `src/pages/posts/index.astro`
+- `src/styles/resources.css`
+- `tests/mikan-pages.test.ts`
+- `README.md`
+- `CHANGELOG.md`
+- `docs/next-tasks.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-firefly-rebuild-design.md`
+- `docs/superpowers/specs/2026-06-27-mikan-archive-focused-content-layout-design.md`
+- `development-log.md`
+
+### 具体内容
+
+- 接续 `docs/next-tasks.md` 中“文章总列表卡片改为无封面整条可点击”的未完成任务，确认上一轮卡在已新增测试但页面仍使用 `PostCard` 的红灯阶段。
+- 将 `/posts/` 文章分组列表从 `PostCard` 替换为无封面的 `article-strip-card` 长条链接，移除总列表对 `entry.data.image` 的传入与封面展示依赖。
+- 长条卡片展示标题、发布日期、更新时间、兼容分类、摘要、标签、置顶和草稿状态，并让整张卡片作为进入文章详情的链接。
+- 新增长条卡片桌面和移动端样式，保留分类标签筛选与分组结构，避免小屏文字和右侧入口挤压。
+- 同步页面契约测试、README、CHANGELOG 与两份正式设计规格，明确 `/posts/` 总列表不展示封面图。
+
+### 验证情况
+
+- TDD 红灯：接手后运行 `npm.cmd run test:pages`，41 个页面契约中 1 个失败，失败点为 `/posts/` 仍导入并使用 `PostCard`。
+- 已运行 `npm.cmd run test:archive`，6/6 通过。
+- 已运行 `npm.cmd run test:content-model`，6/6 通过。
+- 已运行 `npm.cmd run test:pages`，41/41 通过。
+- 已运行 `npm.cmd run build`，构建成功并生成 15 个页面；保留既有 Vite dynamic import、chunk size、路由优先级、Markdown deprecation 和 Pagefind 中文 stemming 提示。
+- 并行运行 `npm.cmd run check` 与 `npm.cmd run build` 时，`check` 曾因两边同时执行 `sync:content` 删除同一生成目录而出现 `EPERM: operation not permitted, rmdir 'src/content/profile'`；随后顺序重跑 `npm.cmd run check` 通过，结果为 165 个文件、0 errors、0 warnings，仅保留既有 `src/components/widget/Calendar.astro` 未读参数 hint。
+- Playwright 使用系统 Chrome 检查 `http://127.0.0.1:4321/posts/` 的 1440×900 桌面端和 390×844 移动端：确认 `.article-strip-card` 共 6 条、旧 `.post-card-wrapper` / `.post-card-image` 为 0、文章页内图片为 0、首条卡片整条链接指向文章详情，桌面和移动端均无横向溢出。
+- 浏览器控制台仅记录既有 favicon 404；已保存截图到已忽略目录 `output/playwright/posts-desktop.png` 和 `output/playwright/posts-mobile.png`。
+
 ## 2026-06-29 16:11:09 +08:00
 
 ### 修改范围
