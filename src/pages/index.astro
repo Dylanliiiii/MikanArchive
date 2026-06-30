@@ -644,10 +644,10 @@ const marqueeItems = [
 
 	.home-art-stage {
 		position: absolute;
-		right: clamp(-4rem, -2vw, -1rem);
+		right: clamp(-7rem, -4.4vw, -2.4rem);
 		bottom: -1.2rem;
 		z-index: 1;
-		width: min(50rem, 49vw);
+		width: min(56rem, 54vw);
 		aspect-ratio: 1;
 		transform:
 			translate3d(calc(var(--home-scroll) * 3.2rem), calc(var(--home-scroll) * -1.4rem), 0)
@@ -665,6 +665,9 @@ const marqueeItems = [
 		opacity: 0.2;
 		mix-blend-mode: multiply;
 		filter: saturate(0.7);
+		animation: homeArtFloat 9s ease-in-out infinite;
+		transform-origin: 54% 48%;
+		will-change: transform;
 	}
 
 	.home-scroll-cue {
@@ -1326,6 +1329,19 @@ const marqueeItems = [
 		}
 	}
 
+	@keyframes homeArtFloat {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+		35% {
+			transform: translate3d(-0.45rem, -0.7rem, 0) rotate(-0.45deg);
+		}
+		70% {
+			transform: translate3d(0.35rem, -0.28rem, 0) rotate(0.32deg);
+		}
+	}
+
 	@keyframes homeMarquee {
 		to {
 			transform: translateX(-50%);
@@ -1373,8 +1389,8 @@ const marqueeItems = [
 		}
 
 		.home-art-stage {
-			width: min(50rem, 56vw);
-			right: -5rem;
+			width: min(55rem, 62vw);
+			right: -7.4rem;
 		}
 
 		.home-gateway-grid {
@@ -1428,7 +1444,7 @@ const marqueeItems = [
 			left: 50%;
 			right: auto;
 			bottom: -5.5rem;
-			width: min(25rem, 90vw);
+			width: min(27rem, 96vw);
 			margin: 0;
 			opacity: 0.9;
 			transform:
@@ -1561,6 +1577,11 @@ const marqueeItems = [
 		}
 
 		.home-art-stage {
+			transform: none;
+		}
+
+		.home-hero-art {
+			animation: none;
 			transform: none;
 		}
 	}

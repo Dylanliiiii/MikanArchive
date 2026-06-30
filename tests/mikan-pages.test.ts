@@ -108,12 +108,16 @@ test("首页角色线稿只服务首屏并裁掉向下溢出的部分", () => {
 	const source = readSource("src/pages/index.astro");
 	const heroRule = /\.home-hero\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 	const artRule = /\.home-art-stage\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const heroArtRule = /\.home-hero-art\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 	const mobileArtRule = /@media \(max-width: 960px\)[\s\S]*?\.home-art-stage\s*\{(?<rule>[\s\S]*?)\n\t\t\}/.exec(source)?.groups?.rule ?? "";
 
 	assert.match(heroRule, /min-height:\s*100svh/);
 	assert.match(heroRule, /overflow:\s*hidden/);
 	assert.match(artRule, /bottom:\s*-1\.2rem/);
-	assert.match(artRule, /width:\s*min\(50rem,\s*49vw\)/);
+	assert.match(artRule, /width:\s*min\(56rem,\s*54vw\)/);
+	assert.match(heroArtRule, /animation:\s*homeArtFloat\s+9s\s+ease-in-out\s+infinite/);
+	assert.match(source, /@keyframes homeArtFloat/);
+	assert.match(source, /translate3d\(-0\.45rem,\s*-0\.7rem,\s*0\)/);
 	assert.match(mobileArtRule, /position:\s*absolute/);
 	assert.match(mobileArtRule, /bottom:\s*-5\.5rem/);
 	assert.doesNotMatch(artRule, /bottom:\s*-7\.2rem/);

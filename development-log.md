@@ -1,5 +1,35 @@
 ﻿# Development Log
 
+## 2026-07-01 00:06:17 +08:00
+
+### 修改范围
+
+- 首页角色线稿尺寸与微动效果恢复
+- 页面契约测试与视觉验证同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 将首页桌面角色线稿舞台从 `min(50rem, 49vw)` 放大到 `min(56rem, 54vw)`，并调整右侧偏移，让人物在首屏右侧更有存在感。
+- 在 `.home-hero-art` 上恢复 9 秒周期的 `homeArtFloat` 轻微漂浮动画，包含低幅度位移和细微旋转；外层 `.home-art-stage` 继续负责滚动视差，避免两种 transform 互相覆盖。
+- 在 `prefers-reduced-motion: reduce` 下关闭角色漂浮动画，保留低动态偏好兼容。
+- 移动端同步小幅放大角色线稿到 `min(27rem, 96vw)`，仍由首屏裁切，不让角色继续压到第二屏。
+- 扩展页面契约测试，约束角色线稿放大尺寸、漂浮动画名称、动画周期和关键位移。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增角色放大和微动契约后按预期失败，失败点为 `.home-art-stage` 仍使用旧尺寸。
+- 已运行 `npm.cmd run test:pages`，66 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已通过 Playwright + 本机 Chrome 检查桌面 `/`：1920x1080 下角色舞台宽高为 896px，`homeArtFloat` 动画周期为 9s，页面无横向溢出。
+- 已通过 Playwright + 本机 Chrome 检查 1114x1114 视口 `/`：角色图宽度约 694px，首屏高度铺满视口，页面无横向溢出。
+
 ## 2026-06-30 23:51:18 +08:00
 
 ### 修改范围
