@@ -1,5 +1,50 @@
 ﻿# Development Log
 
+## 2026-06-30 21:23:26 +08:00
+
+### 修改范围
+
+- 主页角色空间正式实现
+- 首页动效、真实数据映射与导航可点击化
+- 头像与透明线稿站点资产整理
+- 页面契约测试、设计规格、实施计划和维护记录同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `src/config/siteConfig.ts`
+- `src/assets/home/mikan-avatar.webp`
+- `src/assets/home/anime-lineart.webp`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/specs/2026-06-30-mikan-homepage-character-space-design.md`
+- `docs/superpowers/plans/2026-06-30-mikan-homepage-character-space.md`
+- `.gitignore`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将首页从旧 `MainGridLayout` 卡片首页替换为 `Layout contentOnly` 的角色空间专用首页，保留真实 `Navbar`、`Footer`、`FloatingControls` 和 Swup 兼容容器。
+- 使用用户提供头像生成 `mikan-avatar.webp`，并将导航栏站点图标切换为头像图片。
+- 使用透明线稿生成 `anime-lineart.webp`，替换首屏右侧大人物背景，避免继续使用白底头像造成方块感。
+- 首屏保留头像、头像右下角 hover/focus 展开状态、主标题、顶部右侧单卡片和右侧线稿人物；下滑后再展示跑马灯、真实内容入口、整理流、资源轨道、站点数据、最近文章和访问量胶囊。
+- 首页内容从现有文章、资源、友链、更新记录和 `siteConfig.siteStartDate` 读取；访问量只显示“统计未接入”，不伪造数字。
+- 新增遮罩显现、标题入场、头像圆形裁切显现、滚动联动线稿位移、跑马灯、资源轨道 hover 和访问量 hover 文案切换，并补充 `prefers-reduced-motion` 保护。
+- 新增首页页面契约测试，约束正式导航、真实数据、透明线稿、头像资产和动效钩子。
+- 将本地原始 PNG 素材加入 `.gitignore`，避免公开框架仓库提交大体积原图。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增首页契约测试按预期失败，失败点为旧首页仍使用 `MainGridLayout` 且缺少角色空间动效钩子。
+- 已运行 `npm.cmd run test:pages`，58 项页面契约测试通过。
+- 已运行 `npm.cmd run sync:content`，内容同步通过。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:content-model`，8 项内容模型测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过；仍保留既有 Calendar 未使用参数和 inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已使用 `Invoke-WebRequest` 检查 `/`、`/posts/`、`/resources/tools/`、`/about/`、`/site/` 均返回 200。
+- Playwright CLI 因当前 npm 缓存目录写入权限 `EPERM` 未能临时下载 CLI 包；改用系统 Chrome headless 生成桌面、移动端和滚动后截图检查。首屏右侧透明线稿不再有白底方块，顶部导航入口可见，移动端首屏无明显横向溢出。
+
 ## 2026-06-30 00:39:43 +08:00
 
 ### 修改范围
@@ -1634,3 +1679,4 @@
 - 已重新运行 `npm.cmd run test:pages`，13 项测试通过；运行 `npm.cmd run check` 为 0 errors、0 warnings、1 个既有 hint；运行 `npm.cmd run build` 成功生成 15 个页面并完成 Pagefind 索引。
 - 构建仍只有既有的重复动态导入、大 chunk、catch-all 首页冲突和 Markdown 旧选项弃用警告，本次修复未新增构建错误。
 - 已创建修复提交 `d02113c`（`fix: offset focused content below navbar`），并成功推送到 `origin/codex/firefly-rebuild`。
+

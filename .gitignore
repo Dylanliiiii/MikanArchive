@@ -10,6 +10,8 @@ dist/
 .env
 .env.*
 !.env.example
+anime_avatar_expanded_4x_darker_lines.png
+anime_lineart_transparent.png
 
 # Generated content from public examples or private repository
 content/

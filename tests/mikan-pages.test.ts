@@ -29,12 +29,65 @@ const focusedPages = [
 	"src/pages/site.astro",
 ];
 
-test("首页继续使用带横幅和双侧栏的 MainGridLayout", () => {
+test("首页使用角色空间专用布局并保留真实导航", () => {
+	const source = readSource("src/pages/index.astro");
+	const siteConfigSource = readSource("src/config/siteConfig.ts");
+
+	assert.match(source, /import Layout/);
+	assert.match(source, /import Navbar/);
+	assert.match(source, /import Footer/);
+	assert.match(source, /import FloatingControls/);
+	assert.match(source, /<Layout[\s\S]*contentOnly/);
+	assert.match(source, /<Navbar/);
+	assert.match(source, /id="main-grid"/);
+	assert.match(source, /id="swup-container"/);
+	assert.match(source, /id="content-wrapper"/);
+	assert.doesNotMatch(source, /ContentGridLayout/);
+	assert.doesNotMatch(source, /import MainGridLayout/);
+	assert.doesNotMatch(source, /<MainGridLayout/);
+	assert.match(siteConfigSource, /type:\s*"image"/);
+	assert.match(siteConfigSource, /assets\/home\/mikan-avatar\.webp/);
+});
+
+test("首页角色视觉使用透明线稿和圆形头像资产", () => {
 	const source = readSource("src/pages/index.astro");
 
-	assert.match(source, /import MainGridLayout/);
-	assert.match(source, /<MainGridLayout/);
-	assert.doesNotMatch(source, /ContentGridLayout/);
+	assert.match(source, /mikanAvatar/);
+	assert.match(source, /animeLineart/);
+	assert.match(source, /class="home-avatar/);
+	assert.match(source, /class="home-hero-art/);
+	assert.match(source, /src=\{animeLineart\.src\}/);
+	assert.doesNotMatch(source, /anime_avatar_expanded_4x_darker_lines/);
+	assert.doesNotMatch(source, /anime_lineart_transparent/);
+});
+
+test("首页内容区使用真实数据映射且访问量不伪造", () => {
+	const source = readSource("src/pages/index.astro");
+
+	assert.match(source, /getSortedPostsList/);
+	assert.match(source, /getMikanResources/);
+	assert.match(source, /getMikanFriends/);
+	assert.match(source, /getMikanUpdates/);
+	assert.match(source, /siteConfig\.siteStartDate/);
+	assert.match(source, /featuredResources/);
+	assert.match(source, /siteRunningDays/);
+	assert.match(source, /latestActivityLabel/);
+	assert.match(source, /统计未接入/);
+	assert.doesNotMatch(source, /12,846/);
+	assert.doesNotMatch(source, /今日 128/);
+});
+
+test("首页提供遮罩入场、滚动显现和低动态偏好保护", () => {
+	const source = readSource("src/pages/index.astro");
+
+	assert.match(source, /data-home-reveal/);
+	assert.match(source, /data-home-parallax/);
+	assert.match(source, /IntersectionObserver/);
+	assert.match(source, /requestAnimationFrame/);
+	assert.match(source, /prefers-reduced-motion:\s*reduce/);
+	assert.match(source, /@keyframes homeTitleReveal/);
+	assert.match(source, /clip-path/);
+	assert.match(source, /--home-scroll/);
 });
 
 test("所有非主页统一使用 ContentGridLayout", () => {

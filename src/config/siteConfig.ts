@@ -25,8 +25,8 @@ export const siteConfig: SiteConfig = {
 	],
 	navbar: {
 		logo: {
-			type: "icon",
-			value: "material-symbols:auto-stories-rounded",
+			type: "image",
+			value: "assets/home/mikan-avatar.webp",
 			alt: "MikanArchive",
 		},
 		title: "MikanArchive",

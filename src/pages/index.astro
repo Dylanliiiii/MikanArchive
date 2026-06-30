@@ -1,107 +1,1576 @@
 ---
 import { Icon } from "astro-icon/components";
-import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getMikanFriends, getMikanResources } from "@/data/mikan";
+import FloatingControls from "@/components/controls/FloatingControls.astro";
+import Footer from "@/components/layout/Footer.astro";
+import Navbar from "@/components/layout/Navbar.astro";
+import { siteConfig } from "@/config";
+import { getMikanFriends, getMikanResources, getMikanUpdates } from "@/data/mikan";
+import Layout from "@/layouts/Layout.astro";
+import mikanAvatar from "@/assets/home/mikan-avatar.webp";
+import animeLineart from "@/assets/home/anime-lineart.webp";
 import { getSortedPostsList } from "@/utils/content-utils";
-import { getPostUrlBySlug } from "@/utils/url-utils";
+import { getPostUrlBySlug, url } from "@/utils/url-utils";
 
-const posts = (await getSortedPostsList()).slice(0, 6);
+const posts = await getSortedPostsList();
+const recentPosts = posts.slice(0, 4);
 const resources = getMikanResources();
 const featuredResources = [
 	...resources.filter((item) => item.featured),
 	...resources.filter((item) => !item.featured),
-].slice(0, 4);
-const friends = getMikanFriends().slice(0, 4);
-const profileStats = [
-	{ label: "文章", value: posts.length },
-	{ label: "收藏", value: resources.length },
-	{ label: "友链", value: friends.length },
+].slice(0, 6);
+const friends = getMikanFriends();
+const updates = getMikanUpdates();
+const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
+
+const siteStartTime = siteConfig.siteStartDate
+	? new Date(`${siteConfig.siteStartDate}T00:00:00+08:00`).getTime()
+	: Date.now();
+const siteRunningDays = Math.max(
+	0,
+	Math.ceil((Date.now() - siteStartTime) / (1000 * 60 * 60 * 24)),
+);
+
+const latestPostDate = posts
+	.map((post) => post.data.updated ?? post.data.published)
+	.sort((left, right) => right.getTime() - left.getTime())[0];
+const latestUpdateDate = updates
+	.map((item) => new Date(`${item.date}T00:00:00+08:00`))
+	.sort((left, right) => right.getTime() - left.getTime())[0];
+const latestActivityDate = [latestPostDate, latestUpdateDate]
+	.filter((date): date is Date => date instanceof Date && !Number.isNaN(date.getTime()))
+	.sort((left, right) => right.getTime() - left.getTime())[0];
+const latestActivityLabel = latestActivityDate
+	? new Intl.DateTimeFormat("zh-CN", {
+		month: "2-digit",
+		day: "2-digit",
+	}).format(latestActivityDate)
+	: "待记录";
+
+const siteStats = [
+	{
+		value: posts.length.toString().padStart(2, "0"),
+		label: "文章数量",
+		note: "来自文库",
+		icon: "material-symbols:article-outline",
+	},
+	{
+		value: resources.length.toString().padStart(2, "0"),
+		label: "收藏数量",
+		note: "工具与摘录",
+		icon: "material-symbols:bookmark-heart-outline",
+	},
+	{
+		value: siteRunningDays.toString(),
+		label: "运行天数",
+		note: "自建站起",
+		icon: "material-symbols:calendar-clock-outline",
+	},
+	{
+		value: latestActivityLabel,
+		label: "最近更新",
+		note: "文章或记录",
+		icon: "mingcute:heartbeat-line",
+	},
+];
+
+const contentGateways = [
+	{
+		title: "最近文章",
+		description: "教程、笔记和问题记录，优先展示真实文库内容。",
+		meta: `来自 posts / ${posts.length} 篇`,
+		href: url("/posts/"),
+		icon: "material-symbols:article-outline",
+	},
+	{
+		title: "资源收藏",
+		description: "工具导航和摘录收藏共用资源数据，不再重复做一组假卡片。",
+		meta: `来自 resources / ${resources.length} 条`,
+		href: url("/resources/tools/"),
+		icon: "material-symbols:rocket-launch-rounded",
+	},
+	{
+		title: "个人介绍",
+		description: "保留公开资料入口，完整内容交给个人介绍页承载。",
+		meta: "来自 profile",
+		href: url("/about/"),
+		icon: "material-symbols:person-outline-rounded",
+	},
+	{
+		title: "友链一角",
+		description: "展示已有友链数据，没有真实友链时维持示例说明。",
+		meta: `来自 friends / ${friends.length} 位`,
+		href: url("/friends/"),
+		icon: "material-symbols:mail-outline-rounded",
+	},
+];
+
+const flowItems = [
+	{
+		label: "内容更新",
+		description: updates[0]?.description ?? "读取 records/updates；没有更新记录时，退化为最近文章时间线。",
+		tone: "pink",
+	},
+	{
+		label: "收藏补充",
+		description: featuredResources[0]
+			? `最近可进入 ${featuredResources[0].title}，资源收藏只展示真实 resources 数据。`
+			: "资源收藏为空时，不强行展示虚构收藏。",
+		tone: "mint",
+	},
+	{
+		label: "轻交互",
+		description: "滚动到这里时，遮罩、轨道和访问量胶囊会借位淡入，保持阅读节奏。",
+		tone: "blue",
+	},
+];
+
+const marqueeItems = [
+	"状态挂在头像右下角",
+	"角色图拥有完整呼吸空间",
+	"首屏只展示主视觉",
+	"下滑后展开内容入口",
+	"访问量等待真实统计接入",
 ];
 ---
 
-<MainGridLayout title="主页" description="MikanArchive 知识收藏馆">
-	<section class="card-base p-6 md:p-8 mb-4">
-		<div class="flex items-center gap-3 mb-5">
-			<div class="h-10 w-10 rounded-xl bg-(--primary) text-white dark:text-black/70 flex items-center justify-center">
-				<Icon is:inline name="material-symbols:auto-stories-rounded" class="text-2xl" />
-			</div>
-			<div>
-				<h2 class="text-2xl font-bold text-90">最近整理</h2>
-				<p class="text-sm text-30 mt-1">教程、笔记和问题解决记录。</p>
-			</div>
+<Layout title="主页" description="MikanArchive 知识收藏馆" contentOnly>
+	<div
+		id="top-row"
+		class:list={[
+			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none home-top-row",
+			navbarWidthFull ? "w-full" : "w-full xl:w-[92vw] max-w-(--page-width) px-0 md:px-4",
+		]}
+	>
+		<div id="navbar-wrapper" class="pointer-events-auto">
+			<Navbar />
 		</div>
-		<div class="grid gap-3">
-			{posts.map((post) => (
-				<a href={getPostUrlBySlug(post.id)} class="group rounded-2xl border border-(--line-divider) p-4 hover:border-(--primary) hover:bg-(--btn-card-bg-hover) transition-all">
-					<div class="flex items-start justify-between gap-4">
-						<div class="min-w-0">
-							<h3 class="font-bold text-lg text-90 group-hover:text-(--primary) transition-colors truncate">{post.data.title}</h3>
-							<p class="text-sm text-50 mt-1 line-clamp-2">{post.data.description}</p>
-							<div class="mt-3 flex flex-wrap gap-1.5">
-								{post.data.tags.slice(0, 4).map((tag) => <span class="text-[0.7rem] rounded-md bg-black/5 dark:bg-white/10 px-2 py-1 text-50">#{tag}</span>)}
-							</div>
-						</div>
-						<Icon is:inline name="material-symbols:arrow-forward-rounded" class="text-2xl text-(--primary) shrink-0 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-					</div>
-				</a>
-			))}
-		</div>
-	</section>
-
-	<div class="grid gap-4 lg:grid-cols-2">
-		<section class="card-base p-6">
-			<div class="mb-4 flex items-center justify-between gap-3">
-				<h2 class="text-xl font-bold text-90">精选收藏</h2>
-				<a class="text-sm text-(--primary) font-medium" href="/resources/tools/">全部</a>
-			</div>
-			<div class="grid gap-3">
-				{featuredResources.map((item) => (
-					<a href={item.url} target="_blank" rel="noopener noreferrer" class="rounded-xl border border-(--line-divider) p-4 hover:border-(--primary) transition-colors">
-						<div class="font-bold text-90">{item.title}</div>
-						<p class="mt-1 text-sm text-50 line-clamp-2">{item.note}</p>
-					</a>
-				))}
-			</div>
-		</section>
-
-		<section class="card-base p-6">
-			<div class="mb-4 flex items-center justify-between gap-3">
-				<h2 class="text-xl font-bold text-90">个人介绍</h2>
-				<a class="text-sm text-(--primary) font-medium" href="/about/">查看</a>
-			</div>
-			<div class="space-y-3">
-				<div class="rounded-xl bg-black/5 dark:bg-white/8 px-4 py-3">
-					<div class="text-xs text-30">MIKAN PROFILE</div>
-					<div class="mt-1 font-semibold text-90">公开示例个人介绍</div>
-					<p class="mt-1 text-sm text-50">展示简介、技能栈和项目入口，真实站点可替换为自己的资料。</p>
-				</div>
-				<div class="grid grid-cols-3 gap-2">
-					{profileStats.map((item) => (
-						<div class="rounded-xl border border-(--line-divider) px-3 py-2 text-center">
-							<div class="text-lg font-bold text-90">{item.value}</div>
-							<div class="mt-0.5 text-xs text-30">{item.label}</div>
-						</div>
-					))}
-				</div>
-			</div>
-		</section>
 	</div>
 
-	<section class="card-base p-6 mt-4">
-		<div class="mb-4 flex items-center justify-between gap-3">
-			<h2 class="text-xl font-bold text-90">友链一角</h2>
-			<a class="text-sm text-(--primary) font-medium" href="/friends/">联系我</a>
+	<div id="mikan-home-page" class="mikan-home-shell">
+		<div id="banner-overlay-container" class="hidden"></div>
+		<div id="banner-dim-container" class="hidden"></div>
+		<div id="left-sidebar-dynamic" class="hidden transition-swup-fade"></div>
+		<div id="right-sidebar-dynamic" class="hidden transition-swup-fade"></div>
+
+		<div
+			id="main-grid"
+			class="home-page-grid mx-auto grid w-full max-w-(--page-width) grid-cols-1"
+			data-sidebar-position="none"
+		>
+			<main id="swup-container" class="transition-main">
+				<h1 class="sr-only">主页</h1>
+				<div id="grid-class-carrier" data-grid-class="grid-cols-1" class="hidden"></div>
+				<div id="content-wrapper" class="onload-animation transition-leaving">
+					<section class="home-hero" data-home-parallax>
+						<div class="home-hero-copy">
+							<div class="home-avatar-wrap" data-home-reveal data-reveal-kind="iris">
+								<img
+									class="home-avatar"
+									src={mikanAvatar.src}
+									width={mikanAvatar.width}
+									height={mikanAvatar.height}
+									alt="MikanArchive 头像"
+									loading="eager"
+									fetchpriority="high"
+								/>
+								<div class="home-avatar-status" tabindex="0" aria-label="当前状态：整理中">
+									<span class="home-avatar-status__dot">
+										<Icon is:inline name="material-symbols:auto-awesome-rounded" />
+									</span>
+									<span class="home-avatar-status__text">整理中 · 维护知识收藏馆</span>
+								</div>
+							</div>
+
+							<p class="home-kicker" data-home-reveal data-reveal-kind="line">
+								轻二次元角色空间 / 知识收藏馆
+							</p>
+							<div class="home-title-mask" data-home-reveal data-reveal-kind="title">
+								<h2>Mikan<br />Archive</h2>
+							</div>
+							<p class="home-hero-description" data-home-reveal data-reveal-kind="line">
+								把教程、资源、友链和灵感收进一个带角色感的知识收藏馆。
+							</p>
+							<div class="home-hero-actions" data-home-reveal data-reveal-kind="chips">
+								<a href={url("/posts/")}>最近文章</a>
+								<a href={url("/resources/tools/")}>工具导航</a>
+								<a href={url("/about/")}>关于我</a>
+							</div>
+						</div>
+
+						<div class="home-hero-note" data-home-reveal data-reveal-kind="card">
+							<span>馆内广播</span>
+							<strong>主页视觉重做</strong>
+							<p>卡片只放在顶部留白区，不压住角色线稿。</p>
+						</div>
+
+						<div class="home-art-stage" aria-hidden="true" data-home-reveal data-reveal-kind="art">
+							<img
+								class="home-hero-art"
+								src={animeLineart.src}
+								width={animeLineart.width}
+								height={animeLineart.height}
+								alt=""
+								loading="eager"
+								fetchpriority="high"
+							/>
+						</div>
+
+						<a class="home-scroll-cue" href="#home-second-screen" data-home-reveal data-reveal-kind="cue">
+							<span>向下探索</span>
+							<i></i>
+						</a>
+					</section>
+
+					<section id="home-second-screen" class="home-second-screen">
+						<div class="home-marquee" data-home-reveal data-reveal-kind="mask">
+							<div class="home-marquee-track">
+								{[...marqueeItems, ...marqueeItems].map((item) => <span>{item}</span>)}
+							</div>
+						</div>
+
+						<div class="home-section-head" data-home-reveal data-reveal-kind="line">
+							<h2>真实内容快照</h2>
+							<p>第二屏以后再展示入口和站点数据，首屏保持角色空间的呼吸感。</p>
+						</div>
+
+						<div class="home-gateway-grid">
+							{contentGateways.map((item, index) => (
+								<a
+									class="home-gateway-card"
+									href={item.href}
+									data-home-reveal
+									data-reveal-kind="wipe"
+									style={`--reveal-delay: ${index * 80}ms;`}
+								>
+									<span class="home-gateway-icon">
+										<Icon is:inline name={item.icon} />
+									</span>
+									<strong>{item.title}</strong>
+									<p>{item.description}</p>
+									<small>{item.meta}</small>
+								</a>
+							))}
+						</div>
+
+						<div class="home-scroll-layout">
+							<section class="home-flow-panel" data-home-reveal data-reveal-kind="path">
+								<div class="home-panel-title">
+									<span>ORGANIZE FLOW</span>
+									<h2>整理流</h2>
+								</div>
+								<div class="home-flow-line">
+									{flowItems.map((item) => (
+										<div class:list={["home-flow-item", `home-flow-item--${item.tone}`]}>
+											<span></span>
+											<div>
+												<strong>{item.label}</strong>
+												<p>{item.description}</p>
+											</div>
+										</div>
+									))}
+								</div>
+							</section>
+
+							<section class="home-orbit-panel" data-home-reveal data-reveal-kind="orbit">
+								<div class="home-orbit-field">
+									<div class="home-orbit-center">
+										<strong>{resources.length.toString().padStart(2, "0")}</strong>
+										<span>资源收藏</span>
+									</div>
+									{featuredResources.slice(0, 5).map((item, index) => (
+										<a
+											class="home-orbit-chip"
+											href={item.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											style={`--chip-index: ${index};`}
+										>
+											{item.title}
+										</a>
+									))}
+								</div>
+								<div class="home-visit-capsule" tabindex="0">
+									<span>
+										<Icon is:inline name="material-symbols:trending-up-rounded" />
+									</span>
+									<strong>浏览信号</strong>
+									<em>鼠标移上来查看访问量</em>
+									<b>统计未接入</b>
+								</div>
+							</section>
+						</div>
+
+						<div class="home-data-band">
+							<section class="home-stat-panel" data-home-reveal data-reveal-kind="mask">
+								<div class="home-panel-title">
+									<span>SITE OVERVIEW</span>
+									<h2>站点数据</h2>
+								</div>
+								<div class="home-stat-grid">
+									{siteStats.map((item) => (
+										<div class="home-stat-cell">
+											<Icon is:inline name={item.icon} />
+											<strong>{item.value}</strong>
+											<span>{item.label}</span>
+											<small>{item.note}</small>
+										</div>
+									))}
+								</div>
+							</section>
+
+							<section class="home-recent-panel" data-home-reveal data-reveal-kind="mask">
+								<div class="home-panel-title home-panel-title--row">
+									<div>
+										<span>RECENT POSTS</span>
+										<h2>最近文章</h2>
+									</div>
+									<a href={url("/posts/")}>进入文库</a>
+								</div>
+								<div class="home-post-list">
+									{recentPosts.length > 0 ? (
+										recentPosts.map((post, index) => (
+											<a class="home-post-row" href={getPostUrlBySlug(post.id)}>
+												<span>{String(index + 1).padStart(2, "0")}</span>
+												<div>
+													<strong>{post.data.title}</strong>
+													<p>{post.data.description}</p>
+												</div>
+												<Icon is:inline name="material-symbols:arrow-forward-rounded" />
+											</a>
+										))
+									) : (
+										<p class="home-empty">还没有公开文章。</p>
+									)}
+								</div>
+							</section>
+						</div>
+
+						<section class="home-friends-strip" data-home-reveal data-reveal-kind="wipe">
+							<img
+								src={mikanAvatar.src}
+								width={mikanAvatar.width}
+								height={mikanAvatar.height}
+								alt=""
+								loading="lazy"
+							/>
+							<p>
+								主页的“角色感”主要留给首屏头像、淡背景和动效建立；下滑后的内容仍然尊重当前博客真实数据结构，避免出现你这里没有的栏目。
+							</p>
+							<a href={url("/site/")}>查看站点概览</a>
+						</section>
+					</section>
+				</div>
+			</main>
+
+			<div class="footer onload-animation home-footer">
+				<Footer />
+			</div>
 		</div>
-		<div class="grid gap-3 md:grid-cols-2">
-			{friends.map((friend) => (
-				<a href={friend.url} target="_blank" rel="noopener noreferrer" class="group flex items-center gap-3 rounded-xl border border-(--line-divider) p-3 hover:border-(--primary) transition-colors">
-					<img src={friend.avatar} alt={friend.name} class="h-12 w-12 rounded-xl object-cover bg-black/5 dark:bg-white/10" />
-					<div class="min-w-0">
-						<div class="font-bold text-90 group-hover:text-(--primary) truncate">{friend.name}</div>
-						<div class="text-sm text-50 truncate">{friend.description}</div>
-					</div>
-				</a>
-			))}
-		</div>
-	</section>
-</MainGridLayout>
+
+		<FloatingControls />
+	</div>
+</Layout>
+
+<style>
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+
+	:global(body.no-banner-layout) {
+		background:
+			radial-gradient(circle at 15% 5%, rgba(255, 196, 218, 0.45), transparent 28rem),
+			radial-gradient(circle at 88% 10%, rgba(174, 220, 244, 0.62), transparent 30rem),
+			linear-gradient(105deg, #fff4f9 0%, #f8fbff 48%, #eaf7ff 100%);
+		color: #282938;
+		overflow-x: hidden;
+	}
+
+	.home-top-row {
+		padding-top: 2rem;
+	}
+
+	.mikan-home-shell {
+		--home-ink: #282938;
+		--home-muted: #6d6c7b;
+		--home-pink: #dd6da6;
+		--home-blue: #8fc7e8;
+		--home-mint: #74d1ac;
+		--home-yellow: #f0c47c;
+		--home-glass: rgba(255, 255, 255, 0.62);
+		--home-line: rgba(88, 92, 115, 0.12);
+		--home-scroll: 0;
+		position: relative;
+		min-height: 100vh;
+		overflow-x: clip;
+	}
+
+	.home-page-grid {
+		padding: 0 1.5rem 2.5rem;
+	}
+
+	.home-hero {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(20rem, 0.9fr) minmax(26rem, 1.1fr);
+		align-items: center;
+		min-height: 100svh;
+		padding: 8.4rem 4.5rem 5.5rem;
+		isolation: isolate;
+	}
+
+	.home-hero::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -3;
+		background:
+			radial-gradient(circle at 20% 42%, rgba(255, 205, 224, 0.22), transparent 22rem),
+			radial-gradient(circle at 72% 42%, rgba(169, 215, 239, 0.2), transparent 25rem);
+		clip-path: none;
+	}
+
+	.home-hero-copy {
+		position: relative;
+		z-index: 4;
+		max-width: 39rem;
+		padding-left: 1.8rem;
+	}
+
+	.home-avatar-wrap {
+		position: relative;
+		width: 10rem;
+		height: 10rem;
+		margin: 0 0 1.6rem 5.5rem;
+		filter: drop-shadow(0 2rem 3.5rem rgba(213, 99, 151, 0.24));
+	}
+
+	.home-avatar {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		object-fit: cover;
+		background: #fff;
+		box-shadow:
+			0 0 0 0.45rem rgba(255, 255, 255, 0.86),
+			0 1rem 3.5rem rgba(124, 114, 141, 0.2);
+	}
+
+	.home-avatar-status {
+		position: absolute;
+		right: -0.42rem;
+		bottom: 0.72rem;
+		display: inline-grid;
+		grid-template-columns: 2rem 0fr;
+		align-items: center;
+		height: 2rem;
+		border: 0.18rem solid #fff;
+		border-radius: 999px;
+		background: rgba(32, 35, 46, 0.92);
+		box-shadow: 0 1rem 2rem rgba(42, 34, 50, 0.22);
+		color: #fff;
+		overflow: hidden;
+		transition: grid-template-columns 360ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 360ms ease;
+	}
+
+	.home-avatar-status:hover,
+	.home-avatar-status:focus-visible {
+		grid-template-columns: 2rem minmax(0, 12rem);
+		transform: translateX(0.6rem);
+	}
+
+	.home-avatar-status__dot {
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #f39ac4, #89d3b7);
+		font-size: 1.1rem;
+	}
+
+	.home-avatar-status__text {
+		min-width: 0;
+		max-width: 0;
+		padding-right: 0;
+		overflow: hidden;
+		opacity: 0;
+		white-space: nowrap;
+		font-size: 0.78rem;
+		font-weight: 800;
+		transition: max-width 360ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
+	}
+
+	.home-avatar-status:hover .home-avatar-status__text,
+	.home-avatar-status:focus-visible .home-avatar-status__text {
+		max-width: 12rem;
+		padding-right: 0.85rem;
+		opacity: 1;
+	}
+
+	.home-kicker {
+		margin: 0 0 1.2rem;
+		color: #a04d78;
+		font-size: 0.92rem;
+		font-weight: 800;
+	}
+
+	.home-title-mask {
+		overflow: hidden;
+		clip-path: inset(0 0 0 0);
+	}
+
+	.home-title-mask h2 {
+		margin: 0;
+		color: var(--home-ink);
+		font-size: 8.4rem;
+		font-weight: 950;
+		line-height: 0.82;
+		letter-spacing: 0;
+		animation: homeTitleReveal 1100ms cubic-bezier(0.2, 0.82, 0.16, 1) both;
+	}
+
+	.home-hero-description {
+		max-width: 33rem;
+		margin: 1.5rem 0 0;
+		color: var(--home-muted);
+		font-size: 1.05rem;
+		line-height: 1.9;
+		font-weight: 650;
+		overflow-wrap: anywhere;
+		word-break: break-word;
+		white-space: normal;
+	}
+
+	.home-hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.8rem;
+		margin-top: 1.6rem;
+	}
+
+	.home-hero-actions a,
+	.home-panel-title--row a,
+	.home-friends-strip a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.45rem;
+		border: 1px solid rgba(106, 108, 126, 0.12);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.72);
+		padding: 0.58rem 1.05rem;
+		color: #575461;
+		font-weight: 850;
+		box-shadow: 0 1rem 2.8rem rgba(129, 137, 154, 0.12);
+		transition: transform 220ms ease, color 220ms ease, border-color 220ms ease;
+	}
+
+	.home-hero-actions a:hover,
+	.home-panel-title--row a:hover,
+	.home-friends-strip a:hover {
+		transform: translateY(-0.15rem);
+		border-color: rgba(221, 109, 166, 0.34);
+		color: #a94f7d;
+	}
+
+	.home-hero-note {
+		position: absolute;
+		top: 9.5rem;
+		right: 6.7rem;
+		z-index: 5;
+		width: 17.2rem;
+		padding: 1.25rem 1.35rem;
+		border: 1px solid rgba(255, 255, 255, 0.62);
+		border-radius: 1.35rem;
+		background: rgba(255, 255, 255, 0.58);
+		backdrop-filter: blur(18px);
+		box-shadow: 0 1.5rem 4rem rgba(94, 135, 161, 0.18);
+	}
+
+	.home-hero-note span,
+	.home-panel-title span {
+		display: block;
+		color: #cc5792;
+		font-size: 0.78rem;
+		font-weight: 900;
+	}
+
+	.home-hero-note strong {
+		display: block;
+		margin-top: 0.4rem;
+		color: var(--home-ink);
+		font-size: 1rem;
+	}
+
+	.home-hero-note p {
+		margin: 0.42rem 0 0;
+		color: var(--home-muted);
+		font-size: 0.85rem;
+		line-height: 1.65;
+	}
+
+	.home-art-stage {
+		position: absolute;
+		right: -3.5rem;
+		bottom: -7.2rem;
+		z-index: 1;
+		width: min(58rem, 58vw);
+		aspect-ratio: 1;
+		transform:
+			translate3d(calc(var(--home-scroll) * 4rem), calc(var(--home-scroll) * -2rem), 0)
+			scale(calc(1 + var(--home-scroll) * 0.04));
+		transform-origin: 58% 50%;
+		pointer-events: none;
+	}
+
+	.home-hero-art {
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		opacity: 0.2;
+		mix-blend-mode: multiply;
+		filter: saturate(0.7);
+	}
+
+	.home-scroll-cue {
+		position: absolute;
+		left: 50%;
+		bottom: 2.2rem;
+		z-index: 6;
+		display: grid;
+		justify-items: center;
+		gap: 0.5rem;
+		color: #b47491;
+		font-size: 0.78rem;
+		font-weight: 800;
+		transform: translateX(-50%);
+	}
+
+	.home-scroll-cue i {
+		display: block;
+		width: 2px;
+		height: 2.5rem;
+		background: linear-gradient(#ff9ec6, transparent);
+		animation: homeCue 1450ms ease-in-out infinite;
+	}
+
+	.home-second-screen {
+		position: relative;
+		z-index: 8;
+		padding: 1rem 3rem 0;
+	}
+
+	.home-marquee {
+		position: relative;
+		overflow: hidden;
+		border-block: 1px solid rgba(140, 116, 130, 0.14);
+		padding: 0.9rem 0;
+		mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+	}
+
+	.home-marquee-track {
+		display: flex;
+		width: max-content;
+		gap: 2rem;
+		animation: homeMarquee 26s linear infinite;
+	}
+
+	.home-marquee span {
+		color: #99547a;
+		font-size: 0.92rem;
+		font-weight: 850;
+		white-space: nowrap;
+	}
+
+	.home-section-head {
+		display: grid;
+		grid-template-columns: minmax(15rem, 0.55fr) minmax(20rem, 0.45fr);
+		gap: 2rem;
+		margin: 5rem 0 1.8rem;
+	}
+
+	.home-section-head h2,
+	.home-panel-title h2 {
+		margin: 0;
+		color: var(--home-ink);
+		font-size: 3.2rem;
+		font-weight: 950;
+		line-height: 1.02;
+		letter-spacing: 0;
+	}
+
+	.home-section-head p {
+		margin: 0.4rem 0 0;
+		color: var(--home-muted);
+		font-size: 1.02rem;
+		line-height: 1.9;
+	}
+
+	.home-gateway-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1.2rem;
+	}
+
+	.home-gateway-card {
+		position: relative;
+		min-height: 16.4rem;
+		padding: 2rem 1.75rem;
+		border: 1px solid var(--home-line);
+		border-radius: 1.6rem;
+		background:
+			radial-gradient(circle at 92% 92%, rgba(226, 174, 213, 0.2), transparent 5.8rem),
+			rgba(255, 255, 255, 0.68);
+		box-shadow: 0 1.5rem 4.5rem rgba(79, 92, 108, 0.1);
+		overflow: hidden;
+		transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+	}
+
+	.home-gateway-card::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.62), transparent);
+		transform: translateX(-120%);
+		transition: transform 650ms ease;
+	}
+
+	.home-gateway-card:hover {
+		transform: translateY(-0.35rem);
+		border-color: rgba(221, 109, 166, 0.32);
+		box-shadow: 0 2rem 5rem rgba(79, 92, 108, 0.14);
+	}
+
+	.home-gateway-card:hover::after {
+		transform: translateX(120%);
+	}
+
+	.home-gateway-icon {
+		display: grid;
+		place-items: center;
+		width: 3.2rem;
+		height: 3.2rem;
+		border-radius: 1rem;
+		background: rgba(255, 255, 255, 0.8);
+		color: #b25a86;
+		font-size: 1.45rem;
+		box-shadow: 0 1rem 2.2rem rgba(133, 113, 138, 0.12);
+	}
+
+	.home-gateway-card strong {
+		display: block;
+		margin-top: 2.4rem;
+		color: var(--home-ink);
+		font-size: 1.55rem;
+		font-weight: 950;
+	}
+
+	.home-gateway-card p {
+		margin: 0.8rem 0 0;
+		color: var(--home-muted);
+		font-size: 0.98rem;
+		line-height: 1.85;
+	}
+
+	.home-gateway-card small {
+		display: block;
+		margin-top: 1.2rem;
+		color: #92577a;
+		font-size: 0.83rem;
+		font-weight: 850;
+	}
+
+	.home-scroll-layout {
+		display: grid;
+		grid-template-columns: minmax(18rem, 0.86fr) minmax(22rem, 1.14fr);
+		gap: 2.3rem;
+		margin-top: 4.2rem;
+		align-items: center;
+	}
+
+	.home-flow-panel,
+	.home-orbit-panel,
+	.home-stat-panel,
+	.home-recent-panel,
+	.home-friends-strip {
+		border: 1px solid var(--home-line);
+		border-radius: 1.7rem;
+		background: rgba(255, 255, 255, 0.6);
+		box-shadow: 0 1.6rem 5rem rgba(80, 92, 101, 0.1);
+		backdrop-filter: blur(16px);
+	}
+
+	.home-flow-panel {
+		padding: 2.6rem;
+	}
+
+	.home-flow-line {
+		position: relative;
+		display: grid;
+		gap: 1.2rem;
+		margin-top: 2rem;
+	}
+
+	.home-flow-line::before {
+		content: "";
+		position: absolute;
+		left: 0.48rem;
+		top: 0.5rem;
+		bottom: 0.5rem;
+		width: 2px;
+		background: linear-gradient(#df6aaa, #8ccce9, #80d0ad);
+		transform-origin: top;
+		transform: scaleY(var(--home-scroll));
+	}
+
+	.home-flow-item {
+		display: grid;
+		grid-template-columns: 1rem 1fr;
+		gap: 1.1rem;
+	}
+
+	.home-flow-item > span {
+		position: relative;
+		z-index: 2;
+		display: block;
+		width: 1rem;
+		height: 1rem;
+		border: 0.18rem solid #fff;
+		border-radius: 50%;
+		background: var(--home-pink);
+		box-shadow: 0 0.8rem 1.8rem rgba(210, 98, 159, 0.24);
+	}
+
+	.home-flow-item--mint > span {
+		background: var(--home-mint);
+	}
+
+	.home-flow-item--blue > span {
+		background: var(--home-blue);
+	}
+
+	.home-flow-item strong {
+		color: #a64f7b;
+		font-size: 0.94rem;
+		font-weight: 900;
+	}
+
+	.home-flow-item p {
+		margin: 0.35rem 0 0;
+		color: var(--home-muted);
+		font-size: 1rem;
+		line-height: 1.85;
+	}
+
+	.home-orbit-panel {
+		position: relative;
+		min-height: 25rem;
+		padding: 2rem;
+		overflow: hidden;
+	}
+
+	.home-orbit-field {
+		position: relative;
+		min-height: 21rem;
+		border: 1px solid rgba(96, 103, 126, 0.12);
+		border-radius: 999px;
+	}
+
+	.home-orbit-field::before {
+		content: "";
+		position: absolute;
+		inset: 3.8rem 9rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.5);
+		filter: blur(0.1rem);
+	}
+
+	.home-orbit-center {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		display: grid;
+		place-items: center;
+		width: 10rem;
+		height: 10rem;
+		border-radius: 50%;
+		background:
+			radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.52)),
+			linear-gradient(140deg, rgba(255, 219, 235, 0.35), rgba(201, 236, 249, 0.35));
+		transform: translate(-50%, -50%);
+		box-shadow: 0 1.5rem 4rem rgba(129, 140, 154, 0.16);
+	}
+
+	.home-orbit-center strong {
+		color: var(--home-ink);
+		font-size: 2.2rem;
+		font-weight: 950;
+	}
+
+	.home-orbit-center span {
+		color: #9a577c;
+		font-size: 0.9rem;
+		font-weight: 900;
+	}
+
+	.home-orbit-chip {
+		--angle: calc(var(--chip-index) * 72deg - 88deg);
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.6rem;
+		border: 1px solid var(--home-line);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.76);
+		padding: 0.55rem 1.15rem;
+		color: #595664;
+		font-weight: 850;
+		box-shadow: 0 1.2rem 3.2rem rgba(91, 105, 118, 0.13);
+		transform:
+			translate(-50%, -50%)
+			rotate(var(--angle))
+			translateX(15.6rem)
+			rotate(calc(var(--angle) * -1));
+		transition: transform 300ms ease, color 240ms ease, border-color 240ms ease;
+	}
+
+	.home-orbit-chip:hover {
+		color: #9f4e79;
+		border-color: rgba(221, 109, 166, 0.35);
+		transform:
+			translate(-50%, -50%)
+			rotate(var(--angle))
+			translateX(16.4rem)
+			rotate(calc(var(--angle) * -1));
+	}
+
+	.home-visit-capsule {
+		position: absolute;
+		left: 50%;
+		bottom: 2rem;
+		display: grid;
+		grid-template-columns: 3rem auto;
+		grid-template-rows: auto auto;
+		column-gap: 0.95rem;
+		align-items: center;
+		width: min(28rem, calc(100% - 4rem));
+		border: 1px solid var(--home-line);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.78);
+		padding: 0.85rem 1.2rem;
+		box-shadow: 0 1.6rem 4rem rgba(90, 99, 115, 0.17);
+		transform: translateX(-50%);
+		overflow: hidden;
+	}
+
+	.home-visit-capsule span {
+		grid-row: 1 / 3;
+		display: grid;
+		place-items: center;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, #f1b4da, #bfe7f6);
+		color: #fff;
+		font-size: 1.3rem;
+	}
+
+	.home-visit-capsule strong {
+		color: var(--home-ink);
+		font-size: 1.05rem;
+	}
+
+	.home-visit-capsule em,
+	.home-visit-capsule b {
+		grid-column: 2;
+		color: var(--home-muted);
+		font-style: normal;
+		font-size: 0.9rem;
+		font-weight: 750;
+		transition: transform 280ms ease, opacity 280ms ease;
+	}
+
+	.home-visit-capsule b {
+		position: absolute;
+		left: 5.15rem;
+		bottom: 1rem;
+		color: #9f4e79;
+		opacity: 0;
+		transform: translateY(0.65rem);
+	}
+
+	.home-visit-capsule:hover em,
+	.home-visit-capsule:focus-visible em {
+		opacity: 0;
+		transform: translateY(-0.65rem);
+	}
+
+	.home-visit-capsule:hover b,
+	.home-visit-capsule:focus-visible b {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.home-data-band {
+		display: grid;
+		grid-template-columns: minmax(18rem, 0.72fr) minmax(24rem, 1fr);
+		gap: 2.2rem;
+		margin-top: 4.5rem;
+	}
+
+	.home-stat-panel,
+	.home-recent-panel {
+		position: relative;
+		padding: 2.5rem;
+		overflow: hidden;
+	}
+
+	.home-stat-panel::before,
+	.home-recent-panel::before {
+		content: "";
+		position: absolute;
+		inset: -35% -20% auto auto;
+		width: 18rem;
+		height: 18rem;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(175, 221, 238, 0.22), transparent 68%);
+	}
+
+	.home-stat-grid {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		margin-top: 1.5rem;
+	}
+
+	.home-stat-cell {
+		min-height: 8.6rem;
+		border: 1px solid rgba(97, 105, 124, 0.09);
+		border-radius: 1.35rem;
+		background: rgba(255, 255, 255, 0.56);
+		padding: 1.25rem;
+	}
+
+	.home-stat-cell :global(svg) {
+		color: #cf65a0;
+		font-size: 1.25rem;
+	}
+
+	.home-stat-cell strong {
+		display: block;
+		margin-top: 0.65rem;
+		color: #dc68a4;
+		font-size: 2.35rem;
+		font-weight: 950;
+		line-height: 1;
+	}
+
+	.home-stat-cell span,
+	.home-stat-cell small {
+		display: block;
+		margin-top: 0.35rem;
+		color: #595766;
+		font-weight: 850;
+	}
+
+	.home-stat-cell small {
+		color: #848292;
+		font-size: 0.78rem;
+	}
+
+	.home-panel-title--row {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.home-post-list {
+		position: relative;
+		display: grid;
+		gap: 0.7rem;
+		margin-top: 1.5rem;
+	}
+
+	.home-post-row {
+		display: grid;
+		grid-template-columns: 3.4rem minmax(0, 1fr) 1.8rem;
+		align-items: center;
+		gap: 1.05rem;
+		border-top: 1px solid rgba(103, 112, 128, 0.1);
+		padding: 1.05rem 0;
+	}
+
+	.home-post-row > span {
+		display: grid;
+		place-items: center;
+		width: 3.2rem;
+		height: 3.2rem;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, rgba(239, 178, 215, 0.9), rgba(202, 234, 247, 0.9));
+		color: #fff;
+		font-size: 1.1rem;
+		font-weight: 950;
+	}
+
+	.home-post-row strong {
+		display: block;
+		color: var(--home-ink);
+		font-size: 1.1rem;
+		font-weight: 950;
+	}
+
+	.home-post-row p {
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		margin: 0.25rem 0 0;
+		color: var(--home-muted);
+		line-height: 1.6;
+		overflow: hidden;
+	}
+
+	.home-post-row :global(svg) {
+		color: #b55b8a;
+		opacity: 0;
+		transform: translateX(-0.5rem);
+		transition: transform 220ms ease, opacity 220ms ease;
+	}
+
+	.home-post-row:hover :global(svg) {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+	.home-empty {
+		color: var(--home-muted);
+	}
+
+	.home-friends-strip {
+		display: grid;
+		grid-template-columns: 7rem minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 2rem;
+		margin-top: 2.2rem;
+		padding: 2rem 2.3rem;
+	}
+
+	.home-friends-strip img {
+		width: 6.6rem;
+		height: 6.6rem;
+		border-radius: 50%;
+		object-fit: cover;
+		background: #fff;
+		box-shadow: 0 1rem 2.4rem rgba(108, 95, 120, 0.12);
+	}
+
+	.home-friends-strip p {
+		margin: 0;
+		color: var(--home-muted);
+		font-size: 1.04rem;
+		line-height: 1.9;
+	}
+
+	.home-footer {
+		margin-top: 4rem;
+	}
+
+	[data-home-reveal] {
+		opacity: 0;
+		--reveal-y: 1.4rem;
+		--reveal-clip: inset(0 0 100% 0 round 1.2rem);
+		transform: translate3d(0, var(--reveal-y), 0);
+		transition:
+			opacity 760ms ease,
+			transform 820ms cubic-bezier(0.2, 0.78, 0.18, 1),
+			clip-path 900ms cubic-bezier(0.2, 0.78, 0.18, 1);
+		transition-delay: var(--reveal-delay, 0ms);
+		clip-path: var(--reveal-clip);
+	}
+
+	[data-reveal-kind="line"] {
+		--reveal-clip: inset(0 100% 0 0);
+	}
+
+	[data-reveal-kind="title"] {
+		--reveal-y: 0;
+		--reveal-clip: inset(0 0 0 0);
+	}
+
+	[data-reveal-kind="iris"] {
+		--reveal-y: 0;
+		--reveal-clip: circle(0% at 50% 50%);
+	}
+
+	[data-reveal-kind="art"] {
+		--reveal-y: 0;
+		--reveal-clip: inset(10% 0 0 45% round 2rem);
+		transition-duration: 1200ms;
+	}
+
+	[data-reveal-kind="chips"] {
+		--reveal-clip: inset(0 0 0 0);
+	}
+
+	[data-reveal-kind="path"],
+	[data-reveal-kind="orbit"],
+	[data-reveal-kind="mask"],
+	[data-reveal-kind="wipe"] {
+		--reveal-clip: inset(0 0 100% 0 round 1.7rem);
+	}
+
+	[data-home-reveal].is-visible {
+		opacity: 1;
+		clip-path: inset(0 0 0 0 round 0);
+		transform: translate3d(0, 0, 0);
+	}
+
+	[data-reveal-kind="iris"].is-visible {
+		clip-path: circle(80% at 50% 50%);
+	}
+
+	[data-reveal-kind="art"].is-visible {
+		clip-path: inset(0 0 0 0 round 0);
+	}
+
+	@keyframes homeTitleReveal {
+		0% {
+			opacity: 0;
+			transform: translateY(1.2rem) skewY(2deg);
+			clip-path: inset(0 0 100% 0);
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0) skewY(0);
+			clip-path: inset(0 0 0 0);
+		}
+	}
+
+	@keyframes homeCue {
+		0%,
+		100% {
+			transform: scaleY(0.55);
+			opacity: 0.45;
+		}
+		50% {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+	}
+
+	@keyframes homeMarquee {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	:root.dark .mikan-home-shell {
+		--home-ink: #f5f1f5;
+		--home-muted: #c9bfcb;
+		--home-glass: rgba(32, 34, 44, 0.58);
+		--home-line: rgba(255, 255, 255, 0.12);
+	}
+
+	:global(:root.dark body.no-banner-layout) {
+		background:
+			radial-gradient(circle at 15% 5%, rgba(147, 82, 125, 0.28), transparent 28rem),
+			radial-gradient(circle at 88% 10%, rgba(74, 131, 164, 0.36), transparent 30rem),
+			linear-gradient(105deg, #171821 0%, #1f202b 52%, #172631 100%);
+	}
+
+	:root.dark .home-hero-note,
+	:root.dark .home-gateway-card,
+	:root.dark .home-flow-panel,
+	:root.dark .home-orbit-panel,
+	:root.dark .home-stat-panel,
+	:root.dark .home-recent-panel,
+	:root.dark .home-friends-strip {
+		background: rgba(30, 33, 44, 0.7);
+	}
+
+	:root.dark .home-hero-art {
+		opacity: 0.15;
+		filter: invert(1) saturate(0.4);
+		mix-blend-mode: screen;
+	}
+
+	@media (max-width: 1280px) {
+		.home-hero {
+			grid-template-columns: minmax(20rem, 0.95fr) minmax(22rem, 1.05fr);
+			padding-inline: 2rem;
+		}
+
+		.home-title-mask h2 {
+			font-size: 6.8rem;
+		}
+
+		.home-art-stage {
+			width: min(50rem, 56vw);
+			right: -5rem;
+		}
+
+		.home-gateway-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 960px) {
+		.home-page-grid {
+			padding-inline: 0.85rem;
+		}
+
+		.home-top-row {
+			padding-top: 0.75rem;
+		}
+
+		.home-hero {
+			display: block;
+			min-height: auto;
+			padding: 7.5rem 1rem 4rem;
+			overflow: hidden;
+		}
+
+		.home-hero-copy {
+			padding-left: 0;
+			max-width: 100%;
+			min-width: 0;
+		}
+
+		.home-avatar-wrap {
+			width: 8rem;
+			height: 8rem;
+			margin-left: 1.2rem;
+		}
+
+		.home-title-mask h2 {
+			font-size: 4.7rem;
+		}
+
+		.home-hero-note {
+			position: relative;
+			top: auto;
+			right: auto;
+			width: auto;
+			max-width: 100%;
+			margin: 2rem 0 0;
+		}
+
+		.home-art-stage {
+			position: relative;
+			right: auto;
+			bottom: auto;
+			width: min(34rem, 100%);
+			margin: 1rem auto -3rem;
+		}
+
+		.home-hero-description {
+			max-width: 100%;
+			display: block;
+			font-size: 0.98rem;
+			line-height: 1.85;
+		}
+
+		.home-avatar-status:hover,
+		.home-avatar-status:focus-visible {
+			transform: translateX(0.2rem);
+		}
+
+		.home-second-screen {
+			padding-inline: 0.4rem;
+		}
+
+		.home-section-head,
+		.home-scroll-layout,
+		.home-data-band,
+		.home-friends-strip {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.home-orbit-chip {
+			position: static;
+			transform: none;
+			margin: 0.35rem;
+		}
+
+		.home-orbit-chip:hover {
+			transform: translateY(-0.12rem);
+		}
+
+		.home-orbit-field {
+			display: flex;
+			flex-wrap: wrap;
+			align-content: center;
+			justify-content: center;
+			gap: 0.3rem;
+			border-radius: 1.4rem;
+			padding: 7.5rem 1rem 1rem;
+		}
+
+		.home-orbit-center {
+			top: 4.6rem;
+			width: 7rem;
+			height: 7rem;
+		}
+
+		.home-visit-capsule {
+			position: relative;
+			left: auto;
+			bottom: auto;
+			width: 100%;
+			margin-top: 1rem;
+			transform: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.home-title-mask h2 {
+			font-size: 3.8rem;
+		}
+
+		.home-section-head h2,
+		.home-panel-title h2 {
+			font-size: 2.35rem;
+		}
+
+		.home-gateway-grid,
+		.home-stat-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.home-gateway-card,
+		.home-flow-panel,
+		.home-orbit-panel,
+		.home-stat-panel,
+		.home-recent-panel,
+		.home-friends-strip {
+			padding: 1.35rem;
+		}
+
+		.home-friends-strip {
+			gap: 1rem;
+		}
+
+		.home-panel-title--row {
+			display: grid;
+		}
+
+		.home-post-row {
+			grid-template-columns: 2.8rem minmax(0, 1fr);
+		}
+
+		.home-post-row > span {
+			width: 2.65rem;
+			height: 2.65rem;
+		}
+
+		.home-post-row :global(svg) {
+			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(html) {
+			scroll-behavior: auto;
+		}
+
+		*,
+		*::before,
+		*::after {
+			animation: none !important;
+			transition: none !important;
+			scroll-behavior: auto !important;
+		}
+
+		[data-home-reveal] {
+			opacity: 1;
+			clip-path: none;
+			transform: none;
+		}
+
+		.home-art-stage {
+			transform: none;
+		}
+	}
+</style>
+
+<script is:inline>
+	function initMikanHome() {
+		const root = document.getElementById("mikan-home-page");
+		if (!root) return;
+
+		document.body.dataset.contentOnly = "true";
+		document.body.classList.remove("enable-banner", "is-home", "lg:is-home");
+		document.body.classList.add("no-banner-layout");
+
+		const revealItems = [...root.querySelectorAll("[data-home-reveal]")];
+		if ("IntersectionObserver" in window) {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return;
+						entry.target.classList.add("is-visible");
+						observer.unobserve(entry.target);
+					});
+				},
+				{ rootMargin: "0px 0px -12% 0px", threshold: 0.18 },
+			);
+			revealItems.forEach((item) => observer.observe(item));
+		} else {
+			revealItems.forEach((item) => item.classList.add("is-visible"));
+		}
+
+		requestAnimationFrame(() => {
+			revealItems.forEach((item) => {
+				const rect = item.getBoundingClientRect();
+				if (rect.top < window.innerHeight * 0.94 && rect.bottom > 0) {
+					item.classList.add("is-visible");
+				}
+			});
+		});
+
+		const parallaxItems = [...root.querySelectorAll("[data-home-parallax]")];
+		window.__mikanHomeScrollState = {
+			root,
+			parallaxItems,
+			ticking: false,
+		};
+		function updateHomeScroll() {
+			const state = window.__mikanHomeScrollState;
+			if (!state?.root) return;
+			const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+			const viewport = Math.max(1, window.innerHeight);
+			const progress = Math.min(1, Math.max(0, scrollTop / viewport));
+			state.root.style.setProperty("--home-scroll", progress.toFixed(3));
+			state.parallaxItems.forEach((item) => {
+				item.style.setProperty("--home-scroll", progress.toFixed(3));
+			});
+			state.ticking = false;
+		}
+
+		function requestHomeScrollFrame() {
+			const state = window.__mikanHomeScrollState;
+			if (!state || state.ticking) return;
+			state.ticking = true;
+			requestAnimationFrame(updateHomeScroll);
+		}
+
+		if (!window.__mikanHomeScrollBound) {
+			window.__mikanHomeScrollBound = true;
+			window.addEventListener("scroll", requestHomeScrollFrame, { passive: true });
+			window.addEventListener("resize", requestHomeScrollFrame);
+		}
+
+		requestHomeScrollFrame();
+	}
+
+	initMikanHome();
+	document.addEventListener("DOMContentLoaded", initMikanHome);
+	document.addEventListener("astro:page-load", initMikanHome);
+	document.addEventListener("swup:contentReplaced", initMikanHome);
+</script>
