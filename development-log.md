@@ -1,5 +1,40 @@
 ﻿# Development Log
 
+## 2026-06-30 23:51:18 +08:00
+
+### 修改范围
+
+- 首页首屏铺满与角色线稿裁切
+- 首页状态胶囊、卡片圆角阴影、资源轨道与滚动显现动效修正
+- 页面契约测试、更新日志和交接任务同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `CHANGELOG.md`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 按用户补充要求将桌面首页首屏恢复为 `100svh`，让初始页面底部仍由首屏铺满；第二屏从首屏底部附近接入，避免未滑动时出现脱节空白。
+- 将右侧角色线稿限制为首屏氛围层，桌面端贴近首屏底部并由 `.home-hero` 裁切，移动端改为绝对定位，避免下滑后继续在第二屏露出大段图像。
+- 给头像增加独立圆形遮罩层，让右下角状态胶囊在头像容器外展开；提高状态胶囊层级，避免展开后被头像圆形裁切。
+- 将首页卡片显现遮罩、卡片伪元素和主要面板圆角统一，避免动效或阴影露出方形四角。
+- 调整滚动显现脚本，首屏元素即时入场，第二屏模块按视口位置逐步触发；资源收藏轨道的标签改为上半区旋转入场，并让中心数字在圆内居中。
+- 对照用户提供的本地 HTML 模板学习滚动分段和旋转入场节奏，只借鉴动效组织方式，不复制素材、文案或页面内容。
+- 清理 `docs/next-tasks.md` 中本次临时交接任务，保留文档使用规则。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增首页状态胶囊、角色裁切、卡片圆角遮罩、资源轨道和滚动显现契约测试按预期失败。
+- 已运行 `npm.cmd run test:pages`，66 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已通过 Playwright + 本机 Chrome 检查桌面 `/`：1920x1080 下 `.home-hero` 高度为 1080px，第二屏 top 约 1061px，页面无横向溢出；下滑后第二屏前几组模块分段进入。
+- 已通过 Playwright + 本机 Chrome 复查首页资源请求，没有稳定 404；截图保存在 `output/playwright/home-desktop-100svh-top.png` 和 `output/playwright/home-desktop-100svh-scroll.png`。
+
 ## 2026-06-30 22:39:36 +08:00
 
 ### 修改范围

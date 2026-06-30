@@ -63,15 +63,18 @@ test("首页顶部导航使用浅色胶囊样式并保留原导航图标", () =>
 	assert.doesNotMatch(source, /navbar-menu-icon[\s\S]{0,160}display:\s*none/);
 });
 
-test("首页第二屏内容默认可见，显现脚本只负责增强动效", () => {
+test("首页第二屏内容滚动到位后再逐步显现", () => {
 	const source = readSource("src/pages/index.astro");
 
 	assert.match(source, /data-home-reveal/);
 	assert.doesNotMatch(source, /\[data-home-reveal\]\s*\{[\s\S]{0,120}opacity:\s*0/);
 	assert.match(source, /\[data-home-reveal\]\s*\{[\s\S]*opacity:\s*1/);
 	assert.match(source, /\[data-home-reveal\]\.home-reveal-pending\s*\{[\s\S]*opacity:\s*0/);
-	assert.match(source, /closest\("#home-second-screen"\)/);
 	assert.match(source, /item\.classList\.add\("home-reveal-pending"\)/);
+	assert.match(source, /item\.closest\("\.home-hero"\)/);
+	assert.match(source, /rootMargin:\s*"0px 0px -28% 0px"/);
+	assert.match(source, /threshold:\s*0\.24/);
+	assert.doesNotMatch(source, /closest\("#home-second-screen"\)/);
 });
 
 test("首页头像、状态胶囊和主标题共用左侧视觉轴线", () => {
@@ -87,6 +90,58 @@ test("首页头像、状态胶囊和主标题共用左侧视觉轴线", () => {
 	assert.match(source, /\.home-avatar-status:hover,\s*\.home-avatar-status:focus-visible\s*\{[\s\S]*width:\s*15\.25rem/);
 	assert.match(source, /\.home-avatar-status:hover,\s*\.home-avatar-status:focus-visible\s*\{[\s\S]*transform:\s*translateX\(0\.45rem\)/);
 	assert.doesNotMatch(statusRule, /right:/);
+});
+
+test("首页状态胶囊展开不再被头像圆形遮罩裁掉", () => {
+	const source = readSource("src/pages/index.astro");
+	const avatarWrapRule = /\.home-avatar-wrap\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const statusRule = /\.home-avatar-status\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+
+	assert.match(source, /class="home-avatar-mask"[\s\S]*data-home-reveal[\s\S]*data-reveal-kind="iris"/);
+	assert.match(avatarWrapRule, /overflow:\s*visible/);
+	assert.match(avatarWrapRule, /z-index:\s*12/);
+	assert.match(statusRule, /z-index:\s*14/);
+	assert.doesNotMatch(source, /\[data-reveal-kind="iris"\]\.is-visible\s*\{[\s\S]*circle\(80% at 50% 50%\)/);
+});
+
+test("首页角色线稿只服务首屏并裁掉向下溢出的部分", () => {
+	const source = readSource("src/pages/index.astro");
+	const heroRule = /\.home-hero\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const artRule = /\.home-art-stage\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const mobileArtRule = /@media \(max-width: 960px\)[\s\S]*?\.home-art-stage\s*\{(?<rule>[\s\S]*?)\n\t\t\}/.exec(source)?.groups?.rule ?? "";
+
+	assert.match(heroRule, /min-height:\s*100svh/);
+	assert.match(heroRule, /overflow:\s*hidden/);
+	assert.match(artRule, /bottom:\s*-1\.2rem/);
+	assert.match(artRule, /width:\s*min\(50rem,\s*49vw\)/);
+	assert.match(mobileArtRule, /position:\s*absolute/);
+	assert.match(mobileArtRule, /bottom:\s*-5\.5rem/);
+	assert.doesNotMatch(artRule, /bottom:\s*-7\.2rem/);
+	assert.doesNotMatch(mobileArtRule, /position:\s*relative/);
+});
+
+test("首页卡片显现遮罩保留圆角并避免方形阴影边", () => {
+	const source = readSource("src/pages/index.astro");
+
+	assert.match(source, /--home-card-radius:\s*1\.7rem/);
+	assert.match(source, /--reveal-radius:\s*var\(--home-card-radius\)/);
+	assert.match(source, /\[data-home-reveal\]\.is-visible\s*\{[\s\S]*round var\(--reveal-radius/);
+	assert.match(source, /\.home-gateway-card::after\s*\{[\s\S]*border-radius:\s*inherit/);
+	assert.doesNotMatch(source, /\[data-home-reveal\]\.is-visible\s*\{[\s\S]*round 0/);
+});
+
+test("首页资源轨道数字居中且标签只在上半区旋转入场", () => {
+	const source = readSource("src/pages/index.astro");
+	const orbitCenterRule = /\.home-orbit-center\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const orbitChipRule = /\.home-orbit-chip\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+
+	assert.match(source, /featuredResources\.slice\(0,\s*4\)/);
+	assert.match(source, /const orbitChipAngles = \[-154, -104, -56, -10\]/);
+	assert.match(source, /--chip-angle:\s*\$\{orbitChipAngles\[index\]\}deg/);
+	assert.match(orbitCenterRule, /align-content:\s*center/);
+	assert.match(orbitCenterRule, /justify-items:\s*center/);
+	assert.match(orbitChipRule, /--angle:\s*var\(--chip-angle\)/);
+	assert.match(source, /\.home-reveal-pending\s+\.home-orbit-chip\s*\{/);
 });
 
 test("全站主导航统一使用首页同款胶囊与同心圆激活底", () => {

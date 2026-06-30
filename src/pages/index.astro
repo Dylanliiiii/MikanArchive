@@ -18,6 +18,7 @@ const featuredResources = [
 	...resources.filter((item) => item.featured),
 	...resources.filter((item) => !item.featured),
 ].slice(0, 6);
+const orbitChipAngles = [-154, -104, -56, -10];
 const friends = getMikanFriends();
 const updates = getMikanUpdates();
 const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
@@ -163,16 +164,18 @@ const marqueeItems = [
 				<div id="content-wrapper" class="onload-animation transition-leaving">
 					<section class="home-hero" data-home-parallax>
 						<div class="home-hero-copy">
-							<div class="home-avatar-wrap" data-home-reveal data-reveal-kind="iris">
-								<img
-									class="home-avatar"
-									src={mikanAvatar.src}
-									width={mikanAvatar.width}
-									height={mikanAvatar.height}
-									alt="MikanArchive 头像"
-									loading="eager"
-									fetchpriority="high"
-								/>
+							<div class="home-avatar-wrap">
+								<div class="home-avatar-mask" data-home-reveal data-reveal-kind="iris" style="--reveal-delay: 60ms;">
+									<img
+										class="home-avatar"
+										src={mikanAvatar.src}
+										width={mikanAvatar.width}
+										height={mikanAvatar.height}
+										alt="MikanArchive 头像"
+										loading="eager"
+										fetchpriority="high"
+									/>
+								</div>
 								<div class="home-avatar-status" tabindex="0" aria-label="当前状态：整理中">
 									<span class="home-avatar-status__dot">
 										<Icon is:inline name="material-symbols:auto-awesome-rounded" />
@@ -181,29 +184,29 @@ const marqueeItems = [
 								</div>
 							</div>
 
-							<p class="home-kicker" data-home-reveal data-reveal-kind="line">
+							<p class="home-kicker" data-home-reveal data-reveal-kind="line" style="--reveal-delay: 140ms;">
 								轻二次元角色空间 / 知识收藏馆
 							</p>
-							<div class="home-title-mask" data-home-reveal data-reveal-kind="title">
+							<div class="home-title-mask" data-home-reveal data-reveal-kind="title" style="--reveal-delay: 220ms;">
 								<h2>Mikan<br />Archive</h2>
 							</div>
-							<p class="home-hero-description" data-home-reveal data-reveal-kind="line">
+							<p class="home-hero-description" data-home-reveal data-reveal-kind="line" style="--reveal-delay: 360ms;">
 								把教程、资源、友链和灵感收进一个带角色感的知识收藏馆。
 							</p>
-							<div class="home-hero-actions" data-home-reveal data-reveal-kind="chips">
+							<div class="home-hero-actions" data-home-reveal data-reveal-kind="chips" style="--reveal-delay: 480ms;">
 								<a href={url("/posts/")}>最近文章</a>
 								<a href={url("/resources/tools/")}>工具导航</a>
 								<a href={url("/about/")}>关于我</a>
 							</div>
 						</div>
 
-						<div class="home-hero-note" data-home-reveal data-reveal-kind="card">
+						<div class="home-hero-note" data-home-reveal data-reveal-kind="card" style="--reveal-delay: 520ms;">
 							<span>馆内广播</span>
 							<strong>主页视觉重做</strong>
 							<p>卡片只放在顶部留白区，不压住角色线稿。</p>
 						</div>
 
-						<div class="home-art-stage" aria-hidden="true" data-home-reveal data-reveal-kind="art">
+						<div class="home-art-stage" aria-hidden="true" data-home-reveal data-reveal-kind="art" style="--reveal-delay: 300ms;">
 							<img
 								class="home-hero-art"
 								src={animeLineart.src}
@@ -215,7 +218,7 @@ const marqueeItems = [
 							/>
 						</div>
 
-						<a class="home-scroll-cue" href="#home-second-screen" data-home-reveal data-reveal-kind="cue">
+						<a class="home-scroll-cue" href="#home-second-screen" data-home-reveal data-reveal-kind="cue" style="--reveal-delay: 720ms;">
 							<span>向下探索</span>
 							<i></i>
 						</a>
@@ -277,13 +280,13 @@ const marqueeItems = [
 										<strong>{resources.length.toString().padStart(2, "0")}</strong>
 										<span>资源收藏</span>
 									</div>
-									{featuredResources.slice(0, 5).map((item, index) => (
+									{featuredResources.slice(0, 4).map((item, index) => (
 										<a
 											class="home-orbit-chip"
 											href={item.url}
 											target="_blank"
 											rel="noopener noreferrer"
-											style={`--chip-index: ${index};`}
+											style={`--chip-index: ${index}; --chip-angle: ${orbitChipAngles[index]}deg; --chip-delay: ${140 + index * 110}ms;`}
 										>
 											{item.title}
 										</a>
@@ -405,6 +408,7 @@ const marqueeItems = [
 		--home-yellow: #f0c47c;
 		--home-glass: rgba(255, 255, 255, 0.62);
 		--home-line: rgba(88, 92, 115, 0.12);
+		--home-card-radius: 1.7rem;
 		--home-scroll: 0;
 		position: relative;
 		min-height: 100vh;
@@ -421,8 +425,9 @@ const marqueeItems = [
 		grid-template-columns: minmax(20rem, 0.9fr) minmax(26rem, 1.1fr);
 		align-items: center;
 		min-height: 100svh;
-		padding: 8.4rem 4.5rem 5.5rem;
+		padding: 7.8rem 4.5rem 3.2rem;
 		isolation: isolate;
+		overflow: hidden;
 	}
 
 	.home-hero::before {
@@ -445,10 +450,19 @@ const marqueeItems = [
 
 	.home-avatar-wrap {
 		position: relative;
+		z-index: 12;
 		width: 11rem;
 		height: 11rem;
 		margin: 0 0 1.6rem 0;
 		filter: drop-shadow(0 2rem 3.5rem rgba(213, 99, 151, 0.24));
+		overflow: visible;
+	}
+
+	.home-avatar-mask {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
 	}
 
 	.home-avatar {
@@ -467,6 +481,7 @@ const marqueeItems = [
 		position: absolute;
 		left: calc(100% - 2.35rem);
 		bottom: 0.82rem;
+		z-index: 14;
 		display: inline-flex;
 		align-items: center;
 		width: 2.35rem;
@@ -593,8 +608,8 @@ const marqueeItems = [
 
 	.home-hero-note {
 		position: absolute;
-		top: 9.5rem;
-		right: 6.7rem;
+		top: clamp(7.4rem, 9vw, 9.1rem);
+		right: clamp(2.8rem, calc((100vw - var(--page-width)) / 2 + 5.5rem), 15rem);
 		z-index: 5;
 		width: 17.2rem;
 		padding: 1.25rem 1.35rem;
@@ -629,14 +644,14 @@ const marqueeItems = [
 
 	.home-art-stage {
 		position: absolute;
-		right: -3.5rem;
-		bottom: -7.2rem;
+		right: clamp(-4rem, -2vw, -1rem);
+		bottom: -1.2rem;
 		z-index: 1;
-		width: min(58rem, 58vw);
+		width: min(50rem, 49vw);
 		aspect-ratio: 1;
 		transform:
-			translate3d(calc(var(--home-scroll) * 4rem), calc(var(--home-scroll) * -2rem), 0)
-			scale(calc(1 + var(--home-scroll) * 0.04));
+			translate3d(calc(var(--home-scroll) * 3.2rem), calc(var(--home-scroll) * -1.4rem), 0)
+			scale(calc(1 + var(--home-scroll) * 0.025));
 		transform-origin: 58% 50%;
 		pointer-events: none;
 	}
@@ -677,7 +692,8 @@ const marqueeItems = [
 	.home-second-screen {
 		position: relative;
 		z-index: 8;
-		padding: 1rem 3rem 0;
+		margin-top: clamp(-1.2rem, -2vh, -0.2rem);
+		padding: 0 3rem 0;
 	}
 
 	.home-marquee {
@@ -706,7 +722,7 @@ const marqueeItems = [
 		display: grid;
 		grid-template-columns: minmax(15rem, 0.55fr) minmax(20rem, 0.45fr);
 		gap: 2rem;
-		margin: 5rem 0 1.8rem;
+		margin: 3.2rem 0 1.8rem;
 	}
 
 	.home-section-head h2,
@@ -750,6 +766,7 @@ const marqueeItems = [
 		content: "";
 		position: absolute;
 		inset: 0;
+		border-radius: inherit;
 		background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.62), transparent);
 		transform: translateX(-120%);
 		transition: transform 650ms ease;
@@ -814,7 +831,7 @@ const marqueeItems = [
 	.home-recent-panel,
 	.home-friends-strip {
 		border: 1px solid var(--home-line);
-		border-radius: 1.7rem;
+		border-radius: var(--home-card-radius);
 		background: rgba(255, 255, 255, 0.6);
 		box-shadow: 0 1.6rem 5rem rgba(80, 92, 101, 0.1);
 		backdrop-filter: blur(16px);
@@ -910,6 +927,8 @@ const marqueeItems = [
 		left: 50%;
 		top: 50%;
 		display: grid;
+		align-content: center;
+		justify-items: center;
 		place-items: center;
 		width: 10rem;
 		height: 10rem;
@@ -934,7 +953,7 @@ const marqueeItems = [
 	}
 
 	.home-orbit-chip {
-		--angle: calc(var(--chip-index) * 72deg - 88deg);
+		--angle: var(--chip-angle);
 		position: absolute;
 		left: 50%;
 		top: 50%;
@@ -948,12 +967,27 @@ const marqueeItems = [
 		color: #595664;
 		font-weight: 850;
 		box-shadow: 0 1.2rem 3.2rem rgba(91, 105, 118, 0.13);
+		opacity: 1;
 		transform:
 			translate(-50%, -50%)
 			rotate(var(--angle))
-			translateX(15.6rem)
+			translateX(15.3rem)
 			rotate(calc(var(--angle) * -1));
-		transition: transform 300ms ease, color 240ms ease, border-color 240ms ease;
+		transition:
+			opacity 740ms ease var(--chip-delay, 0ms),
+			transform 860ms cubic-bezier(0.18, 0.9, 0.22, 1) var(--chip-delay, 0ms),
+			color 240ms ease,
+			border-color 240ms ease;
+	}
+
+	.home-reveal-pending .home-orbit-chip {
+		opacity: 0;
+		transform:
+			translate(-50%, -50%)
+			rotate(calc(var(--angle) - 42deg))
+			translateX(8.4rem)
+			rotate(calc((var(--angle) - 42deg) * -1))
+			scale(0.72);
 	}
 
 	.home-orbit-chip:hover {
@@ -962,7 +996,7 @@ const marqueeItems = [
 		transform:
 			translate(-50%, -50%)
 			rotate(var(--angle))
-			translateX(16.4rem)
+			translateX(16rem)
 			rotate(calc(var(--angle) * -1));
 	}
 
@@ -1201,7 +1235,8 @@ const marqueeItems = [
 	[data-home-reveal] {
 		opacity: 1;
 		--reveal-y: 1.4rem;
-		--reveal-clip: inset(0 0 0 0 round 0);
+		--reveal-radius: 0rem;
+		--reveal-clip: inset(0 0 0 0 round var(--reveal-radius));
 		transform: translate3d(0, var(--reveal-y), 0);
 		transition:
 			opacity 760ms ease,
@@ -1226,7 +1261,8 @@ const marqueeItems = [
 
 	[data-reveal-kind="iris"] {
 		--reveal-y: 0;
-		--reveal-pending-clip: circle(0% at 50% 50%);
+		--reveal-radius: 50%;
+		--reveal-pending-clip: inset(50% 50% 50% 50% round 50%);
 	}
 
 	[data-reveal-kind="art"] {
@@ -1243,25 +1279,26 @@ const marqueeItems = [
 	[data-reveal-kind="orbit"],
 	[data-reveal-kind="mask"],
 	[data-reveal-kind="wipe"] {
-		--reveal-pending-clip: inset(0 0 100% 0 round 1.7rem);
+		--reveal-radius: var(--home-card-radius);
+		--reveal-pending-clip: inset(0 0 100% 0 round var(--reveal-radius));
 	}
 
 	[data-home-reveal].home-reveal-pending {
-		clip-path: var(--reveal-pending-clip, inset(0 0 100% 0 round 1.2rem));
+		clip-path: var(--reveal-pending-clip, inset(0 0 100% 0 round var(--reveal-radius, 1.2rem)));
 	}
 
 	[data-home-reveal].is-visible {
 		opacity: 1;
-		clip-path: inset(0 0 0 0 round 0);
+		clip-path: inset(0 0 0 0 round var(--reveal-radius));
 		transform: translate3d(0, 0, 0);
 	}
 
 	[data-reveal-kind="iris"].is-visible {
-		clip-path: circle(80% at 50% 50%);
+		clip-path: inset(0 0 0 0 round 50%);
 	}
 
 	[data-reveal-kind="art"].is-visible {
-		clip-path: inset(0 0 0 0 round 0);
+		clip-path: inset(0 0 0 0 round var(--reveal-radius));
 	}
 
 	@keyframes homeTitleReveal {
@@ -1356,8 +1393,8 @@ const marqueeItems = [
 
 		.home-hero {
 			display: block;
-			min-height: auto;
-			padding: 7.5rem 1rem 4rem;
+			min-height: min(92svh, 48rem);
+			padding: 7.5rem 1rem 5.8rem;
 			overflow: hidden;
 		}
 
@@ -1387,11 +1424,16 @@ const marqueeItems = [
 		}
 
 		.home-art-stage {
-			position: relative;
+			position: absolute;
+			left: 50%;
 			right: auto;
-			bottom: auto;
-			width: min(34rem, 100%);
-			margin: 1rem auto -3rem;
+			bottom: -5.5rem;
+			width: min(25rem, 90vw);
+			margin: 0;
+			opacity: 0.9;
+			transform:
+				translate3d(-50%, calc(var(--home-scroll) * -1.2rem), 0)
+				scale(calc(1 + var(--home-scroll) * 0.015));
 		}
 
 		.home-hero-description {
@@ -1535,9 +1577,12 @@ const marqueeItems = [
 
 		const revealItems = [...root.querySelectorAll("[data-home-reveal]")];
 		revealItems.forEach((item) => {
-			const isBelowHeroContent = item.closest("#home-second-screen");
-			if (!isBelowHeroContent && !item.classList.contains("is-visible")) {
+			const isHeroContent = item.closest(".home-hero");
+			if (!item.classList.contains("is-visible")) {
 				item.classList.add("home-reveal-pending");
+			}
+			if (isHeroContent) {
+				item.dataset.revealImmediate = "true";
 			}
 		});
 		if ("IntersectionObserver" in window) {
@@ -1550,7 +1595,7 @@ const marqueeItems = [
 						observer.unobserve(entry.target);
 					});
 				},
-				{ rootMargin: "0px 0px -12% 0px", threshold: 0.18 },
+				{ rootMargin: "0px 0px -28% 0px", threshold: 0.24 },
 			);
 			revealItems.forEach((item) => observer.observe(item));
 		} else {
@@ -1562,6 +1607,7 @@ const marqueeItems = [
 
 		requestAnimationFrame(() => {
 			revealItems.forEach((item) => {
+				if (item.dataset.revealImmediate !== "true") return;
 				const rect = item.getBoundingClientRect();
 				if (rect.top < window.innerHeight * 0.94 && rect.bottom > 0) {
 					item.classList.remove("home-reveal-pending");
@@ -1571,6 +1617,20 @@ const marqueeItems = [
 		});
 
 		const parallaxItems = [...root.querySelectorAll("[data-home-parallax]")];
+		function revealItemsInViewport() {
+			const viewportHeight = Math.max(1, window.innerHeight);
+			revealItems.forEach((item) => {
+				if (item.classList.contains("is-visible")) return;
+				const isImmediate = item.dataset.revealImmediate === "true";
+				const rect = item.getBoundingClientRect();
+				const triggerLine = viewportHeight * (isImmediate ? 0.94 : 0.76);
+				if (rect.top < triggerLine && rect.bottom > viewportHeight * 0.06) {
+					item.classList.remove("home-reveal-pending");
+					item.classList.add("is-visible");
+				}
+			});
+		}
+
 		window.__mikanHomeScrollState = {
 			root,
 			parallaxItems,
@@ -1586,6 +1646,7 @@ const marqueeItems = [
 			state.parallaxItems.forEach((item) => {
 				item.style.setProperty("--home-scroll", progress.toFixed(3));
 			});
+			revealItemsInViewport();
 			state.ticking = false;
 		}
 
@@ -1603,6 +1664,7 @@ const marqueeItems = [
 		}
 
 		requestHomeScrollFrame();
+		revealItemsInViewport();
 	}
 
 	initMikanHome();
