@@ -137,7 +137,7 @@ const marqueeItems = [
 	<div
 		id="top-row"
 		class:list={[
-			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none home-top-row home-top-row--light",
+			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none mikan-glass-top-row home-top-row home-top-row--light",
 			navbarWidthFull ? "w-full" : "w-full xl:w-[92vw] max-w-(--page-width) px-0 md:px-4",
 		]}
 	>
@@ -386,86 +386,14 @@ const marqueeItems = [
 	}
 
 	.home-top-row {
-		--home-nav-bg: rgba(255, 255, 255, 0.74);
-		--home-nav-border: rgba(255, 255, 255, 0.76);
-		--home-nav-text: #5a5d68;
-		--home-nav-muted: rgba(90, 93, 104, 0.68);
-		--home-nav-hover: rgba(255, 255, 255, 0.72);
+		--mikan-navbar-bg: rgba(255, 255, 255, 0.74);
+		--mikan-navbar-border: rgba(255, 255, 255, 0.76);
+		--mikan-navbar-text: #5a5d68;
+		--mikan-navbar-muted: rgba(90, 93, 104, 0.68);
+		--mikan-navbar-hover: rgba(255, 255, 255, 0.72);
 		width: min(96vw, 118rem) !important;
 		max-width: none !important;
-		padding-top: 1.55rem;
 		padding-inline: 0 !important;
-	}
-
-	.home-top-row--light :global(#navbar) {
-		color: var(--home-nav-text);
-	}
-
-	.home-top-row--light :global(#navbar > div) {
-		height: 4.8rem !important;
-		min-height: 4.8rem;
-		border: 1px solid var(--home-nav-border) !important;
-		border-radius: 999px !important;
-		background:
-			linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--home-nav-bg)) !important;
-		box-shadow: 0 1.45rem 4.5rem rgba(87, 112, 132, 0.18) !important;
-		backdrop-filter: blur(22px) saturate(1.2) !important;
-	}
-
-	.home-top-row--light :global(#navbar > div > div) {
-		max-width: none !important;
-	}
-
-	.home-top-row--light :global(#navbar .btn-plain),
-	.home-top-row--light :global(#navbar .btn-plain *),
-	.home-top-row--light :global(#navbar [data-dropdown-trigger]),
-	.home-top-row--light :global(#navbar [data-dropdown-trigger] *) {
-		color: var(--home-nav-text) !important;
-	}
-
-	.home-top-row--light :global(#navbar .btn-plain:hover),
-	.home-top-row--light :global(#navbar .btn-plain:focus-visible),
-	.home-top-row--light :global(#navbar [data-dropdown-trigger]:hover),
-	.home-top-row--light :global(#navbar [data-dropdown-trigger]:focus-visible) {
-		background: var(--home-nav-hover) !important;
-	}
-
-	.home-top-row--light :global(#navbar .navbar-menu-icon),
-	.home-top-row--light :global(#navbar .navbar-submenu-icon),
-	.home-top-row--light :global(#navbar .navbar-mobile-icon),
-	.home-top-row--light :global(#navbar .dropdown-arrow) {
-		color: var(--home-nav-muted) !important;
-	}
-
-	.home-top-row--light :global(#navbar picture),
-	.home-top-row--light :global(#navbar .btn-plain img) {
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.82);
-		box-shadow: 0 0 0 0.16rem rgba(255, 255, 255, 0.86);
-	}
-
-	.home-top-row--light :global(#search-bar),
-	.home-top-row--light :global(#search-bar-inside) {
-		border: 1px solid rgba(102, 111, 130, 0.08);
-		border-radius: 999px !important;
-		background: rgba(255, 255, 255, 0.46) !important;
-	}
-
-	.home-top-row--light :global(#search-bar:hover),
-	.home-top-row--light :global(#search-bar:focus-within),
-	.home-top-row--light :global(#search-bar-inside:hover),
-	.home-top-row--light :global(#search-bar-inside:focus-within) {
-		background: rgba(255, 255, 255, 0.68) !important;
-	}
-
-	.home-top-row--light :global(#search-bar input),
-	.home-top-row--light :global(#search-bar-inside input) {
-		color: var(--home-nav-text) !important;
-	}
-
-	.home-top-row--light :global(#search-bar svg),
-	.home-top-row--light :global(#search-bar-inside svg) {
-		color: var(--home-nav-muted) !important;
 	}
 
 	.mikan-home-shell {
@@ -517,9 +445,9 @@ const marqueeItems = [
 
 	.home-avatar-wrap {
 		position: relative;
-		width: 10rem;
-		height: 10rem;
-		margin: 0 0 1.6rem 5.5rem;
+		width: 11rem;
+		height: 11rem;
+		margin: 0 0 1.6rem 0;
 		filter: drop-shadow(0 2rem 3.5rem rgba(213, 99, 151, 0.24));
 	}
 
@@ -537,28 +465,34 @@ const marqueeItems = [
 
 	.home-avatar-status {
 		position: absolute;
-		right: -0.42rem;
-		bottom: 0.72rem;
-		display: inline-grid;
-		grid-template-columns: 2rem 0fr;
+		left: calc(100% - 2.35rem);
+		bottom: 0.82rem;
+		display: inline-flex;
 		align-items: center;
-		height: 2rem;
+		width: 2.35rem;
+		height: 2.35rem;
 		border: 0.18rem solid #fff;
 		border-radius: 999px;
 		background: rgba(32, 35, 46, 0.92);
 		box-shadow: 0 1rem 2rem rgba(42, 34, 50, 0.22);
 		color: #fff;
 		overflow: hidden;
-		transition: grid-template-columns 360ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 360ms ease;
+		transform-origin: left center;
+		transition:
+			width 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
+			transform 360ms ease,
+			box-shadow 360ms ease;
 	}
 
 	.home-avatar-status:hover,
 	.home-avatar-status:focus-visible {
-		grid-template-columns: 2rem minmax(0, 12rem);
-		transform: translateX(0.6rem);
+		width: 15.25rem;
+		transform: translateX(0.45rem);
+		box-shadow: 0 1.1rem 2.4rem rgba(42, 34, 50, 0.25);
 	}
 
 	.home-avatar-status__dot {
+		flex: 0 0 2rem;
 		display: grid;
 		place-items: center;
 		width: 2rem;
@@ -569,22 +503,26 @@ const marqueeItems = [
 	}
 
 	.home-avatar-status__text {
+		display: block;
 		min-width: 0;
-		max-width: 0;
-		padding-right: 0;
+		width: 12.4rem;
+		padding-right: 0.85rem;
+		padding-left: 0.5rem;
 		overflow: hidden;
 		opacity: 0;
 		white-space: nowrap;
 		font-size: 0.78rem;
 		font-weight: 800;
-		transition: max-width 360ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
+		transform: translateX(-0.5rem);
+		transition:
+			opacity 220ms ease,
+			transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 
 	.home-avatar-status:hover .home-avatar-status__text,
 	.home-avatar-status:focus-visible .home-avatar-status__text {
-		max-width: 12rem;
-		padding-right: 0.85rem;
 		opacity: 1;
+		transform: translateX(0);
 	}
 
 	.home-kicker {
@@ -1261,9 +1199,9 @@ const marqueeItems = [
 	}
 
 	[data-home-reveal] {
-		opacity: 0;
+		opacity: 1;
 		--reveal-y: 1.4rem;
-		--reveal-clip: inset(0 0 100% 0 round 1.2rem);
+		--reveal-clip: inset(0 0 0 0 round 0);
 		transform: translate3d(0, var(--reveal-y), 0);
 		transition:
 			opacity 760ms ease,
@@ -1273,35 +1211,43 @@ const marqueeItems = [
 		clip-path: var(--reveal-clip);
 	}
 
+	[data-home-reveal].home-reveal-pending {
+		opacity: 0;
+	}
+
 	[data-reveal-kind="line"] {
-		--reveal-clip: inset(0 100% 0 0);
+		--reveal-pending-clip: inset(0 100% 0 0);
 	}
 
 	[data-reveal-kind="title"] {
 		--reveal-y: 0;
-		--reveal-clip: inset(0 0 0 0);
+		--reveal-pending-clip: inset(0 0 0 0);
 	}
 
 	[data-reveal-kind="iris"] {
 		--reveal-y: 0;
-		--reveal-clip: circle(0% at 50% 50%);
+		--reveal-pending-clip: circle(0% at 50% 50%);
 	}
 
 	[data-reveal-kind="art"] {
 		--reveal-y: 0;
-		--reveal-clip: inset(10% 0 0 45% round 2rem);
+		--reveal-pending-clip: inset(10% 0 0 45% round 2rem);
 		transition-duration: 1200ms;
 	}
 
 	[data-reveal-kind="chips"] {
-		--reveal-clip: inset(0 0 0 0);
+		--reveal-pending-clip: inset(0 0 0 0);
 	}
 
 	[data-reveal-kind="path"],
 	[data-reveal-kind="orbit"],
 	[data-reveal-kind="mask"],
 	[data-reveal-kind="wipe"] {
-		--reveal-clip: inset(0 0 100% 0 round 1.7rem);
+		--reveal-pending-clip: inset(0 0 100% 0 round 1.7rem);
+	}
+
+	[data-home-reveal].home-reveal-pending {
+		clip-path: var(--reveal-pending-clip, inset(0 0 100% 0 round 1.2rem));
 	}
 
 	[data-home-reveal].is-visible {
@@ -1422,9 +1368,9 @@ const marqueeItems = [
 		}
 
 		.home-avatar-wrap {
-			width: 8rem;
-			height: 8rem;
-			margin-left: 1.2rem;
+			width: 8.6rem;
+			height: 8.6rem;
+			margin-left: 0;
 		}
 
 		.home-title-mask h2 {
@@ -1588,11 +1534,18 @@ const marqueeItems = [
 		document.body.classList.add("no-banner-layout");
 
 		const revealItems = [...root.querySelectorAll("[data-home-reveal]")];
+		revealItems.forEach((item) => {
+			const isBelowHeroContent = item.closest("#home-second-screen");
+			if (!isBelowHeroContent && !item.classList.contains("is-visible")) {
+				item.classList.add("home-reveal-pending");
+			}
+		});
 		if ("IntersectionObserver" in window) {
 			const observer = new IntersectionObserver(
 				(entries) => {
 					entries.forEach((entry) => {
 						if (!entry.isIntersecting) return;
+						entry.target.classList.remove("home-reveal-pending");
 						entry.target.classList.add("is-visible");
 						observer.unobserve(entry.target);
 					});
@@ -1601,13 +1554,17 @@ const marqueeItems = [
 			);
 			revealItems.forEach((item) => observer.observe(item));
 		} else {
-			revealItems.forEach((item) => item.classList.add("is-visible"));
+			revealItems.forEach((item) => {
+				item.classList.remove("home-reveal-pending");
+				item.classList.add("is-visible");
+			});
 		}
 
 		requestAnimationFrame(() => {
 			revealItems.forEach((item) => {
 				const rect = item.getBoundingClientRect();
 				if (rect.top < window.innerHeight * 0.94 && rect.bottom > 0) {
+					item.classList.remove("home-reveal-pending");
 					item.classList.add("is-visible");
 				}
 			});

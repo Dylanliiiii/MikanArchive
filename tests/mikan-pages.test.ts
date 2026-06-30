@@ -52,15 +52,61 @@ test("首页使用角色空间专用布局并保留真实导航", () => {
 test("首页顶部导航使用浅色胶囊样式并保留原导航图标", () => {
 	const source = readSource("src/pages/index.astro");
 	const navbarSource = readSource("src/components/layout/DropdownMenu.astro");
+	const styleSource = readSource("src/styles/navbar.css");
 
 	assert.match(source, /home-top-row--light/);
-	assert.match(source, /--home-nav-bg/);
+	assert.match(source, /--mikan-navbar-bg/);
 	assert.match(source, /width:\s*min\(96vw,\s*118rem\)/);
-	assert.match(source, /:global\(#navbar > div\)/);
-	assert.match(source, /border-radius:\s*999px/);
-	assert.match(source, /backdrop-filter:\s*blur\(22px\)/);
+	assert.match(styleSource, /#navbar>div\s*\{[\s\S]*border-radius:\s*calc\(var\(--mikan-navbar-height\) \/ 2\)/);
+	assert.match(styleSource, /backdrop-filter:\s*blur\(22px\)/);
 	assert.match(navbarSource, /navbar-menu-icon/);
 	assert.doesNotMatch(source, /navbar-menu-icon[\s\S]{0,160}display:\s*none/);
+});
+
+test("首页第二屏内容默认可见，显现脚本只负责增强动效", () => {
+	const source = readSource("src/pages/index.astro");
+
+	assert.match(source, /data-home-reveal/);
+	assert.doesNotMatch(source, /\[data-home-reveal\]\s*\{[\s\S]{0,120}opacity:\s*0/);
+	assert.match(source, /\[data-home-reveal\]\s*\{[\s\S]*opacity:\s*1/);
+	assert.match(source, /\[data-home-reveal\]\.home-reveal-pending\s*\{[\s\S]*opacity:\s*0/);
+	assert.match(source, /closest\("#home-second-screen"\)/);
+	assert.match(source, /item\.classList\.add\("home-reveal-pending"\)/);
+});
+
+test("首页头像、状态胶囊和主标题共用左侧视觉轴线", () => {
+	const source = readSource("src/pages/index.astro");
+	const statusRule = /\.home-avatar-status\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+
+	assert.match(source, /\.home-avatar-wrap\s*\{[\s\S]*width:\s*11rem/);
+	assert.match(source, /\.home-avatar-wrap\s*\{[\s\S]*height:\s*11rem/);
+	assert.match(source, /\.home-avatar-wrap\s*\{[\s\S]*margin:\s*0\s+0\s+1\.6rem\s+0/);
+	assert.match(statusRule, /left:\s*calc\(100% - 2\.35rem\)/);
+	assert.match(statusRule, /width:\s*2\.35rem/);
+	assert.match(statusRule, /height:\s*2\.35rem/);
+	assert.match(source, /\.home-avatar-status:hover,\s*\.home-avatar-status:focus-visible\s*\{[\s\S]*width:\s*15\.25rem/);
+	assert.match(source, /\.home-avatar-status:hover,\s*\.home-avatar-status:focus-visible\s*\{[\s\S]*transform:\s*translateX\(0\.45rem\)/);
+	assert.doesNotMatch(statusRule, /right:/);
+});
+
+test("全站主导航统一使用首页同款胶囊与同心圆激活底", () => {
+	const layoutSource = readSource("src/layouts/ContentGridLayout.astro");
+	const navbarSource = readSource("src/components/layout/Navbar.astro");
+	const dropdownSource = readSource("src/components/layout/DropdownMenu.astro");
+	const styleSource = readSource("src/styles/navbar.css");
+
+	assert.match(layoutSource, /mikan-glass-top-row/);
+	assert.match(navbarSource, /data-current-path/);
+	assert.match(navbarSource, /isNavLinkActive/);
+	assert.match(dropdownSource, /isActive/);
+	assert.match(dropdownSource, /aria-current=\{isActive/);
+	assert.match(dropdownSource, /navbar-nav-item/);
+	assert.match(dropdownSource, /navbar-nav-item--active/);
+	assert.match(styleSource, /--mikan-navbar-height:\s*4\.8rem/);
+	assert.match(styleSource, /#navbar-wrapper #navbar > div\s*\{[\s\S]*border-radius:\s*calc\(var\(--mikan-navbar-height\) \/ 2\)/);
+	assert.match(styleSource, /\.navbar-nav-item,\s*#navbar \.btn-plain\s*\{[\s\S]*border-radius:\s*calc\(var\(--mikan-navbar-control-height\) \/ 2\)/);
+	assert.match(styleSource, /\.navbar-nav-item--active\s*\{[\s\S]*border-radius:\s*calc\(var\(--mikan-navbar-control-height\) \/ 2\)/);
+	assert.doesNotMatch(dropdownSource, /rounded-lg/);
 });
 
 test("首页角色视觉使用透明线稿和圆形头像资产", () => {
@@ -206,7 +252,7 @@ test("聚焦布局为固定导航预留完整高度", () => {
 	const source = readSource("src/layouts/ContentGridLayout.astro");
 
 	assert.match(source, /:global\(body\.sticky-navbar\) \.focused-page-shell/);
-	assert.match(source, /padding-top:\s*4\.5rem/);
+	assert.match(source, /padding-top:\s*6\.35rem/);
 });
 
 test("收藏页不再作为收藏总览功能页，只保留旧链接兼容跳转", () => {

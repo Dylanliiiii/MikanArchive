@@ -1,5 +1,51 @@
 ﻿# Development Log
 
+## 2026-06-30 22:39:36 +08:00
+
+### 修改范围
+
+- 首页第二屏内容可见性修复
+- 首页头像、状态徽章与首屏视觉轴线修正
+- 全站顶部主导航胶囊样式统一
+- 页面契约测试与更新日志同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `src/styles/navbar.css`
+- `src/components/layout/Navbar.astro`
+- `src/components/layout/DropdownMenu.astro`
+- `src/components/common/DropdownItem.astro`
+- `src/layouts/ContentGridLayout.astro`
+- `src/layouts/Layout.astro`
+- `tests/mikan-pages.test.ts`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将首页第二屏显现逻辑改为内容默认可见，脚本只给首屏入场元素加 `home-reveal-pending`，避免下滑后真实内容入口、整理流、站点数据等模块保持透明不可见。
+- 将首页头像略微放大到 11rem，并移除左侧额外偏移，使头像左边缘与 “Mikan Archive” 主标题左边缘对齐；移动端同步保持同一视觉轴线。
+- 将头像右下角状态徽章改为固定圆形默认态，使用左侧锚点和宽度过渡，让 hover/focus 时从原位向右展开，避免向左覆盖头像主体。
+- 将导航浅色玻璃胶囊样式抽到 `src/styles/navbar.css`，让首页和所有 `ContentGridLayout` 页面共用同款顶部主导航。
+- 为主导航增加当前路径识别和 `navbar-nav-item--active` 当前项样式，当前项高亮改为与导航外壳同心的胶囊底，不再使用旧方形/小圆角底。
+- 扩展下拉菜单和下拉项组件，支持当前项高亮与 `aria-current`，并保持图标占位。
+- 新增页面契约测试，约束第二屏默认可见、头像状态展开方向、头像标题对齐、全站导航胶囊与当前项同心圆高亮。
+- 同步更新 `CHANGELOG.md`，记录本次可见性、头像状态和全站导航修复。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增 3 项页面契约测试按预期失败，失败点分别为第二屏默认不可见、头像状态/轴线不符合要求、非主页导航未使用首页同款胶囊样式。
+- 已运行 `npm.cmd run test:pages`，62 项页面契约测试通过。
+- 已运行 `npm.cmd run test:content-model`，8 项内容模型测试通过。
+- 已运行 `npm.cmd run test:archive`，6 项归档工具测试通过。
+- 已运行 `npm.cmd run test:calendar`，9 项日历工具测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过；保留既有 Calendar 未使用参数和 inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已通过 Playwright + 本机 Chromium 检查桌面 `/`：第二屏卡片 opacity 为 `1`，头像左边缘与标题左边缘差值为 `0`，状态徽章默认约 37.6px 圆形，hover 后宽度约 244px 并向右展开。
+- 已通过 Playwright + 本机 Chromium 检查桌面 `/posts/`：非主页导航外壳高度约 76.8px、圆角约 38.4px，当前“文库”项圆角约 22.8px。
+- 已通过 Playwright + 本机 Chromium 检查移动端 `/`：导航保持胶囊，头像与标题左边缘差值为 `0`，第二屏卡片 opacity 为 `1`，页面无横向溢出。
+
 ## 2026-06-30 21:55:12 +08:00
 
 ### 修改范围

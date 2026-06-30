@@ -8,9 +8,16 @@ import { url } from "@/utils/url-utils";
 interface Props {
 	link: NavBarLink;
 	class?: string;
+	currentPath?: string;
+	isActive?: boolean;
 }
 
-const { link, class: className } = Astro.props;
+const {
+	link,
+	class: className,
+	currentPath = Astro.url.pathname,
+	isActive = false,
+} = Astro.props;
 
 // 检查 link 是否存在
 if (!link) {
@@ -20,12 +27,40 @@ if (!link) {
 const processedLink = link;
 
 const hasChildren = processedLink.children && processedLink.children.length > 0;
+
+function normalizeNavPath(pathname: string): string {
+	const baseUrl = import.meta.env.BASE_URL || "/";
+	const withoutBase =
+		baseUrl !== "/" && pathname.startsWith(baseUrl)
+			? pathname.slice(baseUrl.length - 1)
+			: pathname;
+	const normalized = withoutBase.split("?")[0]?.replace(/\/+$/, "") || "/";
+	return normalized === "" ? "/" : normalized;
+}
+
+function isLinkActive(link: NavBarLink): boolean {
+	if (link.children?.some((child) => isLinkActive(child))) {
+		return true;
+	}
+
+	if (link.external || link.url === "#") return false;
+
+	const current = normalizeNavPath(currentPath);
+	const target = normalizeNavPath(url(link.url));
+
+	if (target === "/") return current === "/";
+	return current === target || current.startsWith(`${target}/`);
+}
 ---
 
 <div class:list={["dropdown-container", className]} data-dropdown>
 	{hasChildren ? (
 		<button 
-			class="btn-plain scale-animation rounded-lg h-10 font-bold px-4 pr-8 active:scale-95 dropdown-trigger relative"
+			class:list={[
+				"btn-plain scale-animation h-10 font-bold px-4 pr-8 active:scale-95 dropdown-trigger relative navbar-nav-item",
+				isActive && "navbar-nav-item--active",
+			]}
+			aria-current={isActive ? "page" : undefined}
 			aria-expanded="false"
 			aria-haspopup="true"
 			data-dropdown-trigger
@@ -42,8 +77,10 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 					<DropdownItem
 						href={child.external ? child.url : url(child.url)}
 						target={child.external ? "_blank" : undefined}
+						isActive={isLinkActive(child)}
 						isLast={index === (processedLink.children?.length || 0) - 1}
 						class="dropdown-item h-10"
+						ariaCurrent={isLinkActive(child) ? "page" : undefined}
 					>
 						{child.icon && <Icon is:inline name={child.icon} class="navbar-submenu-icon navbar-icon" />}
 						<span>{child.name}</span>
@@ -59,7 +96,11 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 			aria-label={processedLink.name} 
 			href={processedLink.external ? processedLink.url : url(processedLink.url)} 
 			target={processedLink.external ? "_blank" : null}
-			class="btn-plain scale-animation rounded-lg h-10 font-bold px-4 active:scale-95"
+			class:list={[
+				"btn-plain scale-animation h-10 font-bold px-4 active:scale-95 navbar-nav-item",
+				isActive && "navbar-nav-item--active",
+			]}
+			aria-current={isActive ? "page" : undefined}
 		>
 			<div class="flex items-center gap-2">
 				{processedLink.icon && <Icon is:inline name={processedLink.icon} class="navbar-menu-icon navbar-icon" />}

@@ -58,7 +58,7 @@ const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 	<div
 		id="top-row"
 		class:list={[
-			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none",
+			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none mikan-glass-top-row",
 			navbarWidthFull ? "w-full" : "w-full xl:w-[92vw] max-w-(--page-width) px-0 md:px-4",
 		]}
 	>
@@ -118,7 +118,7 @@ const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
 	}
 
 	:global(body.sticky-navbar) .focused-page-shell {
-		padding-top: 4.5rem;
+		padding-top: 6.35rem;
 	}
 
 	.focused-page-grid {

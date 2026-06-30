@@ -10,6 +10,7 @@ interface Props {
 	isLast?: boolean;
 	class?: string;
 	onclick?: string;
+	ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true";
 }
 
 const {
@@ -19,12 +20,13 @@ const {
 	isLast = false,
 	class: className,
 	onclick,
+	ariaCurrent,
 } = Astro.props;
 
 const baseClasses =
-	"flex transition whitespace-nowrap items-center justify-start! w-full btn-plain scale-animation rounded-lg h-9 px-3 font-medium active:scale-95";
+	"flex transition whitespace-nowrap items-center justify-start! w-full btn-plain scale-animation navbar-nav-item h-9 px-3 font-medium active:scale-95";
 const spacingClass = isLast ? "" : "mb-0.5";
-const activeClass = isActive ? "current-theme-btn" : "";
+const activeClass = isActive ? "navbar-nav-item--active" : "";
 const allClasses =
 	`${baseClasses} ${spacingClass} ${activeClass} ${className || ""}`.trim();
 
@@ -36,6 +38,7 @@ const Tag = href ? "a" : "button";
 	target={target}
 	class={allClasses}
 	onclick={onclick}
+	aria-current={ariaCurrent}
 >
 	<slot />
 </Tag>

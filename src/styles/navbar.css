@@ -19,6 +19,19 @@
 
 @reference "tailwindcss";
 
+:root {
+    --mikan-navbar-height: 4.8rem;
+    --mikan-navbar-control-height: 2.85rem;
+    --mikan-navbar-bg: rgba(255, 255, 255, 0.74);
+    --mikan-navbar-border: rgba(255, 255, 255, 0.76);
+    --mikan-navbar-text: #5a5d68;
+    --mikan-navbar-muted: rgba(90, 93, 104, 0.68);
+    --mikan-navbar-hover: rgba(255, 255, 255, 0.72);
+    --mikan-navbar-active: rgba(232, 247, 251, 0.88);
+    --mikan-navbar-active-border: rgba(139, 208, 226, 0.3);
+    --mikan-navbar-shadow: 0 1.45rem 4.5rem rgba(87, 112, 132, 0.18);
+}
+
 @utility navbar-surface-transition {
   transition:
     background-color 0.36s cubic-bezier(0.22, 1, 0.36, 1),
@@ -33,11 +46,121 @@
  * 适用: 所有模式，所有设备
  * ============================================ */
 #navbar>div {
-    background-color: var(--card-bg);
-    border: 1px solid transparent;
-    border-radius: 0 0 0.75rem 0.75rem;
-    backdrop-filter: blur(0);
+    height: var(--mikan-navbar-height) !important;
+    min-height: var(--mikan-navbar-height);
+    color: var(--mikan-navbar-text);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--mikan-navbar-bg)) !important;
+    border: 1px solid var(--mikan-navbar-border) !important;
+    border-radius: calc(var(--mikan-navbar-height) / 2) !important;
+    box-shadow: var(--mikan-navbar-shadow) !important;
+    backdrop-filter: blur(22px) saturate(1.2) !important;
     @apply navbar-surface-transition;
+}
+
+#navbar-wrapper #navbar > div {
+    border-radius: calc(var(--mikan-navbar-height) / 2) !important;
+}
+
+#navbar > div > div {
+    max-width: none !important;
+}
+
+#navbar .btn-plain,
+#navbar .btn-plain *,
+#navbar [data-dropdown-trigger],
+#navbar [data-dropdown-trigger] * {
+    color: var(--mikan-navbar-text);
+}
+
+#navbar .navbar-menu-icon,
+#navbar .navbar-submenu-icon,
+#navbar .navbar-mobile-icon,
+#navbar .dropdown-arrow,
+#navbar #search-bar svg,
+#navbar #search-bar-inside svg {
+    color: var(--mikan-navbar-muted);
+}
+
+#navbar picture,
+#navbar .btn-plain img {
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 0 0 0.16rem rgba(255, 255, 255, 0.86);
+}
+
+#navbar .navbar-nav-item,
+#navbar .btn-plain {
+    border-radius: calc(var(--mikan-navbar-control-height) / 2) !important;
+}
+
+#navbar .navbar-nav-item:hover,
+#navbar .navbar-nav-item:focus-visible,
+#navbar .btn-plain:hover,
+#navbar .btn-plain:focus-visible,
+#navbar [data-dropdown-trigger]:hover,
+#navbar [data-dropdown-trigger]:focus-visible {
+    background: var(--mikan-navbar-hover) !important;
+}
+
+#navbar .navbar-nav-item--active {
+    border: 1px solid var(--mikan-navbar-active-border);
+    border-radius: calc(var(--mikan-navbar-control-height) / 2) !important;
+    background: var(--mikan-navbar-active) !important;
+    color: #4f6270 !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.66),
+        0 0.65rem 1.8rem rgba(112, 176, 196, 0.18);
+}
+
+#navbar .navbar-nav-item--active *,
+#navbar .navbar-nav-item--active .navbar-menu-icon,
+#navbar .navbar-nav-item--active .navbar-submenu-icon,
+#navbar .navbar-nav-item--active .dropdown-arrow {
+    color: #4f6270 !important;
+}
+
+#navbar #search-bar,
+#navbar #search-bar-inside {
+    border: 1px solid rgba(102, 111, 130, 0.08);
+    border-radius: calc(var(--mikan-navbar-control-height) / 2) !important;
+    background: rgba(255, 255, 255, 0.46) !important;
+}
+
+#navbar #search-bar:hover,
+#navbar #search-bar:focus-within,
+#navbar #search-bar-inside:hover,
+#navbar #search-bar-inside:focus-within {
+    background: rgba(255, 255, 255, 0.68) !important;
+}
+
+#navbar #search-bar input,
+#navbar #search-bar-inside input {
+    color: var(--mikan-navbar-text) !important;
+}
+
+:root.dark {
+    --mikan-navbar-bg: rgba(29, 31, 42, 0.72);
+    --mikan-navbar-border: rgba(255, 255, 255, 0.12);
+    --mikan-navbar-text: rgba(245, 241, 245, 0.82);
+    --mikan-navbar-muted: rgba(245, 241, 245, 0.58);
+    --mikan-navbar-hover: rgba(255, 255, 255, 0.09);
+    --mikan-navbar-active: rgba(58, 80, 92, 0.74);
+    --mikan-navbar-active-border: rgba(150, 220, 235, 0.22);
+    --mikan-navbar-shadow: 0 1.45rem 4.5rem rgba(0, 0, 0, 0.24);
+}
+
+.mikan-glass-top-row {
+    width: min(96vw, 118rem) !important;
+    max-width: none !important;
+    padding-top: 1.55rem;
+    padding-inline: 0 !important;
+}
+
+@media (max-width: 960px) {
+    .mikan-glass-top-row {
+        width: min(96vw, 100% - 1rem) !important;
+        padding-top: 0.75rem;
+    }
 }
 
 
@@ -67,8 +190,8 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"]>div,
     body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"]>div {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
-        background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--mikan-navbar-bg)) !important;
+        border-radius: calc(var(--mikan-navbar-height) / 2) !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 
@@ -88,7 +211,7 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
         backdrop-filter: blur(0) !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: calc(var(--mikan-navbar-height) / 2) !important;
         box-shadow: none !important;
     }
 
@@ -96,8 +219,8 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"].scrolled>div,
     body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"].scrolled>div {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
-        background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--mikan-navbar-bg)) !important;
+        border-radius: calc(var(--mikan-navbar-height) / 2) !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 }
@@ -112,8 +235,8 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
     body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]>div {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
-        background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--mikan-navbar-bg)) !important;
+        border-radius: calc(var(--mikan-navbar-height) / 2) !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 
@@ -133,7 +256,7 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
         backdrop-filter: blur(0) !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: calc(var(--mikan-navbar-height) / 2) !important;
         box-shadow: none !important;
     }
 
@@ -141,8 +264,8 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div,
     body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
-        background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--mikan-navbar-bg)) !important;
+        border-radius: calc(var(--mikan-navbar-height) / 2) !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 }
@@ -223,18 +346,9 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
  * 移动端去掉底部圆角
  * ============================================ */
 @media (max-width: 767px) {
-    #navbar>div {
-        border-radius: 0 !important;
-    }
-
-    /* 覆盖 banner 模式 semi / semifull 下的圆角 */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div,
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div {
-        border-radius: 0 !important;
+    :root {
+        --mikan-navbar-height: 4.35rem;
+        --mikan-navbar-control-height: 2.6rem;
     }
 }
 
@@ -304,7 +418,6 @@ body.wallpaper-transparent .float-panel {
 body:has(#wallpaper-wrapper) #navbar-wrapper #navbar[data-full-width="true"] > div,
 body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div,
 #navbar-wrapper #navbar[data-full-width="true"].scrolled > div {
-    border-radius: 0 !important;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
