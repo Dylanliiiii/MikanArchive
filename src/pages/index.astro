@@ -200,7 +200,7 @@ const marqueeItems = [
 							</div>
 						</div>
 
-						<div class="home-hero-note" data-home-reveal data-reveal-kind="card" style="--reveal-delay: 520ms;">
+						<div class="home-hero-note home-tilt-card" data-home-reveal data-reveal-kind="card" style="--reveal-delay: 520ms;">
 							<span>馆内广播</span>
 							<strong>主页视觉重做</strong>
 							<p>卡片只放在顶部留白区，不压住角色线稿。</p>
@@ -239,7 +239,7 @@ const marqueeItems = [
 						<div class="home-gateway-grid">
 							{contentGateways.map((item, index) => (
 								<a
-									class="home-gateway-card"
+									class="home-gateway-card home-tilt-card"
 									href={item.href}
 									data-home-reveal
 									data-reveal-kind="wipe"
@@ -607,17 +607,93 @@ const marqueeItems = [
 	}
 
 	.home-hero-note {
+		--tilt-x: 0deg;
+		--tilt-y: 0deg;
+		--glow-x: 50%;
+		--glow-y: 50%;
+		--card-scale: 1;
+		--shadow-x: 0rem;
+		--shadow-y: 1.05rem;
+		--edge-opacity: 0.54;
 		position: absolute;
 		top: clamp(7.4rem, 9vw, 9.1rem);
 		right: clamp(2.8rem, calc((100vw - var(--page-width)) / 2 + 5.5rem), 15rem);
 		z-index: 5;
+		isolation: isolate;
 		width: 17.2rem;
 		padding: 1.25rem 1.35rem;
-		border: 1px solid rgba(255, 255, 255, 0.62);
-		border-radius: 1.35rem;
-		background: rgba(255, 255, 255, 0.58);
-		backdrop-filter: blur(18px);
-		box-shadow: 0 1.5rem 4rem rgba(94, 135, 161, 0.18);
+		border: 1px solid rgba(151, 164, 184, 0.2);
+		border-radius: 1.6rem;
+		background:
+			radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 255, 255, 0.96), transparent 6rem),
+			radial-gradient(circle at 8% 12%, rgba(255, 214, 235, 0.26), transparent 6.4rem),
+			radial-gradient(circle at 96% 100%, rgba(191, 231, 246, 0.32), transparent 5.6rem),
+			linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(246, 252, 255, 0.62) 48%, rgba(255, 243, 250, 0.66));
+		backdrop-filter: blur(18px) saturate(1.12);
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+			inset 0 1px 0 rgba(255, 255, 255, 0.82),
+			inset 0 -1rem 2rem rgba(203, 147, 186, 0.1);
+		filter: drop-shadow(var(--shadow-x) var(--shadow-y) 2.4rem rgba(68, 83, 101, 0.16));
+		overflow: hidden;
+		transform:
+			translateY(0)
+			rotateX(var(--tilt-x))
+			rotateY(var(--tilt-y))
+			scale(var(--card-scale));
+		transform-style: preserve-3d;
+		will-change: transform, filter;
+		transition: transform 180ms ease, filter 260ms ease, border-color 260ms ease;
+	}
+
+	.home-hero-note > * {
+		position: relative;
+		z-index: 2;
+	}
+
+	.home-hero-note::before {
+		content: "";
+		position: absolute;
+		left: 0.95rem;
+		right: 0.95rem;
+		bottom: 0.35rem;
+		z-index: 0;
+		height: 0.72rem;
+		border-radius: 999px;
+		background: linear-gradient(90deg, rgba(221, 109, 166, 0.2), rgba(133, 205, 230, 0.2));
+		filter: blur(0.45rem);
+		opacity: var(--edge-opacity);
+		transform: translateY(0.56rem) scaleX(0.9);
+		pointer-events: none;
+		transition: opacity 260ms ease, transform 260ms ease;
+	}
+
+	.home-hero-note::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		border-radius: inherit;
+		background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.58), transparent);
+		transform: translateX(-120%);
+		pointer-events: none;
+		transition: transform 650ms ease;
+	}
+
+	.home-hero-note:hover {
+		--card-scale: 1.018;
+		--edge-opacity: 0.88;
+		border-color: rgba(221, 109, 166, 0.3);
+		filter: drop-shadow(var(--shadow-x) calc(var(--shadow-y) + 0.35rem) 2.8rem rgba(68, 83, 101, 0.2));
+	}
+
+	.home-hero-note:hover::before {
+		opacity: 0.88;
+		transform: translateY(0.65rem) scaleX(0.98);
+	}
+
+	.home-hero-note:hover::after {
+		transform: translateX(120%);
 	}
 
 	.home-hero-note span,
@@ -640,6 +716,18 @@ const marqueeItems = [
 		color: var(--home-muted);
 		font-size: 0.85rem;
 		line-height: 1.65;
+	}
+
+	.home-hero-note[data-home-reveal].is-visible {
+		transform:
+			translateY(0)
+			rotateX(var(--tilt-x))
+			rotateY(var(--tilt-y))
+			scale(var(--card-scale));
+	}
+
+	.home-hero-note[data-home-reveal].is-visible.is-interacting {
+		transition-delay: 0ms;
 	}
 
 	.home-art-stage {
@@ -1410,6 +1498,12 @@ const marqueeItems = [
 		--reveal-pending-clip: inset(0 0 0 0);
 	}
 
+	[data-reveal-kind="card"] {
+		--reveal-y: 0;
+		--reveal-radius: 1.6rem;
+		--reveal-pending-clip: inset(0 0 0 100% round var(--reveal-radius));
+	}
+
 	[data-reveal-kind="path"],
 	[data-reveal-kind="orbit"],
 	[data-reveal-kind="mask"],
@@ -1734,6 +1828,7 @@ const marqueeItems = [
 			transform: none;
 		}
 
+		.home-hero-note,
 		.home-gateway-card {
 			transform: none !important;
 		}
@@ -1791,17 +1886,17 @@ const marqueeItems = [
 		});
 
 		const parallaxItems = [...root.querySelectorAll("[data-home-parallax]")];
-		const gatewayCards = [...root.querySelectorAll(".home-gateway-card")];
+		const tiltCards = [...root.querySelectorAll(".home-tilt-card")];
 		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		function resetGatewayCardTilt(card) {
+		function resetTiltCard(card) {
 			card.style.setProperty("--tilt-x", "0deg");
 			card.style.setProperty("--tilt-y", "0deg");
 			card.style.setProperty("--glow-x", "50%");
 			card.style.setProperty("--glow-y", "50%");
 			card.style.setProperty("--shadow-x", "0rem");
-			card.style.setProperty("--shadow-y", "1.55rem");
+			card.style.setProperty("--shadow-y", card.classList.contains("home-hero-note") ? "1.05rem" : "1.55rem");
 		}
-		gatewayCards.forEach((card) => {
+		tiltCards.forEach((card) => {
 			if (card.dataset.tiltBound === "true") return;
 			card.dataset.tiltBound = "true";
 			if (reduceMotion) return;
@@ -1823,11 +1918,11 @@ const marqueeItems = [
 			});
 			card.addEventListener("pointerleave", () => {
 				card.classList.remove("is-interacting");
-				resetGatewayCardTilt(card);
+				resetTiltCard(card);
 			});
 			card.addEventListener("blur", () => {
 				card.classList.remove("is-interacting");
-				resetGatewayCardTilt(card);
+				resetTiltCard(card);
 			});
 		});
 

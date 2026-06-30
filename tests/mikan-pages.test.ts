@@ -129,7 +129,10 @@ test("首页卡片显现遮罩保留圆角并避免方形阴影边", () => {
 
 	assert.match(source, /--home-card-radius:\s*1\.7rem/);
 	assert.match(source, /--reveal-radius:\s*var\(--home-card-radius\)/);
+	assert.match(source, /\[data-reveal-kind="card"\]\s*\{[\s\S]*--reveal-radius:\s*1\.6rem/);
 	assert.match(source, /\[data-home-reveal\]\.is-visible\s*\{[\s\S]*round var\(--reveal-radius/);
+	assert.match(source, /\.home-hero-note\s*\{[\s\S]*overflow:\s*hidden/);
+	assert.match(source, /\.home-hero-note::after\s*\{[\s\S]*border-radius:\s*inherit/);
 	assert.match(source, /\.home-gateway-card::after\s*\{[\s\S]*border-radius:\s*inherit/);
 	assert.doesNotMatch(source, /\[data-home-reveal\]\.is-visible\s*\{[\s\S]*round 0/);
 });
@@ -158,7 +161,10 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	const source = readSource("src/pages/index.astro");
 	const gatewayGridRule = /\.home-gateway-grid\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 	const gatewayCardRule = /\.home-gateway-card\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const heroNoteRule = /\.home-hero-note\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 
+	assert.match(source, /class="home-hero-note home-tilt-card"/);
+	assert.match(source, /class="home-gateway-card home-tilt-card"/);
 	assert.match(gatewayGridRule, /perspective:\s*70rem/);
 	assert.match(gatewayCardRule, /--tilt-x:\s*0deg/);
 	assert.match(gatewayCardRule, /--tilt-y:\s*0deg/);
@@ -173,8 +179,10 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	assert.match(gatewayCardRule, /rotateY\(var\(--tilt-y\)\)/);
 	assert.match(source, /\.home-gateway-card::before\s*\{[\s\S]*height:\s*0\.85rem/);
 	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\s*\{[\s\S]*rotateX\(var\(--tilt-x\)\)/);
+	assert.match(source, /\.home-hero-note\[data-home-reveal\]\.is-visible\s*\{[\s\S]*rotateX\(var\(--tilt-x\)\)/);
 	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\.is-interacting\s*\{[\s\S]*transition-delay:\s*0ms/);
-	assert.match(source, /querySelectorAll\("\.home-gateway-card"\)/);
+	assert.match(source, /\.home-hero-note\[data-home-reveal\]\.is-visible\.is-interacting\s*\{[\s\S]*transition-delay:\s*0ms/);
+	assert.match(source, /querySelectorAll\("\.home-tilt-card"\)/);
 	assert.match(source, /addEventListener\("pointermove"/);
 	assert.match(source, /classList\.add\("is-interacting"\)/);
 	assert.match(source, /style\.setProperty\("--tilt-x"/);
@@ -182,6 +190,10 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	assert.match(source, /style\.setProperty\("--shadow-x"/);
 	assert.match(source, /style\.setProperty\("--shadow-y"/);
 	assert.match(source, /dataset\.tiltBound/);
+	assert.match(heroNoteRule, /--shadow-x:\s*0rem/);
+	assert.match(heroNoteRule, /backdrop-filter:\s*blur\(18px\)\s*saturate\(1\.12\)/);
+	assert.match(heroNoteRule, /filter:\s*drop-shadow\(var\(--shadow-x\)\s+var\(--shadow-y\)/);
+	assert.match(source, /\.home-hero-note::before\s*\{[\s\S]*height:\s*0\.72rem/);
 });
 
 test("首页站点数据卡片提供粉白反色填充交互", () => {

@@ -1,5 +1,35 @@
 ﻿# Development Log
 
+## 2026-07-01 02:03:06 +08:00
+
+### 修改范围
+
+- 首页馆内广播卡片圆角阴影修正
+- 首页馆内广播卡片厚玻璃与鼠标跟随交互同步
+- 页面契约测试与浏览器视觉验证同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 将首屏右上角“馆内广播”卡片接入 `home-tilt-card` 交互类，与第二屏四张入口卡共用鼠标跟随倾斜、动态光点和阴影变量逻辑。
+- 将广播卡从旧的普通白卡样式升级为厚玻璃样式：加入粉蓝光斑、内高光、底部柔光层、扫光伪元素和圆角裁切。
+- 为 `data-reveal-kind="card"` 增加独立的 `--reveal-radius: 1.6rem` 和圆角入场遮罩，避免显现动画或阴影层出现方形边角。
+- 在低动态偏好下同步关闭广播卡和入口卡的 3D transform。
+- 扩展页面契约测试，覆盖广播卡圆角 reveal、伪元素圆角、厚玻璃样式和 `home-tilt-card` 脚本绑定。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增广播卡圆角 reveal 和同款 tilt 交互契约后按预期失败。
+- 已运行 `npm.cmd run test:pages`，68 项页面契约测试通过。
+- 已通过 Playwright + 本机 Chrome 检查 1366x768 首页：广播卡 `clip-path` 为圆角 inset，`overflow: hidden` 生效；鼠标移入后写入 `--tilt-x`、`--tilt-y`、`--shadow-x`、`--shadow-y`，computed transform 为 `matrix3d(...)`，页面无横向溢出。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+
 ## 2026-07-01 01:13:36 +08:00
 
 ### 修改范围
