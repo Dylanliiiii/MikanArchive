@@ -1,5 +1,38 @@
 ﻿# Development Log
 
+## 2026-07-01 00:34:57 +08:00
+
+### 修改范围
+
+- 首页资源轨道标签完整显示
+- 首页入口卡片鼠标跟随倾斜与厚玻璃交互
+- 页面契约测试与浏览器视觉验证同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 将首页资源收藏轨道的标签调整为 4 个完整可见标签，改用 `[-152, -134, -46, -28]` 的角度分布，并将轨道半径调整为 `15.8rem`，避免标签停在卡片边缘只露半截。
+- 将资源轨道区域高度调到 `22rem`，把浏览信号胶囊从 `bottom: 2rem` 下移到 `bottom: 1.25rem`，让中心圆和底部胶囊之间的距离更舒展。
+- 为首页四张入口卡片增加厚玻璃背景、内阴影、动态光点、`backdrop-filter` 和更明显的 hover 阴影。
+- 增加鼠标跟随 3D 倾斜交互：卡片根据指针位置写入 `--tilt-x`、`--tilt-y`、`--glow-x` 和 `--glow-y`，并在显现动画完成后保持 `matrix3d` 倾斜效果。
+- 在低动态偏好下关闭卡片 3D transform，保留可访问性兼容。
+- 扩展页面契约测试，覆盖资源标签角度/半径、浏览信号位置、卡片厚玻璃样式、鼠标跟随变量和显现动画后的 transform 覆盖规则。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增资源轨道和卡片交互契约后按预期失败；后续又补充显现动画覆盖卡片 transform 的回归测试并按预期失败。
+- 已运行 `npm.cmd run test:pages`，67 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 曾将 `npm.cmd run check` 和 `npm.cmd run build` 并行执行，`build` 的内容同步阶段因同时创建 `src/content/posts` 出现 `EEXIST`；这是验证命令并发导致的同步目录竞争，不是页面代码错误。
+- 已按顺序重跑 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已通过 Playwright + 本机 Chrome 检查桌面 `/`：资源轨道最终静止状态下 4 个标签均完整位于资源卡片内，页面无横向溢出。
+- 已通过 Playwright + 本机 Chrome 检查入口卡片 hover：鼠标移动后卡片写入 `--tilt-x`、`--tilt-y`、`--glow-x` 和 `--glow-y`，computed transform 为 `matrix3d(...)`，确认不再被滚动显现 transform 覆盖。
+
 ## 2026-07-01 00:06:17 +08:00
 
 ### 修改范围

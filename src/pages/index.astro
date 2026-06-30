@@ -18,7 +18,7 @@ const featuredResources = [
 	...resources.filter((item) => item.featured),
 	...resources.filter((item) => !item.featured),
 ].slice(0, 6);
-const orbitChipAngles = [-154, -104, -56, -10];
+const orbitChipAngles = [-152, -134, -46, -28];
 const friends = getMikanFriends();
 const updates = getMikanUpdates();
 const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
@@ -749,36 +749,82 @@ const marqueeItems = [
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 1.2rem;
+		perspective: 70rem;
 	}
 
 	.home-gateway-card {
+		--tilt-x: 0deg;
+		--tilt-y: 0deg;
+		--glow-x: 50%;
+		--glow-y: 50%;
+		--card-scale: 1;
 		position: relative;
+		isolation: isolate;
 		min-height: 16.4rem;
 		padding: 2rem 1.75rem;
-		border: 1px solid var(--home-line);
+		border: 1px solid rgba(255, 255, 255, 0.62);
 		border-radius: 1.6rem;
 		background:
-			radial-gradient(circle at 92% 92%, rgba(226, 174, 213, 0.2), transparent 5.8rem),
-			rgba(255, 255, 255, 0.68);
-		box-shadow: 0 1.5rem 4.5rem rgba(79, 92, 108, 0.1);
+			radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 255, 255, 0.9), transparent 7rem),
+			radial-gradient(circle at 92% 92%, rgba(226, 174, 213, 0.22), transparent 5.8rem),
+			linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.5));
+		box-shadow:
+			0 1.5rem 4.5rem rgba(79, 92, 108, 0.12),
+			inset 0 1px 0 rgba(255, 255, 255, 0.72),
+			inset 0 -1.2rem 2.4rem rgba(226, 174, 213, 0.08);
+		backdrop-filter: blur(18px) saturate(1.12);
 		overflow: hidden;
-		transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+		transform:
+			translateY(0)
+			rotateX(var(--tilt-x))
+			rotateY(var(--tilt-y))
+			scale(var(--card-scale));
+		transform-style: preserve-3d;
+		will-change: transform;
+		transition: transform 180ms ease, box-shadow 260ms ease, border-color 260ms ease;
+	}
+
+	.home-gateway-card > * {
+		position: relative;
+		z-index: 2;
 	}
 
 	.home-gateway-card::after {
 		content: "";
 		position: absolute;
 		inset: 0;
+		z-index: 1;
 		border-radius: inherit;
 		background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.62), transparent);
 		transform: translateX(-120%);
+		pointer-events: none;
 		transition: transform 650ms ease;
 	}
 
 	.home-gateway-card:hover {
-		transform: translateY(-0.35rem);
+		--card-scale: 1.018;
 		border-color: rgba(221, 109, 166, 0.32);
-		box-shadow: 0 2rem 5rem rgba(79, 92, 108, 0.14);
+		box-shadow:
+			0 2.4rem 5.8rem rgba(79, 92, 108, 0.18),
+			0 0.7rem 1.4rem rgba(154, 87, 124, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.82),
+			inset 0 -1.4rem 2.6rem rgba(191, 231, 246, 0.12);
+	}
+
+	.home-gateway-card:active {
+		--card-scale: 0.992;
+	}
+
+	.home-gateway-card[data-home-reveal].is-visible {
+		transform:
+			translateY(0)
+			rotateX(var(--tilt-x))
+			rotateY(var(--tilt-y))
+			scale(var(--card-scale));
+	}
+
+	.home-gateway-card[data-home-reveal].is-visible.is-interacting {
+		transition-delay: 0ms;
 	}
 
 	.home-gateway-card:hover::after {
@@ -911,7 +957,7 @@ const marqueeItems = [
 
 	.home-orbit-field {
 		position: relative;
-		min-height: 21rem;
+		min-height: 22rem;
 		border: 1px solid rgba(96, 103, 126, 0.12);
 		border-radius: 999px;
 	}
@@ -962,6 +1008,7 @@ const marqueeItems = [
 		top: 50%;
 		display: inline-flex;
 		align-items: center;
+		white-space: nowrap;
 		min-height: 2.6rem;
 		border: 1px solid var(--home-line);
 		border-radius: 999px;
@@ -974,7 +1021,7 @@ const marqueeItems = [
 		transform:
 			translate(-50%, -50%)
 			rotate(var(--angle))
-			translateX(15.3rem)
+			translateX(15.8rem)
 			rotate(calc(var(--angle) * -1));
 		transition:
 			opacity 740ms ease var(--chip-delay, 0ms),
@@ -999,14 +1046,14 @@ const marqueeItems = [
 		transform:
 			translate(-50%, -50%)
 			rotate(var(--angle))
-			translateX(16rem)
+			translateX(16.2rem)
 			rotate(calc(var(--angle) * -1));
 	}
 
 	.home-visit-capsule {
 		position: absolute;
 		left: 50%;
-		bottom: 2rem;
+		bottom: 1.25rem;
 		display: grid;
 		grid-template-columns: 3rem auto;
 		grid-template-rows: auto auto;
@@ -1479,6 +1526,7 @@ const marqueeItems = [
 			position: static;
 			transform: none;
 			margin: 0.35rem;
+			white-space: normal;
 		}
 
 		.home-orbit-chip:hover {
@@ -1584,6 +1632,10 @@ const marqueeItems = [
 			animation: none;
 			transform: none;
 		}
+
+		.home-gateway-card {
+			transform: none !important;
+		}
 	}
 </style>
 
@@ -1638,6 +1690,40 @@ const marqueeItems = [
 		});
 
 		const parallaxItems = [...root.querySelectorAll("[data-home-parallax]")];
+		const gatewayCards = [...root.querySelectorAll(".home-gateway-card")];
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		function resetGatewayCardTilt(card) {
+			card.style.setProperty("--tilt-x", "0deg");
+			card.style.setProperty("--tilt-y", "0deg");
+			card.style.setProperty("--glow-x", "50%");
+			card.style.setProperty("--glow-y", "50%");
+		}
+		gatewayCards.forEach((card) => {
+			if (card.dataset.tiltBound === "true") return;
+			card.dataset.tiltBound = "true";
+			if (reduceMotion) return;
+			card.addEventListener("pointermove", (event) => {
+				card.classList.add("is-interacting");
+				const rect = card.getBoundingClientRect();
+				const x = (event.clientX - rect.left) / Math.max(1, rect.width);
+				const y = (event.clientY - rect.top) / Math.max(1, rect.height);
+				const tiltX = ((0.5 - y) * 8).toFixed(2);
+				const tiltY = ((x - 0.5) * 10).toFixed(2);
+				card.style.setProperty("--tilt-x", `${tiltX}deg`);
+				card.style.setProperty("--tilt-y", `${tiltY}deg`);
+				card.style.setProperty("--glow-x", `${(x * 100).toFixed(1)}%`);
+				card.style.setProperty("--glow-y", `${(y * 100).toFixed(1)}%`);
+			});
+			card.addEventListener("pointerleave", () => {
+				card.classList.remove("is-interacting");
+				resetGatewayCardTilt(card);
+			});
+			card.addEventListener("blur", () => {
+				card.classList.remove("is-interacting");
+				resetGatewayCardTilt(card);
+			});
+		});
+
 		function revealItemsInViewport() {
 			const viewportHeight = Math.max(1, window.innerHeight);
 			revealItems.forEach((item) => {

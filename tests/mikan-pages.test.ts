@@ -138,14 +138,42 @@ test("首页资源轨道数字居中且标签只在上半区旋转入场", () =>
 	const source = readSource("src/pages/index.astro");
 	const orbitCenterRule = /\.home-orbit-center\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 	const orbitChipRule = /\.home-orbit-chip\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const orbitFieldRule = /\.home-orbit-field\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const visitCapsuleRule = /\.home-visit-capsule\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 
 	assert.match(source, /featuredResources\.slice\(0,\s*4\)/);
-	assert.match(source, /const orbitChipAngles = \[-154, -104, -56, -10\]/);
+	assert.match(source, /const orbitChipAngles = \[-152, -134, -46, -28\]/);
 	assert.match(source, /--chip-angle:\s*\$\{orbitChipAngles\[index\]\}deg/);
 	assert.match(orbitCenterRule, /align-content:\s*center/);
 	assert.match(orbitCenterRule, /justify-items:\s*center/);
+	assert.match(orbitFieldRule, /min-height:\s*22rem/);
 	assert.match(orbitChipRule, /--angle:\s*var\(--chip-angle\)/);
+	assert.match(orbitChipRule, /translateX\(15\.8rem\)/);
+	assert.match(visitCapsuleRule, /bottom:\s*1\.25rem/);
 	assert.match(source, /\.home-reveal-pending\s+\.home-orbit-chip\s*\{/);
+});
+
+test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () => {
+	const source = readSource("src/pages/index.astro");
+	const gatewayGridRule = /\.home-gateway-grid\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+	const gatewayCardRule = /\.home-gateway-card\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+
+	assert.match(gatewayGridRule, /perspective:\s*70rem/);
+	assert.match(gatewayCardRule, /--tilt-x:\s*0deg/);
+	assert.match(gatewayCardRule, /--tilt-y:\s*0deg/);
+	assert.match(gatewayCardRule, /radial-gradient\(circle at var\(--glow-x\) var\(--glow-y\)/);
+	assert.match(gatewayCardRule, /backdrop-filter:\s*blur\(18px\)/);
+	assert.match(gatewayCardRule, /inset 0 1px 0 rgba\(255,\s*255,\s*255,\s*0\.72\)/);
+	assert.match(gatewayCardRule, /rotateX\(var\(--tilt-x\)\)/);
+	assert.match(gatewayCardRule, /rotateY\(var\(--tilt-y\)\)/);
+	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\s*\{[\s\S]*rotateX\(var\(--tilt-x\)\)/);
+	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\.is-interacting\s*\{[\s\S]*transition-delay:\s*0ms/);
+	assert.match(source, /querySelectorAll\("\.home-gateway-card"\)/);
+	assert.match(source, /addEventListener\("pointermove"/);
+	assert.match(source, /classList\.add\("is-interacting"\)/);
+	assert.match(source, /style\.setProperty\("--tilt-x"/);
+	assert.match(source, /style\.setProperty\("--glow-x"/);
+	assert.match(source, /dataset\.tiltBound/);
 });
 
 test("全站主导航统一使用首页同款胶囊与同心圆激活底", () => {
