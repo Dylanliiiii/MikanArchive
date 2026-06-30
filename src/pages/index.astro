@@ -18,7 +18,7 @@ const featuredResources = [
 	...resources.filter((item) => item.featured),
 	...resources.filter((item) => !item.featured),
 ].slice(0, 6);
-const orbitChipAngles = [-152, -134, -46, -28];
+const orbitChipAngles = [-170, -140, -40, -10];
 const friends = getMikanFriends();
 const updates = getMikanUpdates();
 const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
@@ -758,20 +758,26 @@ const marqueeItems = [
 		--glow-x: 50%;
 		--glow-y: 50%;
 		--card-scale: 1;
+		--shadow-x: 0rem;
+		--shadow-y: 1.55rem;
+		--edge-opacity: 0.58;
 		position: relative;
 		isolation: isolate;
 		min-height: 16.4rem;
 		padding: 2rem 1.75rem;
-		border: 1px solid rgba(255, 255, 255, 0.62);
+		border: 1px solid rgba(151, 164, 184, 0.22);
 		border-radius: 1.6rem;
 		background:
-			radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 255, 255, 0.9), transparent 7rem),
-			radial-gradient(circle at 92% 92%, rgba(226, 174, 213, 0.22), transparent 5.8rem),
-			linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.5));
+			radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 255, 255, 0.96), transparent 6.6rem),
+			radial-gradient(circle at 8% 8%, rgba(255, 214, 235, 0.26), transparent 7.6rem),
+			radial-gradient(circle at 94% 95%, rgba(191, 231, 246, 0.3), transparent 6.2rem),
+			linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(246, 252, 255, 0.64) 48%, rgba(255, 243, 250, 0.68));
 		box-shadow:
-			0 1.5rem 4.5rem rgba(79, 92, 108, 0.12),
-			inset 0 1px 0 rgba(255, 255, 255, 0.72),
-			inset 0 -1.2rem 2.4rem rgba(226, 174, 213, 0.08);
+			var(--shadow-x) var(--shadow-y) 4.6rem rgba(68, 83, 101, 0.18),
+			calc(var(--shadow-x) * -0.42) calc(var(--shadow-y) * -0.32) 1.9rem rgba(255, 255, 255, 0.64),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+			inset 0 1px 0 rgba(255, 255, 255, 0.84),
+			inset 0 -1.3rem 2.5rem rgba(203, 147, 186, 0.12);
 		backdrop-filter: blur(18px) saturate(1.12);
 		overflow: hidden;
 		transform:
@@ -789,6 +795,23 @@ const marqueeItems = [
 		z-index: 2;
 	}
 
+	.home-gateway-card::before {
+		content: "";
+		position: absolute;
+		left: 1.25rem;
+		right: 1.25rem;
+		bottom: 0.45rem;
+		z-index: 0;
+		height: 0.85rem;
+		border-radius: 999px;
+		background: linear-gradient(90deg, rgba(221, 109, 166, 0.22), rgba(133, 205, 230, 0.2));
+		filter: blur(0.55rem);
+		opacity: var(--edge-opacity);
+		transform: translateY(0.65rem) scaleX(0.92);
+		pointer-events: none;
+		transition: opacity 260ms ease, transform 260ms ease;
+	}
+
 	.home-gateway-card::after {
 		content: "";
 		position: absolute;
@@ -803,12 +826,15 @@ const marqueeItems = [
 
 	.home-gateway-card:hover {
 		--card-scale: 1.018;
+		--edge-opacity: 0.92;
 		border-color: rgba(221, 109, 166, 0.32);
 		box-shadow:
-			0 2.4rem 5.8rem rgba(79, 92, 108, 0.18),
+			var(--shadow-x) calc(var(--shadow-y) + 0.55rem) 5.8rem rgba(68, 83, 101, 0.24),
+			calc(var(--shadow-x) * -0.5) calc(var(--shadow-y) * -0.34) 2rem rgba(255, 255, 255, 0.7),
 			0 0.7rem 1.4rem rgba(154, 87, 124, 0.1),
-			inset 0 1px 0 rgba(255, 255, 255, 0.82),
-			inset 0 -1.4rem 2.6rem rgba(191, 231, 246, 0.12);
+			inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+			inset 0 1px 0 rgba(255, 255, 255, 0.88),
+			inset 0 -1.4rem 2.6rem rgba(191, 231, 246, 0.14);
 	}
 
 	.home-gateway-card:active {
@@ -829,6 +855,11 @@ const marqueeItems = [
 
 	.home-gateway-card:hover::after {
 		transform: translateX(120%);
+	}
+
+	.home-gateway-card:hover::before {
+		opacity: 0.92;
+		transform: translateY(0.78rem) scaleX(0.98);
 	}
 
 	.home-gateway-icon {
@@ -1021,7 +1052,7 @@ const marqueeItems = [
 		transform:
 			translate(-50%, -50%)
 			rotate(var(--angle))
-			translateX(15.8rem)
+			translateX(14.4rem)
 			rotate(calc(var(--angle) * -1));
 		transition:
 			opacity 740ms ease var(--chip-delay, 0ms),
@@ -1046,7 +1077,7 @@ const marqueeItems = [
 		transform:
 			translate(-50%, -50%)
 			rotate(var(--angle))
-			translateX(16.2rem)
+			translateX(15rem)
 			rotate(calc(var(--angle) * -1));
 	}
 
@@ -1151,16 +1182,53 @@ const marqueeItems = [
 	}
 
 	.home-stat-cell {
+		position: relative;
 		min-height: 8.6rem;
-		border: 1px solid rgba(97, 105, 124, 0.09);
+		border: 1px solid rgba(97, 105, 124, 0.14);
 		border-radius: 1.35rem;
-		background: rgba(255, 255, 255, 0.56);
+		background: rgba(255, 255, 255, 0.74);
 		padding: 1.25rem;
+		box-shadow:
+			0 1.2rem 3.2rem rgba(74, 86, 104, 0.08),
+			inset 0 1px 0 rgba(255, 255, 255, 0.74);
+		overflow: hidden;
+		transition: border-color 260ms ease, box-shadow 260ms ease, transform 260ms ease;
+	}
+
+	.home-stat-cell::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: linear-gradient(120deg, #d95b9e, #e986bb 55%, #b9e4f5);
+		transform: scaleX(0);
+		transform-origin: left center;
+		transition: transform 360ms cubic-bezier(0.18, 0.9, 0.22, 1);
+	}
+
+	.home-stat-cell > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	.home-stat-cell:hover,
+	.home-stat-cell:focus-within {
+		border-color: rgba(217, 91, 158, 0.28);
+		box-shadow:
+			0 1.7rem 3.8rem rgba(183, 88, 143, 0.18),
+			inset 0 1px 0 rgba(255, 255, 255, 0.42);
+		transform: translateY(-0.16rem);
+	}
+
+	.home-stat-cell:hover::before,
+	.home-stat-cell:focus-within::before {
+		transform: scaleX(1);
 	}
 
 	.home-stat-cell :global(svg) {
 		color: #cf65a0;
 		font-size: 1.25rem;
+		transition: color 260ms ease, transform 260ms ease;
 	}
 
 	.home-stat-cell strong {
@@ -1170,6 +1238,7 @@ const marqueeItems = [
 		font-size: 2.35rem;
 		font-weight: 950;
 		line-height: 1;
+		transition: color 260ms ease;
 	}
 
 	.home-stat-cell span,
@@ -1178,11 +1247,27 @@ const marqueeItems = [
 		margin-top: 0.35rem;
 		color: #595766;
 		font-weight: 850;
+		transition: color 260ms ease;
 	}
 
 	.home-stat-cell small {
 		color: #848292;
 		font-size: 0.78rem;
+	}
+
+	.home-stat-cell:hover :global(svg),
+	.home-stat-cell:focus-within :global(svg) {
+		color: #fff;
+		transform: translateX(0.16rem);
+	}
+
+	.home-stat-cell:hover strong,
+	.home-stat-cell:hover span,
+	.home-stat-cell:hover small,
+	.home-stat-cell:focus-within strong,
+	.home-stat-cell:focus-within span,
+	.home-stat-cell:focus-within small {
+		color: #fff;
 	}
 
 	.home-panel-title--row {
@@ -1443,6 +1528,22 @@ const marqueeItems = [
 		.home-gateway-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
+
+		.home-orbit-chip {
+			transform:
+				translate(-50%, -50%)
+				rotate(var(--angle))
+				translateX(13.2rem)
+				rotate(calc(var(--angle) * -1));
+		}
+
+		.home-orbit-chip:hover {
+			transform:
+				translate(-50%, -50%)
+				rotate(var(--angle))
+				translateX(13.8rem)
+				rotate(calc(var(--angle) * -1));
+		}
 	}
 
 	@media (max-width: 960px) {
@@ -1697,6 +1798,8 @@ const marqueeItems = [
 			card.style.setProperty("--tilt-y", "0deg");
 			card.style.setProperty("--glow-x", "50%");
 			card.style.setProperty("--glow-y", "50%");
+			card.style.setProperty("--shadow-x", "0rem");
+			card.style.setProperty("--shadow-y", "1.55rem");
 		}
 		gatewayCards.forEach((card) => {
 			if (card.dataset.tiltBound === "true") return;
@@ -1707,12 +1810,16 @@ const marqueeItems = [
 				const rect = card.getBoundingClientRect();
 				const x = (event.clientX - rect.left) / Math.max(1, rect.width);
 				const y = (event.clientY - rect.top) / Math.max(1, rect.height);
-				const tiltX = ((0.5 - y) * 8).toFixed(2);
-				const tiltY = ((x - 0.5) * 10).toFixed(2);
+				const tiltX = ((0.5 - y) * 10).toFixed(2);
+				const tiltY = ((x - 0.5) * 12).toFixed(2);
+				const shadowX = ((0.5 - x) * 0.9).toFixed(2);
+				const shadowY = (1.35 + (0.5 - y) * 0.6).toFixed(2);
 				card.style.setProperty("--tilt-x", `${tiltX}deg`);
 				card.style.setProperty("--tilt-y", `${tiltY}deg`);
 				card.style.setProperty("--glow-x", `${(x * 100).toFixed(1)}%`);
 				card.style.setProperty("--glow-y", `${(y * 100).toFixed(1)}%`);
+				card.style.setProperty("--shadow-x", `${shadowX}rem`);
+				card.style.setProperty("--shadow-y", `${shadowY}rem`);
 			});
 			card.addEventListener("pointerleave", () => {
 				card.classList.remove("is-interacting");

@@ -142,15 +142,16 @@ test("首页资源轨道数字居中且标签只在上半区旋转入场", () =>
 	const visitCapsuleRule = /\.home-visit-capsule\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
 
 	assert.match(source, /featuredResources\.slice\(0,\s*4\)/);
-	assert.match(source, /const orbitChipAngles = \[-152, -134, -46, -28\]/);
+	assert.match(source, /const orbitChipAngles = \[-170, -140, -40, -10\]/);
 	assert.match(source, /--chip-angle:\s*\$\{orbitChipAngles\[index\]\}deg/);
 	assert.match(orbitCenterRule, /align-content:\s*center/);
 	assert.match(orbitCenterRule, /justify-items:\s*center/);
 	assert.match(orbitFieldRule, /min-height:\s*22rem/);
 	assert.match(orbitChipRule, /--angle:\s*var\(--chip-angle\)/);
-	assert.match(orbitChipRule, /translateX\(15\.8rem\)/);
+	assert.match(orbitChipRule, /translateX\(14\.4rem\)/);
 	assert.match(visitCapsuleRule, /bottom:\s*1\.25rem/);
 	assert.match(source, /\.home-reveal-pending\s+\.home-orbit-chip\s*\{/);
+	assert.match(source, /@media \(max-width:\s*1280px\)[\s\S]*\.home-orbit-chip\s*\{[\s\S]*translateX\(13\.2rem\)/);
 });
 
 test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () => {
@@ -161,11 +162,16 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	assert.match(gatewayGridRule, /perspective:\s*70rem/);
 	assert.match(gatewayCardRule, /--tilt-x:\s*0deg/);
 	assert.match(gatewayCardRule, /--tilt-y:\s*0deg/);
+	assert.match(gatewayCardRule, /--shadow-x:\s*0rem/);
+	assert.match(gatewayCardRule, /--shadow-y:\s*1\.55rem/);
 	assert.match(gatewayCardRule, /radial-gradient\(circle at var\(--glow-x\) var\(--glow-y\)/);
 	assert.match(gatewayCardRule, /backdrop-filter:\s*blur\(18px\)/);
-	assert.match(gatewayCardRule, /inset 0 1px 0 rgba\(255,\s*255,\s*255,\s*0\.72\)/);
+	assert.match(gatewayCardRule, /border:\s*1px solid rgba\(151,\s*164,\s*184,\s*0\.22\)/);
+	assert.match(gatewayCardRule, /var\(--shadow-x\)\s+var\(--shadow-y\)/);
+	assert.match(gatewayCardRule, /inset 0 1px 0 rgba\(255,\s*255,\s*255,\s*0\.84\)/);
 	assert.match(gatewayCardRule, /rotateX\(var\(--tilt-x\)\)/);
 	assert.match(gatewayCardRule, /rotateY\(var\(--tilt-y\)\)/);
+	assert.match(source, /\.home-gateway-card::before\s*\{[\s\S]*height:\s*0\.85rem/);
 	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\s*\{[\s\S]*rotateX\(var\(--tilt-x\)\)/);
 	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\.is-interacting\s*\{[\s\S]*transition-delay:\s*0ms/);
 	assert.match(source, /querySelectorAll\("\.home-gateway-card"\)/);
@@ -173,7 +179,22 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	assert.match(source, /classList\.add\("is-interacting"\)/);
 	assert.match(source, /style\.setProperty\("--tilt-x"/);
 	assert.match(source, /style\.setProperty\("--glow-x"/);
+	assert.match(source, /style\.setProperty\("--shadow-x"/);
+	assert.match(source, /style\.setProperty\("--shadow-y"/);
 	assert.match(source, /dataset\.tiltBound/);
+});
+
+test("首页站点数据卡片提供粉白反色填充交互", () => {
+	const source = readSource("src/pages/index.astro");
+	const statRule = /\.home-stat-cell\s*\{(?<rule>[\s\S]*?)\n\t\}/.exec(source)?.groups?.rule ?? "";
+
+	assert.match(statRule, /position:\s*relative/);
+	assert.match(statRule, /overflow:\s*hidden/);
+	assert.match(statRule, /background:\s*rgba\(255,\s*255,\s*255,\s*0\.74\)/);
+	assert.match(source, /\.home-stat-cell::before\s*\{[\s\S]*transform:\s*scaleX\(0\)/);
+	assert.match(source, /\.home-stat-cell:hover::before,[\s\S]*\.home-stat-cell:focus-within::before\s*\{[\s\S]*transform:\s*scaleX\(1\)/);
+	assert.match(source, /\.home-stat-cell > \*\s*\{[\s\S]*z-index:\s*1/);
+	assert.match(source, /\.home-stat-cell:hover strong,[\s\S]*\.home-stat-cell:focus-within small\s*\{[\s\S]*color:\s*#fff/);
 });
 
 test("全站主导航统一使用首页同款胶囊与同心圆激活底", () => {

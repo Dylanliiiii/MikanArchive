@@ -1,5 +1,36 @@
 ﻿# Development Log
 
+## 2026-07-01 01:13:36 +08:00
+
+### 修改范围
+
+- 首页资源轨道标签分布优化
+- 首页亮色入口卡片厚玻璃层次与鼠标交互增强
+- 首页站点数据卡片 hover 反色反馈
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `development-log.md`
+
+### 具体内容
+
+- 将首页资源轨道的 4 个标签角度调整为 `[-170, -140, -40, -10]`，形成更松散的左右对称分布；桌面大屏使用 `14.4rem` 半径，中等宽度下收至 `13.2rem`，避免两列布局时左右标签溢出卡片。
+- 为首页入口卡片补充更明显的亮色玻璃层次：提高边框可见度，加入粉蓝双向光斑、动态外阴影、内高光和底部厚度光带。
+- 强化入口卡片指针跟随交互：鼠标位置会同步写入 `--shadow-x`、`--shadow-y`，与 `--tilt-x`、`--tilt-y` 一起形成倾斜和厚度反馈。
+- 将站点数据小卡片背景提高到更清晰的白色玻璃层，增加阴影和边框对比；hover / focus 时从左向右扫入粉蓝渐变，并将图标、数字和文字切换为白色。
+- 扩展页面契约测试，覆盖资源轨道响应式半径、入口卡动态阴影变量和统计卡粉白反色交互。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增资源轨道、入口卡厚玻璃和统计卡反色契约后按预期失败。
+- 已运行 `npm.cmd run test:pages`，68 项页面契约测试通过。
+- 已通过 Playwright + 本机 Chrome 检查 1200x900 首页：资源轨道 4 个标签均完整位于卡片内；入口卡 hover 后 `--tilt-x`、`--tilt-y`、`--shadow-x`、`--shadow-y` 和 `matrix3d(...)` 生效；站点数据卡 hover 后渐变填充展开，数字和图标变为白色。
+- 已通过 Playwright + 本机 Chrome 检查 2048x1152 首页：资源轨道标签仍完整位于卡片内，入口卡保持四列，页面无横向溢出。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+
 ## 2026-07-01 00:34:57 +08:00
 
 ### 修改范围
