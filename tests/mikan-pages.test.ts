@@ -49,6 +49,20 @@ test("首页使用角色空间专用布局并保留真实导航", () => {
 	assert.match(siteConfigSource, /assets\/home\/mikan-avatar\.webp/);
 });
 
+test("首页顶部导航使用浅色胶囊样式并保留原导航图标", () => {
+	const source = readSource("src/pages/index.astro");
+	const navbarSource = readSource("src/components/layout/DropdownMenu.astro");
+
+	assert.match(source, /home-top-row--light/);
+	assert.match(source, /--home-nav-bg/);
+	assert.match(source, /width:\s*min\(96vw,\s*118rem\)/);
+	assert.match(source, /:global\(#navbar > div\)/);
+	assert.match(source, /border-radius:\s*999px/);
+	assert.match(source, /backdrop-filter:\s*blur\(22px\)/);
+	assert.match(navbarSource, /navbar-menu-icon/);
+	assert.doesNotMatch(source, /navbar-menu-icon[\s\S]{0,160}display:\s*none/);
+});
+
 test("首页角色视觉使用透明线稿和圆形头像资产", () => {
 	const source = readSource("src/pages/index.astro");
 

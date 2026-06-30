@@ -1,5 +1,36 @@
 ﻿# Development Log
 
+## 2026-06-30 21:55:12 +08:00
+
+### 修改范围
+
+- 首页顶部导航视觉修正
+- 页面契约测试与维护记录同步
+
+### 涉及文件
+
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `CHANGELOG.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将首页顶部导航外壳改为浅色半透明长胶囊样式，宽度接近首屏横幅比例，并保留真实 `Navbar` 组件、原有站点图标、导航图标、搜索和主题按钮。
+- 使用首页作用域 `home-top-row--light` 与 `:global(#navbar ...)` 覆盖导航表层背景、圆角、阴影、文字颜色、搜索框和头像图标样式，不影响文库、收藏、联系我、我的等非主页布局的导航样式。
+- 新增页面契约测试，约束首页必须使用浅色胶囊导航并保留原导航图标占位。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增“首页顶部导航使用浅色胶囊样式并保留原导航图标”测试按预期失败，失败点为首页尚未提供 `home-top-row--light` 和浅色胶囊导航样式。
+- 已运行 `npm.cmd run test:pages`，59 项页面契约测试通过。
+- 已运行 `npm.cmd run sync:content`，内容同步通过。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:content-model`，8 项内容模型测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过；仍保留既有 Calendar 未使用参数和 inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已通过 `npx.cmd playwright screenshot` 使用临时 npm 缓存截取 `http://localhost:4321/` 桌面首屏截图，确认顶部导航已呈现浅色长胶囊样式且导航图标仍可见；默认 npm 缓存目录当前存在 `EPERM` 写入问题，已改用系统临时缓存目录规避。
+
 ## 2026-06-30 21:23:26 +08:00
 
 ### 修改范围

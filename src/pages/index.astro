@@ -137,7 +137,7 @@ const marqueeItems = [
 	<div
 		id="top-row"
 		class:list={[
-			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none home-top-row",
+			"sticky top-0 left-0 right-0 z-80 mx-auto pointer-events-none home-top-row home-top-row--light",
 			navbarWidthFull ? "w-full" : "w-full xl:w-[92vw] max-w-(--page-width) px-0 md:px-4",
 		]}
 	>
@@ -386,7 +386,86 @@ const marqueeItems = [
 	}
 
 	.home-top-row {
-		padding-top: 2rem;
+		--home-nav-bg: rgba(255, 255, 255, 0.74);
+		--home-nav-border: rgba(255, 255, 255, 0.76);
+		--home-nav-text: #5a5d68;
+		--home-nav-muted: rgba(90, 93, 104, 0.68);
+		--home-nav-hover: rgba(255, 255, 255, 0.72);
+		width: min(96vw, 118rem) !important;
+		max-width: none !important;
+		padding-top: 1.55rem;
+		padding-inline: 0 !important;
+	}
+
+	.home-top-row--light :global(#navbar) {
+		color: var(--home-nav-text);
+	}
+
+	.home-top-row--light :global(#navbar > div) {
+		height: 4.8rem !important;
+		min-height: 4.8rem;
+		border: 1px solid var(--home-nav-border) !important;
+		border-radius: 999px !important;
+		background:
+			linear-gradient(90deg, rgba(255, 255, 255, 0.84), var(--home-nav-bg)) !important;
+		box-shadow: 0 1.45rem 4.5rem rgba(87, 112, 132, 0.18) !important;
+		backdrop-filter: blur(22px) saturate(1.2) !important;
+	}
+
+	.home-top-row--light :global(#navbar > div > div) {
+		max-width: none !important;
+	}
+
+	.home-top-row--light :global(#navbar .btn-plain),
+	.home-top-row--light :global(#navbar .btn-plain *),
+	.home-top-row--light :global(#navbar [data-dropdown-trigger]),
+	.home-top-row--light :global(#navbar [data-dropdown-trigger] *) {
+		color: var(--home-nav-text) !important;
+	}
+
+	.home-top-row--light :global(#navbar .btn-plain:hover),
+	.home-top-row--light :global(#navbar .btn-plain:focus-visible),
+	.home-top-row--light :global(#navbar [data-dropdown-trigger]:hover),
+	.home-top-row--light :global(#navbar [data-dropdown-trigger]:focus-visible) {
+		background: var(--home-nav-hover) !important;
+	}
+
+	.home-top-row--light :global(#navbar .navbar-menu-icon),
+	.home-top-row--light :global(#navbar .navbar-submenu-icon),
+	.home-top-row--light :global(#navbar .navbar-mobile-icon),
+	.home-top-row--light :global(#navbar .dropdown-arrow) {
+		color: var(--home-nav-muted) !important;
+	}
+
+	.home-top-row--light :global(#navbar picture),
+	.home-top-row--light :global(#navbar .btn-plain img) {
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.82);
+		box-shadow: 0 0 0 0.16rem rgba(255, 255, 255, 0.86);
+	}
+
+	.home-top-row--light :global(#search-bar),
+	.home-top-row--light :global(#search-bar-inside) {
+		border: 1px solid rgba(102, 111, 130, 0.08);
+		border-radius: 999px !important;
+		background: rgba(255, 255, 255, 0.46) !important;
+	}
+
+	.home-top-row--light :global(#search-bar:hover),
+	.home-top-row--light :global(#search-bar:focus-within),
+	.home-top-row--light :global(#search-bar-inside:hover),
+	.home-top-row--light :global(#search-bar-inside:focus-within) {
+		background: rgba(255, 255, 255, 0.68) !important;
+	}
+
+	.home-top-row--light :global(#search-bar input),
+	.home-top-row--light :global(#search-bar-inside input) {
+		color: var(--home-nav-text) !important;
+	}
+
+	.home-top-row--light :global(#search-bar svg),
+	.home-top-row--light :global(#search-bar-inside svg) {
+		color: var(--home-nav-muted) !important;
 	}
 
 	.mikan-home-shell {
