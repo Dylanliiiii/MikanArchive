@@ -125,24 +125,25 @@ if (isLocalSrcLogo) {
 	}
 }
 ---
-<div id="navbar" class="z-50" style={`--navbar-glass-blur: ${navbarBlur}px;`} data-transparent-mode={navbarTransparentMode} data-enable-blur={String(navbarEnableBlur)} data-is-home={isHomePageCheck} data-full-width={navbarWidthFull} data-current-path={currentPath}>
+<div id="navbar" class="z-50" style={`--navbar-glass-blur: ${navbarBlur}px; --navbar-scroll-progress: 0;`} data-transparent-mode={navbarTransparentMode} data-enable-blur={String(navbarEnableBlur)} data-is-home={isHomePageCheck} data-full-width={navbarWidthFull} data-current-path={currentPath}>
     <div class:list={[
         className,
-        "overflow-visible! h-18 px-4"
+        "navbar-shell overflow-visible! h-18 px-4"
     ]}>
-        <div class="mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
-            <a href={url('/')} class="btn-plain scale-animation rounded-lg h-13 px-5 font-bold active:scale-95">
+        <div class="navbar-inner mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
+            <a href={url('/')} class="navbar-brand btn-plain scale-animation rounded-lg h-13 px-5 font-bold active:scale-95">
                 <div class:list={[
-                    "flex flex-row items-center text-md",
+                    "navbar-brand-content flex flex-row items-center text-md",
                     siteConfig.navbar.followTheme ? "text-(--primary)" : "dark:text-white text-black"
                 ]} style="font-family: var(--font-navbar-title, inherit)">
+                    <span class="navbar-brand-logo" aria-hidden="true">
                                     {siteConfig.navbar.logo?.type === "icon" ? (
-                                        <Icon is:inline name={siteConfig.navbar.logo.value || "material-symbols:home-pin-outline"} class="text-[1.75rem] mb-1 mr-2" />
+                                        <Icon is:inline name={siteConfig.navbar.logo.value || "material-symbols:home-pin-outline"} class="text-[1.75rem]" />
                                     ) : siteConfig.navbar.logo?.type === "image" && logoImg ? (
                                         <Picture
                                             src={logoImg}
                                             alt={siteConfig.navbar.logo.alt || siteConfig.title}
-                                            class="h-7 w-7 mb-1 mr-2 object-contain"
+                                            class="h-7 w-7 object-contain"
                                             formats={getImageFormats()}
                                             fallbackFormat={getFallbackFormat()}
                                             widths={[28, 56]}
@@ -150,16 +151,18 @@ if (isLocalSrcLogo) {
                                             fetchpriority="high"
                                         />
                                     ) : siteConfig.navbar.logo?.type === "image" ? (
-                                        <img src={url(siteConfig.navbar.logo.value)} alt={siteConfig.navbar.logo.alt || siteConfig.title} class="h-7 w-7 mb-1 mr-2 object-contain" fetchpriority="high" />
+                                        <img src={url(siteConfig.navbar.logo.value)} alt={siteConfig.navbar.logo.alt || siteConfig.title} class="h-7 w-7 object-contain" fetchpriority="high" />
                                     ) : siteConfig.navbar.logo?.type === "url" ? (
-                                        <img src={siteConfig.navbar.logo.value} alt={siteConfig.navbar.logo.alt || siteConfig.title} class="h-7 w-7 mb-1 mr-2 object-contain" fetchpriority="high" />
+                                        <img src={siteConfig.navbar.logo.value} alt={siteConfig.navbar.logo.alt || siteConfig.title} class="h-7 w-7 object-contain" fetchpriority="high" />
                                     ) : (
-                                        <Icon is:inline name="material-symbols:home-pin-outline" class="text-[1.75rem] mb-1 mr-2" />
+                                        <Icon is:inline name="material-symbols:home-pin-outline" class="text-[1.75rem]" />
                                     )}
-                    {navbarTitle}
+                    </span>
+                    <span class="navbar-brand-text">{navbarTitle}</span>
                 </div>
             </a>
             <div class:list={[
+                "navbar-navigation",
                 "hidden lg:flex items-center space-x-1 col-start-2",
                 isNavbarMenuCentered
                     ? "justify-center"
@@ -169,7 +172,7 @@ if (isLocalSrcLogo) {
                     return <DropdownMenu link={l} currentPath={currentPath} isActive={isNavLinkActive(l)} />;
                 })}
             </div>
-            <div class="flex col-start-3 justify-self-end">
+            <div class="navbar-actions flex col-start-3 justify-self-end">
                 <!--<SearchPanel client:load>-->
                 <Search
                     client:load
@@ -386,6 +389,92 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSemifullScrollDetection);
 } else {
     initSemifullScrollDetection();
+}
+
+function initLiquidNavbarScroll() {
+    const navbar = document.getElementById("navbar");
+    if (!navbar) return;
+
+    const maxScroll = 160;
+    let ticking = false;
+
+    function updateLiquidNavbar() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const progress = Math.min(1, Math.max(0, scrollTop / maxScroll));
+        const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        const parentWidth = navbar!.parentElement?.getBoundingClientRect().width || viewportWidth;
+        const isMobile = viewportWidth < 768;
+        const isTablet = viewportWidth >= 768 && viewportWidth <= 1180;
+        const targetWidth = isMobile
+            ? Math.max(0, parentWidth - 8)
+            : isTablet
+                ? Math.max(0, parentWidth - viewportWidth * 0.07)
+                : Math.min(64 * rootFontSize, viewportWidth * 0.84, parentWidth);
+        const currentWidth = parentWidth - (parentWidth - targetWidth) * progress;
+        const fullHeight = (isMobile ? 4.35 : 4.8) * rootFontSize;
+        const compactHeight = (isMobile ? 4.05 : 4.18) * rootFontSize;
+        const currentHeight = fullHeight - (fullHeight - compactHeight) * progress;
+        const shellPadding = (isMobile ? 0.7 : 1) * rootFontSize - (isMobile ? 0.08 : 0.28) * rootFontSize * progress;
+        const brandTextWidth = (isMobile ? 6.7 : 7.9) * rootFontSize * (1 - progress);
+        const brandTextOpacity = Math.max(0, 1 - Math.min(1, progress * 1.35));
+        const controlHeight = (isMobile ? 2.6 : 2.85) * rootFontSize;
+        const searchWidth = (11 * rootFontSize) - ((11 * rootFontSize) - (controlHeight - 1.6)) * progress;
+
+        navbar!.style.setProperty("--navbar-scroll-progress", progress.toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-compact-progress", progress.toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-shell-width", `${currentWidth.toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-current-height", `${currentHeight.toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-shell-padding", `${shellPadding.toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-brand-padding", `${(1.25 * rootFontSize - 0.58 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-brand-text-width", `${brandTextWidth.toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-brand-text-opacity", brandTextOpacity.toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-brand-gap", `${(0.55 * rootFontSize * (1 - progress)).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-brand-logo-shift", `${(0.12 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-brand-text-shift", `${(-0.38 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-navigation-shift", `${(-0.42 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-actions-gap", `${((0.03 + 0.08 * progress) * rootFontSize).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-search-width", `${searchWidth.toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-search-icon-margin", `${((0.75 - 0.08 * progress) * rootFontSize).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-search-icon-shift", `${(0.22 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-current-blur", `${(22 + 8 * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-current-saturate", (1.2 + 0.47 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-current-contrast", (1 + 0.05 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-top-glow-alpha", (0.34 + 0.3 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-start-alpha", (0.76 + 0.12 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-mid-alpha", (0.54 + 0.2 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-border-alpha", (0.68 + 0.22 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-inner-highlight-alpha", (0.5 + 0.36 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-inner-shadow-alpha", (0.08 + 0.16 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-shadow-y", `${(1.1 + 0.45 * progress).toFixed(2)}rem`);
+        navbar!.style.setProperty("--mikan-navbar-shadow-blur", `${(3 + 1.3 * progress).toFixed(2)}rem`);
+        navbar!.style.setProperty("--mikan-navbar-shadow-alpha", (0.14 + 0.09 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-reflection-height", `${(46 + 10 * progress).toFixed(2)}%`);
+        navbar!.style.setProperty("--mikan-navbar-reflection-opacity", (0.34 + 0.46 * progress).toFixed(3));
+        navbar!.style.setProperty("--mikan-navbar-reflection-shift", `${(0.14 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.classList.toggle("is-liquid-compact", progress > 0.94);
+        ticking = false;
+    }
+
+    function requestLiquidNavbarTick() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(updateLiquidNavbar);
+    }
+
+    window.removeEventListener("scroll", window.liquidNavbarScrollHandler as () => void);
+    window.liquidNavbarScrollHandler = requestLiquidNavbarTick as unknown as (() => void);
+    window.addEventListener("scroll", requestLiquidNavbarTick, { passive: true });
+    window.addEventListener("resize", requestLiquidNavbarTick, { passive: true });
+    updateLiquidNavbar();
+}
+
+window.initLiquidNavbarScroll = initLiquidNavbarScroll;
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initLiquidNavbarScroll);
+} else {
+    initLiquidNavbarScroll();
 }
 </script>
 

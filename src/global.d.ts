@@ -9,6 +9,8 @@ declare global {
 		// Firefly compatibility hook. Runtime may not provide Swup in this build.
 		// biome-ignore lint/suspicious/noExplicitAny: Optional external router integration
 		swup: any;
+		liquidNavbarScrollHandler?: () => void;
+		initLiquidNavbarScroll?: () => void;
 		spineModelInitialized?: boolean;
 		floatingTOCListenersInitialized?: boolean;
 		// biome-ignore lint/suspicious/noExplicitAny: External library

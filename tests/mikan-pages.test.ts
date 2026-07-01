@@ -229,6 +229,24 @@ test("全站主导航统一使用首页同款胶囊与同心圆激活底", () =>
 	assert.doesNotMatch(dropdownSource, /rounded-lg/);
 });
 
+test("主导航随滚动进度收缩并渐变为液态玻璃", () => {
+	const navbarSource = readSource("src/components/layout/Navbar.astro");
+	const searchSource = readSource("src/components/controls/Search.svelte");
+	const styleSource = readSource("src/styles/navbar.css");
+
+	assert.match(navbarSource, /--navbar-scroll-progress/);
+	assert.match(navbarSource, /initLiquidNavbarScroll/);
+	assert.match(navbarSource, /navbar-brand-text/);
+	assert.match(searchSource, /navbar-search-compactable/);
+	assert.match(styleSource, /--mikan-navbar-compact-progress/);
+	assert.match(styleSource, /width:\s*calc\(/);
+	assert.match(navbarSource, /--mikan-navbar-current-blur/);
+	assert.match(styleSource, /backdrop-filter:\s*blur\(var\(--mikan-navbar-current-blur\)/);
+	assert.match(styleSource, /\.navbar-brand-text/);
+	assert.match(styleSource, /#navbar #search-bar\.navbar-search-compactable/);
+	assert.match(styleSource, /prefers-reduced-motion:\s*reduce/);
+});
+
 test("首页角色视觉使用透明线稿和圆形头像资产", () => {
 	const source = readSource("src/pages/index.astro");
 

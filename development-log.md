@@ -1,5 +1,44 @@
 ﻿# Development Log
 
+## 2026-07-01 22:02:26 +08:00
+
+### 修改范围
+
+- 全站顶部主导航滚动液态收缩交互
+- 桌面搜索栏收缩为圆形搜索入口
+- 导航滚动契约测试与浏览器视觉验收
+
+### 涉及文件
+
+- `src/components/layout/Navbar.astro`
+- `src/components/controls/Search.svelte`
+- `src/styles/navbar.css`
+- `src/global.d.ts`
+- `tests/mikan-pages.test.ts`
+- `docs/superpowers/plans/2026-07-01-mikan-liquid-navbar.md`
+- `development-log.md`
+
+### 具体内容
+
+- 为顶部主导航增加 `--navbar-scroll-progress` 滚动进度变量，滚动 0 到约 160px 时按比例计算导航宽度、高度、内边距、品牌文字宽度、搜索栏宽度和玻璃质感参数。
+- 将导航品牌拆成图标和 `navbar-brand-text`，收缩末态隐藏 `MikanArchive` 文字，仅保留左侧头像图标；回到页面顶部时恢复完整品牌。
+- 将桌面搜索栏接入 `navbar-search-compactable`，随导航收缩从长条变为圆形图标入口；收缩态点击圆形搜索仍打开原搜索面板。
+- 用 JS 计算滚动相关像素变量，避免浏览器对 CSS 乘法 `calc()` 支持不一致导致动画不生效；保留低动态偏好保护。
+- 移动端采用保守收缩，只轻微缩短导航外壳并隐藏品牌文字，确保搜索、主题、显示设置和菜单按钮不横向溢出。
+- 新增页面契约测试，覆盖滚动进度变量、液态导航初始化、品牌文字渐隐、搜索栏收缩和低动态偏好规则。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增主导航滚动液态收缩契约后按预期失败。
+- 已运行 `npm.cmd run sync:content`，示例内容同步成功。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。曾并行运行导致验证早于同步完成并报缺失文件，随后按顺序重跑通过。
+- 已运行 `npm.cmd run test:pages`，69 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 已运行 `npm.cmd run build`，内容同步、内容校验、Astro 构建和 Pagefind 索引生成通过；保留既有 Vite 动态导入、chunk 体积、catch-all 首页冲突、Markdown 配置弃用和 Pagefind 中文 stemming 提示。
+- 已通过 Playwright + 本机 Chrome 检查 `http://127.0.0.1:4321/` 桌面端：导航宽度约从 `1382px` 收缩到 `1024px`，品牌文字宽度变为 `0`，搜索宽度约从 `176px` 收缩到 `44px`，回到顶部后恢复完整长条。
+- 已通过 Playwright + 本机 Chrome 检查 `390x844` 移动端：导航宽度约从 `374px` 保守收缩到 `366px`，无横向溢出，按钮位置稳定。
+- 已通过 Playwright 检查收缩态圆形搜索入口可打开搜索面板。
+
 ## 2026-07-01 02:03:06 +08:00
 
 ### 修改范围
