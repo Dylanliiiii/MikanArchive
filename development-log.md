@@ -1,5 +1,44 @@
 ﻿# Development Log
 
+## 2026-07-01 23:31:44 +08:00
+
+### 修改范围
+
+- 全站顶部主导航搜索框定位、对比度与圆形收缩修正
+- 顶部主导航液态玻璃厚度边增强
+- 首页四张入口卡片厚玻璃侧边和底部折射增强
+- 页面契约测试与浏览器几何验收同步
+
+### 涉及文件
+
+- `src/components/controls/Search.svelte`
+- `src/components/layout/Navbar.astro`
+- `src/styles/navbar.css`
+- `src/pages/index.astro`
+- `tests/mikan-pages.test.ts`
+- `docs/next-tasks.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将桌面搜索栏改为 `navbar-search-icon` 固定图标槽 + `navbar-search-input` 弹性输入区，移除滚动时对搜索图标的 `margin-left` 和横向位移变量，避免收缩后图标偏离圆心。
+- 为搜索栏增加更清晰的边框、内高光、底部折射阴影和暗色模式样式；滚动收缩末态使用 `--mikan-navbar-search-size` 强制宽高一致并设为正圆。
+- 为顶部主导航外壳增加 `::after` 厚度边，随滚动进度提升透明度，形成液态玻璃底部折射层；补充暗色模式和低动态偏好规则。
+- 为首页四张入口卡片增加 `home-gateway-edge` 厚度层，提高底部柔光层高度，并加入右侧内缘折射阴影，使卡片倾斜时能看到更明确的玻璃厚度。
+- 扩展页面契约测试，覆盖搜索图标几何居中、搜索圆形收缩、导航厚玻璃边缘和入口卡片厚度层。
+
+### 验证情况
+
+- TDD 红灯：已先运行 `npm.cmd run test:pages`，新增搜索正圆居中与厚玻璃契约后按预期失败 3 项。
+- 已运行 `npm.cmd run sync:content`，示例内容同步成功。
+- 已运行 `npm.cmd run validate:content`，内容校验通过。
+- 已运行 `npm.cmd run test:pages`，71 项页面契约测试通过。
+- 已运行 `npm.cmd run check`，Astro 检查通过，0 errors；保留既有 Calendar 未使用参数和 calendar inline script hint。
+- 已通过 Playwright + 本机 Chrome 检查 `http://127.0.0.1:4321/`：滚动 260px 后搜索框为 `45.59px × 45.59px`、`border-radius: 50%`，搜索图标中心偏差 `0px`；导航外壳宽度收缩到约 `1024px`。
+- 已通过 Playwright + 本机 Chrome 检查第二屏入口卡片：`home-gateway-edge` 为块级绝对定位，宽度约 `354.48px`，高度约 `12.28px`，厚度层横向覆盖整张卡片并保留透视旋转。
+- 已生成视觉验收截图：`output/playwright/liquid-navbar-initial.png`、`output/playwright/liquid-navbar-compact.png`、`output/playwright/home-gateway-thick-glass.png`。
+- 已运行 `npm.cmd run build` 和 bundled Node 直接运行 `astro build`，均在 Vite/Rolldown 构建静态入口阶段失败于 `spawn EPERM`；内容同步、内容校验和构建信息收集已通过。单独运行 `node_modules\@esbuild\win32-x64\esbuild.exe --version` 与 `esbuild.transformSync` 成功，判断为当前 Windows 环境对子进程启动的阶段性权限或占用问题，而非本次样式或组件语法错误。
+
 ## 2026-07-01 22:02:26 +08:00
 
 ### 修改范围

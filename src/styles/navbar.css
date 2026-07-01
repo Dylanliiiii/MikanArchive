@@ -35,9 +35,11 @@
     --mikan-navbar-brand-text-shift: 0px;
     --mikan-navbar-navigation-shift: 0px;
     --mikan-navbar-actions-gap: 0.03rem;
+    --mikan-navbar-actions-inset: 0.55rem;
+    --mikan-navbar-search-size: var(--mikan-navbar-control-height);
     --mikan-navbar-search-width: 11rem;
-    --mikan-navbar-search-icon-margin: 0.75rem;
-    --mikan-navbar-search-icon-shift: 0px;
+    --mikan-navbar-glass-depth: 0.62rem;
+    --mikan-navbar-depth-opacity: 0.16;
     --mikan-navbar-current-blur: 22px;
     --mikan-navbar-current-saturate: 1.2;
     --mikan-navbar-current-contrast: 1;
@@ -78,6 +80,7 @@
  * ============================================ */
 #navbar>div {
     position: relative;
+    isolation: isolate;
     width: var(--mikan-navbar-shell-width) !important;
     max-width: var(--mikan-navbar-shell-width) !important;
     height: var(--mikan-navbar-current-height) !important;
@@ -101,6 +104,7 @@
 
 #navbar>div::before {
     position: absolute;
+    z-index: 0;
     inset: 0.08rem 0.2rem auto;
     height: var(--mikan-navbar-reflection-height);
     pointer-events: none;
@@ -109,6 +113,30 @@
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.46));
     opacity: var(--mikan-navbar-reflection-opacity);
     transform: translateY(var(--mikan-navbar-reflection-shift));
+}
+
+#navbar>div::after {
+    position: absolute;
+    z-index: 0;
+    left: 1.45rem;
+    right: 1.45rem;
+    bottom: -0.42rem;
+    height: var(--mikan-navbar-glass-depth);
+    pointer-events: none;
+    content: "";
+    border: 1px solid rgba(255, 255, 255, 0.52);
+    border-top: 0;
+    border-radius: 0 0 calc(var(--mikan-navbar-height) / 2) calc(var(--mikan-navbar-height) / 2);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(203, 226, 236, 0.25) 48%, rgba(221, 109, 166, 0.16)),
+        linear-gradient(90deg, rgba(221, 109, 166, 0.16), rgba(133, 205, 230, 0.22), rgba(255, 255, 255, 0.24));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.58),
+        inset 0 -0.42rem 0.8rem rgba(105, 132, 154, 0.16),
+        0 0.55rem 1.25rem rgba(82, 104, 126, 0.12);
+    opacity: var(--mikan-navbar-depth-opacity);
+    transform: perspective(9rem) rotateX(64deg) translateY(calc(0.12rem * var(--mikan-navbar-compact-progress)));
+    transform-origin: top;
 }
 
 #navbar-wrapper #navbar > div {
@@ -163,6 +191,7 @@
 #navbar .navbar-actions {
     align-items: center;
     gap: var(--mikan-navbar-actions-gap);
+    padding-right: var(--mikan-navbar-actions-inset);
 }
 
 #navbar .btn-plain,
@@ -221,39 +250,68 @@
 
 #navbar #search-bar,
 #navbar #search-bar-inside {
-    border: 1px solid rgba(102, 111, 130, 0.08);
+    border: 1px solid rgba(102, 111, 130, 0.16);
     border-radius: calc(var(--mikan-navbar-control-height) / 2) !important;
-    background: rgba(255, 255, 255, 0.46) !important;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.95), transparent 2.9rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(246, 252, 255, 0.56)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -0.32rem 0.8rem rgba(110, 134, 154, 0.08),
+        0 0.5rem 1.45rem rgba(78, 93, 116, 0.08);
 }
 
 #navbar #search-bar.navbar-search-compactable {
     position: relative;
+    justify-content: flex-start;
     width: var(--mikan-navbar-search-width);
-    min-width: calc(var(--mikan-navbar-control-height) - 0.1rem);
+    min-width: var(--mikan-navbar-search-size);
+    height: var(--mikan-navbar-search-size);
     max-width: 15rem;
+    padding-inline: 0.08rem 0.82rem;
     overflow: hidden;
     cursor: text;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.76),
+        inset 0 -0.45rem 0.95rem rgba(108, 132, 154, 0.11),
+        0 0.52rem 1.5rem rgba(78, 93, 116, 0.1);
 }
 
 #navbar.is-liquid-compact #search-bar.navbar-search-compactable {
+    width: var(--mikan-navbar-search-size);
+    height: var(--mikan-navbar-search-size);
+    padding: 0;
+    border-radius: 50% !important;
+    justify-content: center;
     cursor: pointer;
 }
 
-#navbar #search-bar.navbar-search-compactable input {
-    width: calc(var(--mikan-navbar-search-width) - 1rem) !important;
+#navbar #search-bar.navbar-search-compactable .navbar-search-input {
+    width: calc(var(--mikan-navbar-search-width) - var(--mikan-navbar-search-size) - 0.52rem) !important;
     opacity: var(--mikan-navbar-brand-text-opacity);
     pointer-events: auto;
     transition: none !important;
 }
 
-#navbar.is-liquid-compact #search-bar.navbar-search-compactable input {
+#navbar.is-liquid-compact #search-bar.navbar-search-compactable .navbar-search-input {
+    flex: 0 0 0;
+    width: 0 !important;
     pointer-events: none;
 }
 
-#navbar #search-bar.navbar-search-compactable svg {
-    margin-left: var(--mikan-navbar-search-icon-margin);
-    transform: translateX(var(--mikan-navbar-search-icon-shift));
+#navbar #search-bar.navbar-search-compactable .navbar-search-icon {
+    display: grid;
+    flex: 0 0 var(--mikan-navbar-search-size);
+    width: var(--mikan-navbar-search-size);
+    height: var(--mikan-navbar-search-size);
+    place-items: center;
+    color: rgba(90, 93, 104, 0.72);
+    transform: none;
     transition: none !important;
+}
+
+#navbar #search-bar.navbar-search-compactable .navbar-search-icon svg {
+    transform: none !important;
 }
 
 #navbar #search-bar:hover,
@@ -284,6 +342,33 @@
         radial-gradient(circle at 34% 0%, rgba(255, 255, 255, var(--mikan-navbar-top-glow-alpha)), transparent 38%),
         linear-gradient(115deg, rgba(36, 40, 54, var(--mikan-navbar-start-alpha)), rgba(27, 31, 43, var(--mikan-navbar-mid-alpha))) !important;
     border-color: rgba(255, 255, 255, var(--mikan-navbar-border-alpha)) !important;
+}
+
+:root.dark #navbar>div::after {
+    border-color: rgba(255, 255, 255, 0.14);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(58, 78, 94, 0.34) 48%, rgba(197, 103, 158, 0.16)),
+        linear-gradient(90deg, rgba(197, 103, 158, 0.12), rgba(102, 181, 210, 0.2), rgba(255, 255, 255, 0.1));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -0.42rem 0.8rem rgba(0, 0, 0, 0.24),
+        0 0.55rem 1.25rem rgba(0, 0, 0, 0.2);
+}
+
+:root.dark #navbar #search-bar,
+:root.dark #navbar #search-bar-inside {
+    border-color: rgba(255, 255, 255, 0.16);
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.14), transparent 2.9rem),
+        linear-gradient(135deg, rgba(48, 53, 70, 0.76), rgba(31, 36, 50, 0.62)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -0.45rem 0.95rem rgba(0, 0, 0, 0.18),
+        0 0.52rem 1.5rem rgba(0, 0, 0, 0.16);
+}
+
+:root.dark #navbar #search-bar.navbar-search-compactable .navbar-search-icon {
+    color: rgba(245, 241, 245, 0.72);
 }
 
 .mikan-glass-top-row {
@@ -587,15 +672,23 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 @media (prefers-reduced-motion: reduce) {
     #navbar>div,
     #navbar>div::before,
+    #navbar>div::after,
     #navbar .navbar-brand,
     #navbar .navbar-brand-logo,
     #navbar .navbar-brand-text,
     #navbar .navbar-navigation,
     #navbar #search-bar.navbar-search-compactable,
-    #navbar #search-bar.navbar-search-compactable input,
+    #navbar #search-bar.navbar-search-compactable .navbar-search-input,
+    #navbar #search-bar.navbar-search-compactable .navbar-search-icon,
     #navbar #search-bar.navbar-search-compactable svg {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
+    }
+}
+
+@media (max-width: 1023px) {
+    #navbar .navbar-actions {
+        padding-right: 0;
     }
 }
 

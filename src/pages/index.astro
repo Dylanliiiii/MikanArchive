@@ -245,6 +245,7 @@ const marqueeItems = [
 									data-reveal-kind="wipe"
 									style={`--reveal-delay: ${index * 80}ms;`}
 								>
+									<span class="home-gateway-edge" aria-hidden="true"></span>
 									<span class="home-gateway-icon">
 										<Icon is:inline name={item.icon} />
 									</span>
@@ -849,6 +850,7 @@ const marqueeItems = [
 		--shadow-x: 0rem;
 		--shadow-y: 1.55rem;
 		--edge-opacity: 0.58;
+		--glass-edge-depth: 1.16rem;
 		position: relative;
 		isolation: isolate;
 		min-height: 16.4rem;
@@ -865,7 +867,10 @@ const marqueeItems = [
 			calc(var(--shadow-x) * -0.42) calc(var(--shadow-y) * -0.32) 1.9rem rgba(255, 255, 255, 0.64),
 			inset 0 0 0 1px rgba(255, 255, 255, 0.34),
 			inset 0 1px 0 rgba(255, 255, 255, 0.84),
-			inset 0 -1.3rem 2.5rem rgba(203, 147, 186, 0.12);
+			inset -0.42rem 0 1.2rem rgba(136, 177, 199, 0.12),
+			inset 0 -0.18rem 0 rgba(255, 255, 255, 0.56),
+			inset 0 -1.6rem 2.9rem rgba(203, 147, 186, 0.16),
+			inset 0 -2.6rem 3.2rem rgba(136, 177, 199, 0.1);
 		backdrop-filter: blur(18px) saturate(1.12);
 		overflow: hidden;
 		transform:
@@ -890,14 +895,42 @@ const marqueeItems = [
 		right: 1.25rem;
 		bottom: 0.45rem;
 		z-index: 0;
-		height: 0.85rem;
+		height: var(--glass-edge-depth);
 		border-radius: 999px;
-		background: linear-gradient(90deg, rgba(221, 109, 166, 0.22), rgba(133, 205, 230, 0.2));
-		filter: blur(0.55rem);
+		background:
+			linear-gradient(90deg, rgba(221, 109, 166, 0.2), rgba(133, 205, 230, 0.26), rgba(255, 255, 255, 0.32)),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(128, 155, 178, 0.14));
+		filter: blur(0.5rem);
 		opacity: var(--edge-opacity);
 		transform: translateY(0.65rem) scaleX(0.92);
 		pointer-events: none;
 		transition: opacity 260ms ease, transform 260ms ease;
+	}
+
+	.home-gateway-card > .home-gateway-edge {
+		display: block;
+		position: absolute;
+		left: 1.15rem;
+		right: 1.15rem;
+		bottom: 0.18rem;
+		z-index: 0;
+		box-sizing: border-box;
+		height: var(--glass-edge-depth);
+		border: 1px solid rgba(255, 255, 255, 0.48);
+		border-top: 0;
+		border-radius: 0 0 1.25rem 1.25rem;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(213, 229, 238, 0.34) 38%, rgba(193, 121, 166, 0.16)),
+			linear-gradient(90deg, rgba(221, 109, 166, 0.16), rgba(133, 205, 230, 0.22), rgba(255, 255, 255, 0.3));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.66),
+			inset 0 -0.55rem 0.9rem rgba(93, 119, 145, 0.16),
+			0 0.55rem 1.2rem rgba(78, 97, 118, 0.1);
+		opacity: 0.72;
+		transform: perspective(9rem) rotateX(58deg) translateY(0.52rem) scaleX(0.96);
+		transform-origin: top;
+		pointer-events: none;
+		transition: opacity 260ms ease, transform 260ms ease, box-shadow 260ms ease;
 	}
 
 	.home-gateway-card::after {
@@ -922,7 +955,10 @@ const marqueeItems = [
 			0 0.7rem 1.4rem rgba(154, 87, 124, 0.1),
 			inset 0 0 0 1px rgba(255, 255, 255, 0.42),
 			inset 0 1px 0 rgba(255, 255, 255, 0.88),
-			inset 0 -1.4rem 2.6rem rgba(191, 231, 246, 0.14);
+			inset -0.5rem 0 1.25rem rgba(136, 177, 199, 0.16),
+			inset 0 -0.18rem 0 rgba(255, 255, 255, 0.62),
+			inset 0 -1.8rem 3rem rgba(191, 231, 246, 0.18),
+			inset 0 -2.8rem 3.3rem rgba(203, 147, 186, 0.12);
 	}
 
 	.home-gateway-card:active {
@@ -948,6 +984,15 @@ const marqueeItems = [
 	.home-gateway-card:hover::before {
 		opacity: 0.92;
 		transform: translateY(0.78rem) scaleX(0.98);
+	}
+
+	.home-gateway-card:hover > .home-gateway-edge {
+		opacity: 0.94;
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.72),
+			inset 0 -0.62rem 1rem rgba(93, 119, 145, 0.2),
+			0 0.72rem 1.35rem rgba(78, 97, 118, 0.14);
+		transform: perspective(9rem) rotateX(58deg) translateY(0.66rem) scaleX(1);
 	}
 
 	.home-gateway-icon {
@@ -1596,6 +1641,17 @@ const marqueeItems = [
 	:root.dark .home-recent-panel,
 	:root.dark .home-friends-strip {
 		background: rgba(30, 33, 44, 0.7);
+	}
+
+	:root.dark .home-gateway-card > .home-gateway-edge {
+		border-color: rgba(255, 255, 255, 0.18);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(74, 94, 116, 0.38) 42%, rgba(197, 103, 158, 0.18)),
+			linear-gradient(90deg, rgba(197, 103, 158, 0.14), rgba(102, 181, 210, 0.2), rgba(255, 255, 255, 0.12));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.18),
+			inset 0 -0.55rem 0.9rem rgba(0, 0, 0, 0.26),
+			0 0.65rem 1.25rem rgba(0, 0, 0, 0.2);
 	}
 
 	:root.dark .home-hero-art {

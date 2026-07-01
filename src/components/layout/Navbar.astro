@@ -419,7 +419,8 @@ function initLiquidNavbarScroll() {
         const brandTextWidth = (isMobile ? 6.7 : 7.9) * rootFontSize * (1 - progress);
         const brandTextOpacity = Math.max(0, 1 - Math.min(1, progress * 1.35));
         const controlHeight = (isMobile ? 2.6 : 2.85) * rootFontSize;
-        const searchWidth = (11 * rootFontSize) - ((11 * rootFontSize) - (controlHeight - 1.6)) * progress;
+        const searchFullWidth = 11.2 * rootFontSize;
+        const searchWidth = searchFullWidth - (searchFullWidth - controlHeight) * progress;
 
         navbar!.style.setProperty("--navbar-scroll-progress", progress.toFixed(3));
         navbar!.style.setProperty("--mikan-navbar-compact-progress", progress.toFixed(3));
@@ -434,9 +435,9 @@ function initLiquidNavbarScroll() {
         navbar!.style.setProperty("--mikan-navbar-brand-text-shift", `${(-0.38 * rootFontSize * progress).toFixed(2)}px`);
         navbar!.style.setProperty("--mikan-navbar-navigation-shift", `${(-0.42 * rootFontSize * progress).toFixed(2)}px`);
         navbar!.style.setProperty("--mikan-navbar-actions-gap", `${((0.03 + 0.08 * progress) * rootFontSize).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-actions-inset", `${((0.55 + 0.18 * progress) * rootFontSize).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-search-size", `${controlHeight.toFixed(2)}px`);
         navbar!.style.setProperty("--mikan-navbar-search-width", `${searchWidth.toFixed(2)}px`);
-        navbar!.style.setProperty("--mikan-navbar-search-icon-margin", `${((0.75 - 0.08 * progress) * rootFontSize).toFixed(2)}px`);
-        navbar!.style.setProperty("--mikan-navbar-search-icon-shift", `${(0.22 * rootFontSize * progress).toFixed(2)}px`);
         navbar!.style.setProperty("--mikan-navbar-current-blur", `${(22 + 8 * progress).toFixed(2)}px`);
         navbar!.style.setProperty("--mikan-navbar-current-saturate", (1.2 + 0.47 * progress).toFixed(3));
         navbar!.style.setProperty("--mikan-navbar-current-contrast", (1 + 0.05 * progress).toFixed(3));
@@ -452,6 +453,7 @@ function initLiquidNavbarScroll() {
         navbar!.style.setProperty("--mikan-navbar-reflection-height", `${(46 + 10 * progress).toFixed(2)}%`);
         navbar!.style.setProperty("--mikan-navbar-reflection-opacity", (0.34 + 0.46 * progress).toFixed(3));
         navbar!.style.setProperty("--mikan-navbar-reflection-shift", `${(0.14 * rootFontSize * progress).toFixed(2)}px`);
+        navbar!.style.setProperty("--mikan-navbar-depth-opacity", (0.16 + 0.34 * progress).toFixed(3));
         navbar!.classList.toggle("is-liquid-compact", progress > 0.94);
         ticking = false;
     }

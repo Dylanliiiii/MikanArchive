@@ -155,12 +155,14 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
       bg-black/4 hover:bg-black/6 focus-within:bg-black/6
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 ">
-    <Icon icon="material-symbols:search"
-          class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
+    <span class="navbar-search-icon" aria-hidden="true">
+        <Icon icon="material-symbols:search"
+              class="text-[1.25rem] pointer-events-none transition text-black/45 dark:text-white/55"></Icon>
+    </span>
     <input id="search-input-desktop" placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop}
            on:focus={() => search(keywordDesktop, true)}
-           class="transition-all pl-10 text-sm bg-transparent outline-0
-         h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
+           class="navbar-search-input transition-all text-sm bg-transparent outline-0
+         h-full min-w-0 flex-1 text-black/60 dark:text-white/60"
     >
 </div>
 

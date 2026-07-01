@@ -170,6 +170,7 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	assert.match(gatewayCardRule, /--tilt-y:\s*0deg/);
 	assert.match(gatewayCardRule, /--shadow-x:\s*0rem/);
 	assert.match(gatewayCardRule, /--shadow-y:\s*1\.55rem/);
+	assert.match(gatewayCardRule, /--glass-edge-depth:\s*1\.16rem/);
 	assert.match(gatewayCardRule, /radial-gradient\(circle at var\(--glow-x\) var\(--glow-y\)/);
 	assert.match(gatewayCardRule, /backdrop-filter:\s*blur\(18px\)/);
 	assert.match(gatewayCardRule, /border:\s*1px solid rgba\(151,\s*164,\s*184,\s*0\.22\)/);
@@ -177,7 +178,10 @@ test("首页入口卡片提供鼠标跟随倾斜和厚玻璃 hover 反馈", () =
 	assert.match(gatewayCardRule, /inset 0 1px 0 rgba\(255,\s*255,\s*255,\s*0\.84\)/);
 	assert.match(gatewayCardRule, /rotateX\(var\(--tilt-x\)\)/);
 	assert.match(gatewayCardRule, /rotateY\(var\(--tilt-y\)\)/);
-	assert.match(source, /\.home-gateway-card::before\s*\{[\s\S]*height:\s*0\.85rem/);
+	assert.match(source, /\.home-gateway-card::before\s*\{[\s\S]*height:\s*var\(--glass-edge-depth\)/);
+	assert.match(source, /class="home-gateway-edge"/);
+	assert.match(source, /\.home-gateway-edge\s*\{[\s\S]*height:\s*var\(--glass-edge-depth\)/);
+	assert.match(source, /\.home-gateway-edge\s*\{[\s\S]*rotateX\(58deg\)/);
 	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\s*\{[\s\S]*rotateX\(var\(--tilt-x\)\)/);
 	assert.match(source, /\.home-hero-note\[data-home-reveal\]\.is-visible\s*\{[\s\S]*rotateX\(var\(--tilt-x\)\)/);
 	assert.match(source, /\.home-gateway-card\[data-home-reveal\]\.is-visible\.is-interacting\s*\{[\s\S]*transition-delay:\s*0ms/);
@@ -245,6 +249,33 @@ test("主导航随滚动进度收缩并渐变为液态玻璃", () => {
 	assert.match(styleSource, /\.navbar-brand-text/);
 	assert.match(styleSource, /#navbar #search-bar\.navbar-search-compactable/);
 	assert.match(styleSource, /prefers-reduced-motion:\s*reduce/);
+});
+
+test("主导航搜索框收缩为圆形且搜索图标保持几何居中", () => {
+	const navbarSource = readSource("src/components/layout/Navbar.astro");
+	const searchSource = readSource("src/components/controls/Search.svelte");
+	const styleSource = readSource("src/styles/navbar.css");
+
+	assert.match(searchSource, /class="navbar-search-icon"/);
+	assert.match(searchSource, /class="navbar-search-input/);
+	assert.match(styleSource, /--mikan-navbar-search-size/);
+	assert.match(styleSource, /#navbar #search-bar\.navbar-search-compactable\s*\{[\s\S]*justify-content:\s*flex-start/);
+	assert.match(styleSource, /#navbar\.is-liquid-compact #search-bar\.navbar-search-compactable\s*\{[\s\S]*width:\s*var\(--mikan-navbar-search-size\)[\s\S]*height:\s*var\(--mikan-navbar-search-size\)[\s\S]*border-radius:\s*50%/);
+	assert.match(styleSource, /\.navbar-search-icon\s*\{[\s\S]*place-items:\s*center/);
+	assert.match(styleSource, /\.navbar-search-icon\s*\{[\s\S]*flex:\s*0 0 var\(--mikan-navbar-search-size\)/);
+	assert.doesNotMatch(navbarSource, /mikan-navbar-search-icon-shift/);
+	assert.doesNotMatch(styleSource, /margin-left:\s*var\(--mikan-navbar-search-icon-margin\)/);
+});
+
+test("主导航液态玻璃提供厚度边缘和更清晰的搜索对比", () => {
+	const styleSource = readSource("src/styles/navbar.css");
+
+	assert.match(styleSource, /--mikan-navbar-glass-depth:\s*0\.62rem/);
+	assert.match(styleSource, /--mikan-navbar-depth-opacity/);
+	assert.match(styleSource, /#navbar>div::after\s*\{[\s\S]*height:\s*var\(--mikan-navbar-glass-depth\)/);
+	assert.match(styleSource, /#navbar>div::after\s*\{[\s\S]*rotateX\(64deg\)/);
+	assert.match(styleSource, /#navbar #search-bar,\s*\n#navbar #search-bar-inside\s*\{[\s\S]*rgba\(102,\s*111,\s*130,\s*0\.16\)/);
+	assert.match(styleSource, /#navbar #search-bar\.navbar-search-compactable\s*\{[\s\S]*box-shadow:[\s\S]*inset 0 -0\.45rem 0\.95rem/);
 });
 
 test("首页角色视觉使用透明线稿和圆形头像资产", () => {
